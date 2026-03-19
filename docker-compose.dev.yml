@@ -1,0 +1,14 @@
+services:
+  postgres:
+    image: postgres:17-alpine
+    ports:
+      - "5433:5432"
+    environment:
+      POSTGRES_USER: photoheadshot
+      POSTGRES_PASSWORD: photoheadshot
+      POSTGRES_DB: photoheadshotdb
+    volumes:
+      - photoheadshot_pgdata:/var/lib/postgresql/data
+
+volumes:
+  photoheadshot_pgdata:

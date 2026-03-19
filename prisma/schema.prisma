@@ -1,0 +1,142 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id             String   @id @default(cuid())
+  name           String
+  email          String   @unique
+  emailVerified  Boolean  @default(false) @map("email_verified")
+  image          String?
+  currentCredits Int      @default(0) @map("current_credits")
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+
+  sessions           Session[]
+  accounts           Account[]
+  photos             Photo[]
+  generationJobs     GenerationJob[]
+  creditTransactions CreditTransaction[]
+
+  @@map("users")
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  userId    String   @map("user_id")
+  token     String   @unique
+  expiresAt DateTime @map("expires_at")
+  ipAddress String?  @map("ip_address")
+  userAgent String?  @map("user_agent")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([token])
+  @@map("sessions")
+}
+
+model Account {
+  id                    String    @id @default(cuid())
+  userId                String    @map("user_id")
+  accountId             String    @map("account_id")
+  providerId            String    @map("provider_id")
+  accessToken           String?   @map("access_token")
+  refreshToken          String?   @map("refresh_token")
+  accessTokenExpiresAt  DateTime? @map("access_token_expires_at")
+  refreshTokenExpiresAt DateTime? @map("refresh_token_expires_at")
+  scope                 String?
+  idToken               String?   @map("id_token")
+  password              String?
+  createdAt             DateTime  @default(now()) @map("created_at")
+  updatedAt             DateTime  @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("accounts")
+}
+
+model Verification {
+  id         String   @id @default(cuid())
+  identifier String
+  value      String
+  expiresAt  DateTime @map("expires_at")
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
+
+  @@index([identifier])
+  @@map("verifications")
+}
+
+model Photo {
+  id               String   @id @default(cuid())
+  userId           String   @map("user_id")
+  key              String   @unique
+  filename         String
+  contentType      String   @map("content_type")
+  size             Int
+  status           String   @default("pending")
+  hasFaceDetected  Boolean? @map("has_face_detected")
+  createdAt        DateTime @default(now()) @map("created_at")
+
+  user           User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  generationJobs GenerationJob[]
+
+  @@index([userId])
+  @@index([status])
+  @@map("photos")
+}
+
+model GenerationJob {
+  id            String    @id @default(cuid())
+  userId        String    @map("user_id")
+  photoId       String    @map("photo_id")
+  stylePrompt   String    @map("style_prompt")
+  status        String    @default("pending")
+  costCredits   Int       @map("cost_credits")
+  startedAt     DateTime  @default(now()) @map("started_at")
+  completedAt   DateTime? @map("completed_at")
+
+  user               User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  photo              Photo               @relation(fields: [photoId], references: [id], onDelete: Cascade)
+  generatedHeadshots GeneratedHeadshot[]
+
+  @@index([userId])
+  @@index([photoId])
+  @@index([status])
+  @@map("generation_jobs")
+}
+
+model GeneratedHeadshot {
+  id            String   @id @default(cuid())
+  generationJobId String  @map("generation_job_id")
+  resultUrl     String   @map("result_url")
+  isDeleted     Boolean  @default(false) @map("is_deleted")
+  createdAt     DateTime @default(now()) @map("created_at")
+
+  generationJob GenerationJob @relation(fields: [generationJobId], references: [id], onDelete: Cascade)
+
+  @@index([generationJobId])
+  @@map("generated_headshots")
+}
+
+model CreditTransaction {
+  id              String   @id @default(cuid())
+  userId          String   @map("user_id")
+  amount          Int
+  transactionType String   @map("transaction_type")
+  createdAt       DateTime @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("credit_transactions")
+}
