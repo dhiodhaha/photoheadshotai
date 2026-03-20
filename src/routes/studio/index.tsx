@@ -1,6 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router';
 import { motion, AnimatePresence } from 'motion/react';
-import { Upload, Info, Zap, Camera, ShieldCheck, X, CheckCircle2, ImageIcon } from 'lucide-react';
+import { Upload, Info, Zap, Camera, ShieldCheck, X, CheckCircle2, ImageIcon, Loader2, Sparkles, Download } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useState, useRef } from 'react';
 import { cn } from '@/lib/utils';
@@ -16,12 +16,21 @@ const AI_STYLES = [
 ];
 
 function StudioIndexPage() {
-    const [step, setStep] = useState<1 | 2>(1);
+    const [step, setStep] = useState<1 | 2 | 3>(1);
     const [file, setFile] = useState<File | null>(null);
     const [previewUrl, setPreviewUrl] = useState<string | null>(null);
     const [isDragging, setIsDragging] = useState(false);
     const [selectedStyle, setSelectedStyle] = useState<string | null>(null);
+    const [isGenerating, setIsGenerating] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
+
+    const handleGenerate = () => {
+        setStep(3);
+        setIsGenerating(true);
+        setTimeout(() => {
+            setIsGenerating(false);
+        }, 3500); // Simulate network latency and generation time
+    };
 
     const handleFile = (selectedFile: File) => {
         if (!selectedFile.type.startsWith('image/')) return;
@@ -265,11 +274,82 @@ function StudioIndexPage() {
                                         size="lg"
                                         className="w-full sm:w-auto rounded-full h-12 px-8 uppercase tracking-widest text-xs font-bold transition-all"
                                         disabled={!selectedStyle}
-                                        onClick={() => console.log('Generate!')}
+                                        onClick={handleGenerate}
                                     >
                                         Begin Generation (10 Credits)
                                     </Button>
                                 </div>
+                            </motion.div>
+                        )}
+
+                        {step === 3 && (
+                            <motion.div 
+                                key="step3"
+                                initial={{ opacity: 0, scale: 0.95 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                exit={{ opacity: 0, scale: 0.95 }}
+                                transition={{ duration: 0.5 }}
+                                className="min-h-[400px] flex flex-col items-center justify-center p-8 text-center"
+                            >
+                                {isGenerating ? (
+                                    <div className="space-y-8 flex flex-col items-center max-w-sm mx-auto">
+                                        <div className="relative">
+                                            <div className="absolute inset-0 bg-primary/20 blur-2xl rounded-full animate-pulse" />
+                                            <div className="w-24 h-24 rounded-full border border-white/10 glass flex items-center justify-center relative">
+                                                <Loader2 className="w-10 h-10 text-primary animate-spin" />
+                                            </div>
+                                        </div>
+                                        <div className="space-y-2">
+                                            <h3 className="text-2xl font-display font-bold bg-clip-text text-transparent bg-linear-to-r from-white to-white/60">Crafting your legacy...</h3>
+                                            <p className="text-sm text-muted-foreground font-light">
+                                                Our neural networks are analyzing facial structures and applying {AI_STYLES.find(s => s.id === selectedStyle)?.name || 'premium'} enhancements.
+                                            </p>
+                                        </div>
+                                    </div>
+                                ) : (
+                                    <div className="space-y-8 w-full">
+                                        <div className="space-y-2">
+                                            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-green-500/10 text-green-400 text-xs font-bold tracking-widest uppercase mb-2 border border-green-500/20">
+                                                <Sparkles className="w-3 h-3" />
+                                                Generation Complete
+                                            </div>
+                                            <h3 className="text-3xl font-display font-bold">Your new headshots</h3>
+                                        </div>
+                                        
+                                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                                            {[
+                                                '/hero_headshot_preview_1773972472569.png',
+                                                '/auth_fashion_portrait_1.png',
+                                                '/auth_fashion_portrait_2.png',
+                                                '/hero_headshot_preview_1773972472569.png'
+                                            ].map((src, i) => (
+                                                <motion.div
+                                                    key={i}
+                                                    initial={{ opacity: 0, y: 20 }}
+                                                    animate={{ opacity: 1, y: 0 }}
+                                                    transition={{ delay: i * 0.1, duration: 0.5 }}
+                                                    className="aspect-3/4 rounded-2xl overflow-hidden glass border border-white/10 relative group"
+                                                >
+                                                    <img src={src} alt={`Generated headshot ${i + 1}`} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+                                                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                                        <Button size="icon" variant="secondary" className="rounded-full w-10 h-10">
+                                                            <Download className="w-4 h-4" />
+                                                        </Button>
+                                                    </div>
+                                                </motion.div>
+                                            ))}
+                                        </div>
+
+                                        <div className="pt-6 border-t border-white/5 flex justify-center gap-4">
+                                            <Button variant="outline" className="rounded-full px-8 h-12 uppercase tracking-widest text-xs font-bold border-white/10" onClick={clearFile}>
+                                                Start Over
+                                            </Button>
+                                            <Button className="rounded-full px-8 h-12 uppercase tracking-widest text-xs font-bold">
+                                                Download All High-Res
+                                            </Button>
+                                        </div>
+                                    </div>
+                                )}
                             </motion.div>
                         )}
                     </AnimatePresence>
