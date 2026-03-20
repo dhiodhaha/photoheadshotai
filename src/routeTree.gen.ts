@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as StudioRouteImport } from './routes/studio'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as StudioIndexRouteImport } from './routes/studio/index'
+import { Route as StudioSettingsRouteImport } from './routes/studio/settings'
 import { Route as StudioGalleryRouteImport } from './routes/studio/gallery'
 import { Route as StudioBillingRouteImport } from './routes/studio/billing'
 import { Route as AuthSignupRouteImport } from './routes/auth/signup'
@@ -32,6 +33,11 @@ const IndexRoute = IndexRouteImport.update({
 const StudioIndexRoute = StudioIndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => StudioRoute,
+} as any)
+const StudioSettingsRoute = StudioSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
   getParentRoute: () => StudioRoute,
 } as any)
 const StudioGalleryRoute = StudioGalleryRouteImport.update({
@@ -72,6 +78,7 @@ export interface FileRoutesByFullPath {
   '/auth/signup': typeof AuthSignupRoute
   '/studio/billing': typeof StudioBillingRoute
   '/studio/gallery': typeof StudioGalleryRoute
+  '/studio/settings': typeof StudioSettingsRoute
   '/studio/': typeof StudioIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/studio/upload': typeof ApiStudioUploadRoute
@@ -82,6 +89,7 @@ export interface FileRoutesByTo {
   '/auth/signup': typeof AuthSignupRoute
   '/studio/billing': typeof StudioBillingRoute
   '/studio/gallery': typeof StudioGalleryRoute
+  '/studio/settings': typeof StudioSettingsRoute
   '/studio': typeof StudioIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/studio/upload': typeof ApiStudioUploadRoute
@@ -94,6 +102,7 @@ export interface FileRoutesById {
   '/auth/signup': typeof AuthSignupRoute
   '/studio/billing': typeof StudioBillingRoute
   '/studio/gallery': typeof StudioGalleryRoute
+  '/studio/settings': typeof StudioSettingsRoute
   '/studio/': typeof StudioIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/studio/upload': typeof ApiStudioUploadRoute
@@ -107,6 +116,7 @@ export interface FileRouteTypes {
     | '/auth/signup'
     | '/studio/billing'
     | '/studio/gallery'
+    | '/studio/settings'
     | '/studio/'
     | '/api/auth/$'
     | '/api/studio/upload'
@@ -117,6 +127,7 @@ export interface FileRouteTypes {
     | '/auth/signup'
     | '/studio/billing'
     | '/studio/gallery'
+    | '/studio/settings'
     | '/studio'
     | '/api/auth/$'
     | '/api/studio/upload'
@@ -128,6 +139,7 @@ export interface FileRouteTypes {
     | '/auth/signup'
     | '/studio/billing'
     | '/studio/gallery'
+    | '/studio/settings'
     | '/studio/'
     | '/api/auth/$'
     | '/api/studio/upload'
@@ -163,6 +175,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/studio/'
       preLoaderRoute: typeof StudioIndexRouteImport
+      parentRoute: typeof StudioRoute
+    }
+    '/studio/settings': {
+      id: '/studio/settings'
+      path: '/settings'
+      fullPath: '/studio/settings'
+      preLoaderRoute: typeof StudioSettingsRouteImport
       parentRoute: typeof StudioRoute
     }
     '/studio/gallery': {
@@ -213,12 +232,14 @@ declare module '@tanstack/react-router' {
 interface StudioRouteChildren {
   StudioBillingRoute: typeof StudioBillingRoute
   StudioGalleryRoute: typeof StudioGalleryRoute
+  StudioSettingsRoute: typeof StudioSettingsRoute
   StudioIndexRoute: typeof StudioIndexRoute
 }
 
 const StudioRouteChildren: StudioRouteChildren = {
   StudioBillingRoute: StudioBillingRoute,
   StudioGalleryRoute: StudioGalleryRoute,
+  StudioSettingsRoute: StudioSettingsRoute,
   StudioIndexRoute: StudioIndexRoute,
 }
 
