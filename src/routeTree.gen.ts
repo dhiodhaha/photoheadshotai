@@ -12,6 +12,8 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as StudioRouteImport } from './routes/studio'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as StudioIndexRouteImport } from './routes/studio/index'
+import { Route as StudioGalleryRouteImport } from './routes/studio/gallery'
+import { Route as StudioBillingRouteImport } from './routes/studio/billing'
 import { Route as AuthSignupRouteImport } from './routes/auth/signup'
 import { Route as AuthSigninRouteImport } from './routes/auth/signin'
 import { Route as ApiStudioUploadRouteImport } from './routes/api/studio/upload'
@@ -30,6 +32,16 @@ const IndexRoute = IndexRouteImport.update({
 const StudioIndexRoute = StudioIndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => StudioRoute,
+} as any)
+const StudioGalleryRoute = StudioGalleryRouteImport.update({
+  id: '/gallery',
+  path: '/gallery',
+  getParentRoute: () => StudioRoute,
+} as any)
+const StudioBillingRoute = StudioBillingRouteImport.update({
+  id: '/billing',
+  path: '/billing',
   getParentRoute: () => StudioRoute,
 } as any)
 const AuthSignupRoute = AuthSignupRouteImport.update({
@@ -58,6 +70,8 @@ export interface FileRoutesByFullPath {
   '/studio': typeof StudioRouteWithChildren
   '/auth/signin': typeof AuthSigninRoute
   '/auth/signup': typeof AuthSignupRoute
+  '/studio/billing': typeof StudioBillingRoute
+  '/studio/gallery': typeof StudioGalleryRoute
   '/studio/': typeof StudioIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/studio/upload': typeof ApiStudioUploadRoute
@@ -66,6 +80,8 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth/signin': typeof AuthSigninRoute
   '/auth/signup': typeof AuthSignupRoute
+  '/studio/billing': typeof StudioBillingRoute
+  '/studio/gallery': typeof StudioGalleryRoute
   '/studio': typeof StudioIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/studio/upload': typeof ApiStudioUploadRoute
@@ -76,6 +92,8 @@ export interface FileRoutesById {
   '/studio': typeof StudioRouteWithChildren
   '/auth/signin': typeof AuthSigninRoute
   '/auth/signup': typeof AuthSignupRoute
+  '/studio/billing': typeof StudioBillingRoute
+  '/studio/gallery': typeof StudioGalleryRoute
   '/studio/': typeof StudioIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/studio/upload': typeof ApiStudioUploadRoute
@@ -87,6 +105,8 @@ export interface FileRouteTypes {
     | '/studio'
     | '/auth/signin'
     | '/auth/signup'
+    | '/studio/billing'
+    | '/studio/gallery'
     | '/studio/'
     | '/api/auth/$'
     | '/api/studio/upload'
@@ -95,6 +115,8 @@ export interface FileRouteTypes {
     | '/'
     | '/auth/signin'
     | '/auth/signup'
+    | '/studio/billing'
+    | '/studio/gallery'
     | '/studio'
     | '/api/auth/$'
     | '/api/studio/upload'
@@ -104,6 +126,8 @@ export interface FileRouteTypes {
     | '/studio'
     | '/auth/signin'
     | '/auth/signup'
+    | '/studio/billing'
+    | '/studio/gallery'
     | '/studio/'
     | '/api/auth/$'
     | '/api/studio/upload'
@@ -141,6 +165,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof StudioIndexRouteImport
       parentRoute: typeof StudioRoute
     }
+    '/studio/gallery': {
+      id: '/studio/gallery'
+      path: '/gallery'
+      fullPath: '/studio/gallery'
+      preLoaderRoute: typeof StudioGalleryRouteImport
+      parentRoute: typeof StudioRoute
+    }
+    '/studio/billing': {
+      id: '/studio/billing'
+      path: '/billing'
+      fullPath: '/studio/billing'
+      preLoaderRoute: typeof StudioBillingRouteImport
+      parentRoute: typeof StudioRoute
+    }
     '/auth/signup': {
       id: '/auth/signup'
       path: '/auth/signup'
@@ -173,10 +211,14 @@ declare module '@tanstack/react-router' {
 }
 
 interface StudioRouteChildren {
+  StudioBillingRoute: typeof StudioBillingRoute
+  StudioGalleryRoute: typeof StudioGalleryRoute
   StudioIndexRoute: typeof StudioIndexRoute
 }
 
 const StudioRouteChildren: StudioRouteChildren = {
+  StudioBillingRoute: StudioBillingRoute,
+  StudioGalleryRoute: StudioGalleryRoute,
   StudioIndexRoute: StudioIndexRoute,
 }
 

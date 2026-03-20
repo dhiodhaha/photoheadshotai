@@ -1,5 +1,5 @@
 import { createFileRoute, Outlet, Link, useRouterState } from '@tanstack/react-router';
-import { Home, Sparkles, Image as ImageIcon, Settings, Bolt, Plus, User } from 'lucide-react';
+import { Home, Sparkles, Image as ImageIcon, Settings, Bolt, Plus, User, CreditCard } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 export const Route = createFileRoute('/studio')({
@@ -10,6 +10,7 @@ const navItems = [
 	{ icon: Home, label: 'Home', to: '/' },
 	{ icon: Sparkles, label: 'Studio AI', to: '/studio' },
 	{ icon: ImageIcon, label: 'Gallery', to: '/studio/gallery' },
+	{ icon: CreditCard, label: 'Billing', to: '/studio/billing' },
 	{ icon: Settings, label: 'Settings', to: '/studio/settings' },
 ];
 
@@ -69,9 +70,9 @@ function StudioLayout() {
                             <div className="flex items-center gap-2 px-3 py-1.5 text-muted-foreground">
                                 <div className="w-4 h-4 rounded-full bg-linear-to-tr from-accent to-primary" />
                                 <span className="text-xs font-bold tracking-wider">BALANCE 0 TOKENS</span>
-                                <button className="w-5 h-5 flex items-center justify-center rounded-full bg-white/10 hover:bg-white/20 transition-colors ml-1">
+                                <Link to="/studio/billing" className="w-5 h-5 flex items-center justify-center rounded-full bg-white/10 hover:bg-white/20 transition-colors ml-1">
                                     <Plus className="w-3 h-3 text-white" />
-                                </button>
+                                </Link>
                             </div>
 						</div>
                         
