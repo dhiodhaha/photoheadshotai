@@ -4,6 +4,7 @@ import { Upload, Info, Zap, Camera, ShieldCheck, X, CheckCircle2, ImageIcon, Loa
 import { Button } from '@/components/ui/button';
 import { useState, useRef } from 'react';
 import { cn } from '@/lib/utils';
+import { toast } from 'sonner';
 
 export const Route = createFileRoute('/studio/')({
 	component: StudioIndexPage,
@@ -24,12 +25,40 @@ function StudioIndexPage() {
     const [isGenerating, setIsGenerating] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
-    const handleGenerate = () => {
+    const handleGenerate = async () => {
+        if (!file || !selectedStyle) return;
+
         setStep(3);
         setIsGenerating(true);
-        setTimeout(() => {
+        
+        try {
+            const formData = new FormData();
+            formData.append("file", file);
+            
+            const res = await fetch("/api/studio/upload", {
+                method: "POST",
+                body: formData
+            });
+
+            if (!res.ok) {
+                const err = await res.json();
+                throw new Error(err.error || "Failed to upload image.");
+            }
+
+            const data = await res.json();
+            toast.success("Image successfully secured and uploaded! Prompting AI...");
+            
+            // Mocking the AI Generation latency right after successful upload
+            setTimeout(() => {
+                setIsGenerating(false);
+                toast.success("Generation Complete!");
+            }, 3500);
+            
+        } catch (e: any) {
+            toast.error(e.message || "Something went wrong.");
             setIsGenerating(false);
-        }, 3500); // Simulate network latency and generation time
+            setStep(2);
+        }
     };
 
     const handleFile = (selectedFile: File) => {
