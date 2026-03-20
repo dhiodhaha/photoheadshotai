@@ -1,4 +1,4 @@
-import { createFileRoute, Link, useNavigate } from '@tanstack/react-router';
+import { createFileRoute, Link, useNavigate, redirect } from '@tanstack/react-router';
 import { motion } from 'motion/react';
 import { useState } from 'react';
 import { ArrowRight, ChevronLeft, Loader2 } from 'lucide-react';
@@ -8,7 +8,17 @@ import { Label } from '@/components/ui/label';
 import { authClient } from '#/lib/auth-client';
 import { toast } from 'sonner';
 
+import { getSessionFn } from '#/modules/auth/infrastructure/auth.functions';
+
 export const Route = createFileRoute('/auth/signup')({
+	beforeLoad: async () => {
+		const session = await getSessionFn();
+		if (session) {
+			throw redirect({
+				to: '/studio',
+			});
+		}
+	},
 	component: SignUpPage,
 });
 
@@ -37,7 +47,7 @@ function SignUpPage() {
 				toast.error(error.message || 'Failed to create account');
 			} else {
 				toast.success('Account created successfully!');
-				navigate({ to: '/' });
+				navigate({ to: '/studio' });
 			}
 		} catch (err) {
 			toast.error('An unexpected error occurred');

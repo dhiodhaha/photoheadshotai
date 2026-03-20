@@ -6,7 +6,7 @@ import {
 	findPhotosByUser,
 } from "../infrastructure/photo.repository";
 import { deleteFromR2, uploadToR2 } from "../infrastructure/photo.storage";
-import { getPublicUrl } from "../infrastructure/r2.client";
+import { getPublicUrl } from "../infrastructure/r2.server";
 import {
 	ALLOWED_CONTENT_TYPES,
 	MAX_FILE_SIZE,

@@ -1,10 +1,21 @@
-import { createFileRoute, Outlet, Link, useRouterState } from '@tanstack/react-router';
+import { createFileRoute, Outlet, Link, useRouterState, useNavigate, redirect } from '@tanstack/react-router';
 import { Home, Sparkles, Image as ImageIcon, Settings, Bolt, Plus, User, CreditCard, Menu, X, LogOut } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useState } from 'react';
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuLabel } from '@/components/ui/dropdown-menu';
+import { authClient } from '#/lib/auth-client';
+import { getSessionFn } from '#/modules/auth/infrastructure/auth.functions';
 
 export const Route = createFileRoute('/studio')({
+	beforeLoad: async () => {
+		const session = await getSessionFn();
+		if (!session) {
+			throw redirect({
+				to: '/auth/signin',
+			});
+		}
+		return { session };
+	},
 	component: StudioLayout,
 });
 
@@ -18,8 +29,19 @@ const navItems = [
 
 function StudioLayout() {
 	const routerState = useRouterState();
+	const navigate = useNavigate();
 	const currentPath = routerState.location.pathname;
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+	const handleSignOut = async () => {
+		await authClient.signOut({
+			fetchOptions: {
+				onSuccess: () => {
+					navigate({ to: '/auth/signin' });
+				}
+			}
+		});
+	};
 
 	return (
 		<div className="h-dvh bg-transparent text-foreground flex overflow-hidden w-full">
@@ -121,7 +143,10 @@ function StudioLayout() {
                                         <span>Settings</span>
                                     </Link>
                                 </DropdownMenuItem>
-                                <DropdownMenuItem className="focus:bg-red-500/20 focus:text-red-500 text-red-500 cursor-pointer py-2.5 rounded-xl transition-colors mt-1">
+                                <DropdownMenuItem 
+									onClick={handleSignOut}
+									className="focus:bg-red-500/20 focus:text-red-500 text-red-500 cursor-pointer py-2.5 rounded-xl transition-colors mt-1"
+								>
                                     <LogOut className="mr-3 w-4 h-4" />
                                     <span className="font-bold">Sign Out Securely</span>
                                 </DropdownMenuItem>

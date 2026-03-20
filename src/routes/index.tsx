@@ -2,10 +2,13 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { motion } from "motion/react";
 import { ArrowRight, Camera, Sparkles, Upload } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { authClient } from "#/lib/auth-client";
 
 export const Route = createFileRoute("/")({ component: App });
 
 function App() {
+	const { data: session } = authClient.useSession();
+
 	return (
 		<main className="relative min-h-screen overflow-hidden selection:bg-primary selection:text-primary-foreground">
 			{/* Header */}
@@ -17,20 +20,33 @@ function App() {
 					Studio AI
 				</Link>
 				<nav className="flex gap-8 items-center">
-					<Link
-						to="/auth/signin"
-						className="text-sm font-medium tracking-wide uppercase text-white/80 hover:text-white transition-colors"
-					>
-						Sign In
-					</Link>
-					<Button
-						variant="secondary"
-						size="sm"
-						className="rounded-full px-6 uppercase tracking-widest text-[10px]"
-						asChild
-					>
-						<Link to="/auth/signup">Get Started</Link>
-					</Button>
+					{session ? (
+						<Button
+							variant="secondary"
+							size="sm"
+							className="rounded-full px-6 uppercase tracking-widest text-[10px]"
+							asChild
+						>
+							<Link to="/studio">Dashboard</Link>
+						</Button>
+					) : (
+						<>
+							<Link
+								to="/auth/signin"
+								className="text-sm font-medium tracking-wide uppercase text-white/80 hover:text-white transition-colors"
+							>
+								Sign In
+							</Link>
+							<Button
+								variant="secondary"
+								size="sm"
+								className="rounded-full px-6 uppercase tracking-widest text-[10px]"
+								asChild
+							>
+								<Link to="/auth/signup">Get Started</Link>
+							</Button>
+						</>
+					)}
 				</nav>
 			</header>
 
@@ -65,8 +81,8 @@ function App() {
 							className="rounded-full h-14 px-10 text-lg group bg-primary text-primary-foreground hover:scale-105 transition-transform"
 							asChild
 						>
-							<Link to="/auth/signup">
-								Start Your Session
+							<Link to={session ? "/studio" : "/auth/signup"}>
+								{session ? "Enter Studio" : "Start Your Session"}
 								<ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
 							</Link>
 						</Button>
