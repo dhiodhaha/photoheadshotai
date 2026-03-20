@@ -1,28 +1,48 @@
 import { PrismaPg } from "@prisma/adapter-pg";
+import pg from "pg";
 import { PrismaClient } from "../src/generated/prisma/client.js";
 
-const adapter = new PrismaPg({
+const pool = new pg.Pool({
 	connectionString: process.env.DATABASE_URL!,
 });
-
+const adapter = new PrismaPg(pool as any);
 const prisma = new PrismaClient({ adapter });
 
 async function main() {
 	console.log("🌱 Seeding database...");
 
-	// Clear existing todos
-	await prisma.todo.deleteMany();
+	// 1. Create a Test User
+	const user = await prisma.user.upsert({
+		where: { email: "test@example.com" },
+		update: {},
+		create: {
+			email: "test@example.com",
+			name: "Test User",
+			currentCredits: 500,
+		},
+	});
 
-	// Create example todos
-	const todos = await prisma.todo.createMany({
+	console.log(
+		`✅ User seeded: ${user.email} (Credits: ${user.currentCredits})`,
+	);
+
+	// 2. Add Sample Credit Transactions
+	const transactions = await prisma.creditTransaction.createMany({
 		data: [
-			{ title: "Buy groceries" },
-			{ title: "Read a book" },
-			{ title: "Workout" },
+			{
+				userId: user.id,
+				amount: 500,
+				transactionType: "PURCHASE",
+			},
+			{
+				userId: user.id,
+				amount: -10,
+				transactionType: "GENERATION_DEDUCTION",
+			},
 		],
 	});
 
-	console.log(`✅ Created ${todos.count} todos`);
+	console.log(`✅ Seeded ${transactions.count} transactions.`);
 }
 
 main()

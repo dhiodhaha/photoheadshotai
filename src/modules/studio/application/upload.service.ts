@@ -28,7 +28,7 @@ export async function uploadPhoto(
 	const key = `photos/${userId}/${randomUUID()}.${ext}`;
 
 	const buffer = Buffer.from(await file.arrayBuffer());
-	
+
 	if (process.env.R2_ACCOUNT_ID !== "placeholder_account_id") {
 		await uploadToR2(key, buffer, file.type);
 	} else {

@@ -30,6 +30,8 @@
 		"@prisma/adapter-pg": "^7.4.2",
 		"@prisma/client": "^7.4.2",
 		"@tailwindcss/vite": "^4.1.18",
+		"@tanstack/ai": "^0.8.1",
+		"@tanstack/ai-fal": "^0.6.6",
 		"@tanstack/react-devtools": "latest",
 		"@tanstack/react-query": "latest",
 		"@tanstack/react-query-devtools": "latest",
