@@ -17,19 +17,19 @@ function App() {
 					Studio AI
 				</Link>
 				<nav className="flex gap-8 items-center">
-					<a
-						href="/api/auth/signin"
+					<Link
+						to="/auth/signin"
 						className="text-sm font-medium tracking-wide uppercase text-white/80 hover:text-white transition-colors"
 					>
 						Sign In
-					</a>
+					</Link>
 					<Button
 						variant="secondary"
 						size="sm"
 						className="rounded-full px-6 uppercase tracking-widest text-[10px]"
 						asChild
 					>
-						<a href="/api/auth/signup">Get Started</a>
+						<Link to="/auth/signup">Get Started</Link>
 					</Button>
 				</nav>
 			</header>
@@ -65,10 +65,10 @@ function App() {
 							className="rounded-full h-14 px-10 text-lg group bg-primary text-primary-foreground hover:scale-105 transition-transform"
 							asChild
 						>
-							<a href="/api/auth/signup">
+							<Link to="/auth/signup">
 								Start Your Session
 								<ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
-							</a>
+							</Link>
 						</Button>
 						<Button
 							variant="outline"
