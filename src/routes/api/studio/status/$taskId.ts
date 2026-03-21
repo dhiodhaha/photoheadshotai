@@ -22,11 +22,10 @@ export const Route = createFileRoute("/api/studio/status/$taskId")({
 						session.user.id,
 					);
 					return Response.json(status);
-				} catch (error: any) {
-					return Response.json(
-						{ error: error.message || "Internal server error" },
-						{ status: 500 },
-					);
+				} catch (error: unknown) {
+					const message =
+						error instanceof Error ? error.message : "Internal server error";
+					return Response.json({ error: message }, { status: 500 });
 				}
 			},
 		},

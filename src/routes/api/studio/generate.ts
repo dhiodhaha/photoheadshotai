@@ -36,12 +36,11 @@ export const Route = createFileRoute("/api/studio/generate")({
 						},
 						{ status: 200 },
 					);
-				} catch (error: any) {
+				} catch (error: unknown) {
 					console.error("AI Generate Error:", error);
-					return Response.json(
-						{ error: error.message || "Internal server error" },
-						{ status: 500 },
-					);
+					const message =
+						error instanceof Error ? error.message : "Internal server error";
+					return Response.json({ error: message }, { status: 500 });
 				}
 			},
 		},

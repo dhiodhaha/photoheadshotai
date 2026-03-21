@@ -7,6 +7,27 @@ datasource db {
   provider = "postgresql"
 }
 
+enum PhotoStatus {
+  pending
+  uploaded
+  processing
+  completed
+  failed
+}
+
+enum GenerationJobStatus {
+  pending
+  processing
+  completed
+  failed
+}
+
+enum TransactionType {
+  purchase
+  generation_deduction
+  generation_refund
+}
+
 model User {
   id             String   @id @default(cuid())
   name           String
@@ -83,7 +104,7 @@ model Photo {
   filename         String
   contentType      String   @map("content_type")
   size             Int
-  status           String   @default("pending")
+  status           PhotoStatus @default(pending)
   hasFaceDetected  Boolean? @map("has_face_detected")
   createdAt        DateTime @default(now()) @map("created_at")
 
@@ -100,8 +121,8 @@ model GenerationJob {
   userId        String    @map("user_id")
   photoId       String    @map("photo_id")
   stylePrompt   String    @map("style_prompt")
-  status        String    @default("pending")
-  costCredits   Int       @map("cost_credits")
+  status        GenerationJobStatus @default(pending)
+  costCredits   Int                @map("cost_credits")
   startedAt     DateTime  @default(now()) @map("started_at")
   completedAt   DateTime? @map("completed_at")
 
@@ -132,7 +153,7 @@ model CreditTransaction {
   id              String   @id @default(cuid())
   userId          String   @map("user_id")
   amount          Int
-  transactionType String   @map("transaction_type")
+  transactionType TransactionType @map("transaction_type")
   createdAt       DateTime @default(now()) @map("created_at")
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)

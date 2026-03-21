@@ -32,12 +32,12 @@ async function main() {
 			{
 				userId: user.id,
 				amount: 500,
-				transactionType: "PURCHASE",
+				transactionType: "purchase",
 			},
 			{
 				userId: user.id,
 				amount: -10,
-				transactionType: "GENERATION_DEDUCTION",
+				transactionType: "generation_deduction",
 			},
 		],
 	});

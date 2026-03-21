@@ -3,51 +3,47 @@ import { falImage } from "@tanstack/ai-fal";
 import { prisma } from "#/lib/prisma";
 import { getPublicUrl } from "#/modules/studio/infrastructure/r2.server";
 
+const GENERATION_CREDIT_COST = 10;
+
 export class GenerationService {
 	async startGeneration(userId: string, photoId: string, style: string) {
-		// 1. Verify User has Enough Credits
-		const user = await prisma.user.findUnique({
-			where: { id: userId },
-		});
+		// 1. Fetch user and photo in parallel
+		const [user, photo] = await Promise.all([
+			prisma.user.findUnique({ where: { id: userId } }),
+			prisma.photo.findUnique({ where: { id: photoId } }),
+		]);
 
-		if (!user || user.currentCredits < 10) {
+		if (!user || user.currentCredits < GENERATION_CREDIT_COST) {
 			throw new Error("Insufficient credits. Please top up.");
 		}
-
-		// 2. Fetch the uploaded photo record
-		const photo = await prisma.photo.findUnique({
-			where: { id: photoId },
-		});
 
 		if (!photo || photo.userId !== userId) {
 			throw new Error("Photo not found or access denied.");
 		}
 
-		// 3. Deduct 10 Credits Immediately & Log Transaction
-		await prisma.$transaction([
+		// 2. Atomically deduct credits, log transaction, and create job
+		const [, , job] = await prisma.$transaction([
 			prisma.user.update({
 				where: { id: user.id },
-				data: { currentCredits: user.currentCredits - 10 },
+				data: { currentCredits: { decrement: GENERATION_CREDIT_COST } },
 			}),
 			prisma.creditTransaction.create({
 				data: {
 					userId: user.id,
-					amount: -10,
-					transactionType: "GENERATION_DEDUCTION",
+					amount: -GENERATION_CREDIT_COST,
+					transactionType: "generation_deduction",
+				},
+			}),
+			prisma.generationJob.create({
+				data: {
+					userId: user.id,
+					photoId: photo.id,
+					status: "processing",
+					stylePrompt: style,
+					costCredits: GENERATION_CREDIT_COST,
 				},
 			}),
 		]);
-
-		// 4. Create a "Generation Job" record
-		const job = await prisma.generationJob.create({
-			data: {
-				userId: user.id,
-				photoId: photo.id,
-				status: "PROCESSING",
-				stylePrompt: style,
-				costCredits: 10,
-			},
-		});
 
 		// Start background process (for now we still wait, but logic is modular)
 		return this.processGeneration(job.id, photo.key, style, user.id, photo.id);
@@ -77,6 +73,7 @@ export class GenerationService {
 		}
 
 		try {
+			// TODO: Remove `as any` casts when @tanstack/ai-fal ships stable types
 			const adapter = falImage("fal-ai/flux-pulid", {
 				apiKey: process.env.FAL_KEY!,
 			});
@@ -102,8 +99,10 @@ export class GenerationService {
 			} else {
 				throw new Error("AI Provider returned no image.");
 			}
-		} catch (error: any) {
-			await this.handleGenerationFailure(jobId, userId, error.message);
+		} catch (error: unknown) {
+			const message =
+				error instanceof Error ? error.message : String(error);
+			await this.handleGenerationFailure(jobId, userId, message);
 			throw error;
 		}
 	}
@@ -116,11 +115,11 @@ export class GenerationService {
 		await prisma.$transaction([
 			prisma.generationJob.update({
 				where: { id: jobId },
-				data: { status: "COMPLETED", completedAt: new Date() },
+				data: { status: "completed", completedAt: new Date() },
 			}),
 			prisma.photo.update({
 				where: { id: photoId },
-				data: { status: "active" },
+				data: { status: "completed" },
 			}),
 			prisma.generatedHeadshot.create({
 				data: {
@@ -140,17 +139,17 @@ export class GenerationService {
 		await prisma.$transaction([
 			prisma.generationJob.update({
 				where: { id: jobId },
-				data: { status: "FAILED" },
+				data: { status: "failed" },
 			}),
 			prisma.user.update({
 				where: { id: userId },
-				data: { currentCredits: { increment: 10 } },
+				data: { currentCredits: { increment: GENERATION_CREDIT_COST } },
 			}),
 			prisma.creditTransaction.create({
 				data: {
 					userId: userId,
-					amount: 10,
-					transactionType: "GENERATION_REFUND",
+					amount: GENERATION_CREDIT_COST,
+					transactionType: "generation_refund",
 				},
 			}),
 		]);
@@ -160,7 +159,7 @@ export class GenerationService {
 		const job = await prisma.generationJob.findUnique({
 			where: { id: jobId },
 			include: {
-				generatedHeadshots: true,
+				generatedHeadshots: { take: 1 },
 			},
 		});
 
