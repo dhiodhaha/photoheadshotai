@@ -3,15 +3,25 @@ export interface HeadshotStyle {
 	label: string;
 	description: string;
 	prompt: string;
+	image: string;
 }
 
 export const HEADSHOT_STYLES: HeadshotStyle[] = [
+	{
+		id: "executive",
+		label: "Executive Classic",
+		description: "Authoritative and refined for C-suite and leadership pages",
+		prompt:
+			"Executive portrait, premium tailored suit, dark moody background, Rembrandt lighting, commanding presence, ultra sharp",
+		image: "/hero_headshot_preview_1773972472569.png",
+	},
 	{
 		id: "corporate",
 		label: "Corporate",
 		description: "Clean, polished look for LinkedIn and business profiles",
 		prompt:
 			"Professional corporate headshot, clean navy suit, neutral background, soft studio lighting, sharp focus",
+		image: "/auth_fashion_portrait_1.png",
 	},
 	{
 		id: "creative",
@@ -19,6 +29,7 @@ export const HEADSHOT_STYLES: HeadshotStyle[] = [
 		description: "Artistic and editorial for portfolios and personal branding",
 		prompt:
 			"Modern creative portrait, artistic lighting, vibrant but professional, editorial style, dramatic shadows",
+		image: "/auth_fashion_portrait_2.png",
 	},
 	{
 		id: "casual",
@@ -26,13 +37,7 @@ export const HEADSHOT_STYLES: HeadshotStyle[] = [
 		description: "Relaxed yet professional for startups and personal sites",
 		prompt:
 			"Relaxed professional portrait, smart casual attire, warm natural lighting, approachable expression, soft bokeh background",
-	},
-	{
-		id: "executive",
-		label: "Executive",
-		description: "Authoritative and refined for C-suite and leadership pages",
-		prompt:
-			"Executive portrait, premium tailored suit, dark moody background, Rembrandt lighting, commanding presence, ultra sharp",
+		image: "/auth_fashion_portrait_1.png",
 	},
 	{
 		id: "minimal",
@@ -40,6 +45,7 @@ export const HEADSHOT_STYLES: HeadshotStyle[] = [
 		description: "Clean and simple with white or light background",
 		prompt:
 			"Minimalist headshot, clean white background, simple elegant attire, even flat lighting, modern and crisp",
+		image: "/auth_fashion_portrait_2.png",
 	},
 ];
 

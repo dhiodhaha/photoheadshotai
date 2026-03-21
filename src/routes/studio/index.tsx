@@ -16,33 +16,13 @@ import { AnimatePresence, motion } from "motion/react";
 import { useRef, useState } from "react";
 import { toast } from "sonner";
 import { authClient } from "#/lib/auth-client";
+import { HEADSHOT_STYLES } from "#/modules/studio";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/studio/")({
 	component: StudioIndexPage,
 });
-
-const AI_STYLES = [
-	{
-		id: "executive",
-		name: "Executive Classic",
-		image: "/hero_headshot_preview_1773972472569.png",
-		desc: "Sharp, professional corporate headshot.",
-	},
-	{
-		id: "fashion",
-		name: "High Fashion Editor",
-		image: "/auth_fashion_portrait_1.png",
-		desc: "Editorial aesthetic with dramatic lighting.",
-	},
-	{
-		id: "cinematic",
-		name: "Cinematic Moody",
-		image: "/auth_fashion_portrait_2.png",
-		desc: "Film-like grade with deep contrast.",
-	},
-];
 
 function StudioIndexPage() {
 	const { data: session, refetch } = authClient.useSession();
@@ -394,7 +374,7 @@ function StudioIndexPage() {
 											Select Studio Direction
 										</div>
 										<div className="grid grid-cols-2 gap-3">
-											{AI_STYLES.map((style) => (
+											{HEADSHOT_STYLES.map((style) => (
 												<button
 													type="button"
 													key={style.id}
@@ -408,17 +388,17 @@ function StudioIndexPage() {
 												>
 													<img
 														src={style.image}
-														alt={style.name}
+														alt={style.label}
 														className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
 													/>
 													<div className="absolute inset-0 bg-linear-to-t from-background/90 via-background/40 to-transparent" />
 
 													<div className="absolute inset-0 p-3 flex flex-col justify-end">
 														<h4 className="font-bold text-sm text-white mb-0.5">
-															{style.name}
+															{style.label}
 														</h4>
 														<p className="text-[10px] text-white/70 leading-tight line-clamp-2">
-															{style.desc}
+															{style.description}
 														</p>
 													</div>
 
@@ -477,8 +457,8 @@ function StudioIndexPage() {
 											<p className="text-sm text-muted-foreground font-light">
 												Our neural networks are analyzing facial structures and
 												applying{" "}
-												{AI_STYLES.find((s) => s.id === selectedStyle)?.name ||
-													"premium"}{" "}
+												{HEADSHOT_STYLES.find((s) => s.id === selectedStyle)
+													?.label || "premium"}{" "}
 												enhancements.
 											</p>
 										</div>
