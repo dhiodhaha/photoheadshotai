@@ -26,19 +26,14 @@ export const Route = createFileRoute("/api/studio/gallery")({
 				try {
 					const { id } = await request.json();
 					if (!id) {
-						return Response.json(
-							{ error: "Missing ID" },
-							{ status: 400 },
-						);
+						return Response.json({ error: "Missing ID" }, { status: 400 });
 					}
 
 					await deleteHeadshot(id, session.user.id);
 					return Response.json({ message: "Deleted successfully (Soft)" });
 				} catch (error: unknown) {
 					const message =
-						error instanceof Error
-							? error.message
-							: "Internal server error";
+						error instanceof Error ? error.message : "Internal server error";
 					return Response.json({ error: message }, { status: 404 });
 				}
 			},

@@ -30,16 +30,10 @@ export function StudioSidebar({ isOpen, onClose }: StudioSidebarProps) {
 		<>
 			{/* Mobile Backdrop */}
 			{isOpen && (
-				<div
-					className="fixed inset-0 bg-black/60 backdrop-blur-md z-40 md:hidden"
+				<button
+					type="button"
+					className="fixed inset-0 bg-black/60 backdrop-blur-md z-40 md:hidden w-full h-full border-none p-0"
 					onClick={onClose}
-					onKeyDown={(e) => {
-						if (e.key === "Enter" || e.key === " ") {
-							onClose();
-						}
-					}}
-					role="button"
-					tabIndex={0}
 					aria-label="Close mobile menu"
 				/>
 			)}

@@ -122,16 +122,11 @@ function SettingsPage() {
 									</div>
 
 									<div className="flex items-center gap-6">
-										<div
+										<button
+											type="button"
 											className="relative group cursor-pointer"
-											role="button"
-											tabIndex={0}
 											aria-label="Upload new avatar"
 											onClick={() => {}}
-											onKeyDown={(e) => {
-												if (e.key === "Enter" || e.key === " ") {
-												}
-											}}
 										>
 											<div className="w-24 h-24 rounded-full border border-white/10 flex items-center justify-center overflow-hidden bg-white/5 transition-colors group-hover:border-primary/50">
 												<User className="w-10 h-10 text-muted-foreground group-hover:opacity-0 transition-opacity duration-300" />
@@ -139,7 +134,7 @@ function SettingsPage() {
 													<Camera className="w-6 h-6 text-white" />
 												</div>
 											</div>
-										</div>
+										</button>
 										<div className="space-y-1">
 											<Button
 												variant="outline"

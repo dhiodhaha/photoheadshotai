@@ -1,13 +1,9 @@
 // Domain
-export type {
-	CreditTransaction,
-	TransactionType,
-} from "./domain/transaction.entity";
+
+export type { DeductInput, PurchaseInput } from "./application/credits.schema";
 
 // Schemas
 export { deductSchema, purchaseSchema } from "./application/credits.schema";
-export type { DeductInput, PurchaseInput } from "./application/credits.schema";
-
 // Application
 export {
 	deductUserCredits,
@@ -15,3 +11,7 @@ export {
 	purchaseCredits,
 	refundCredits,
 } from "./application/credits.service";
+export type {
+	CreditTransaction,
+	TransactionType,
+} from "./domain/transaction.entity";

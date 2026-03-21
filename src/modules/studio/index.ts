@@ -1,5 +1,11 @@
 // Domain
-export type { Photo, PhotoStatus } from "./domain/photo.entity";
+
+export {
+	deleteHeadshot,
+	getHeadshotGallery,
+} from "./application/gallery.service";
+export { generationService } from "./application/generation.service";
+export { getGenerationHistory } from "./application/history.service";
 export type { UploadFileInput } from "./application/upload.schema";
 
 // Schemas
@@ -15,6 +21,6 @@ export {
 	removePhoto,
 	uploadPhoto,
 } from "./application/upload.service";
-export { generationService } from "./application/generation.service";
-export { deleteHeadshot, getHeadshotGallery } from "./application/gallery.service";
-export { getGenerationHistory } from "./application/history.service";
+export type { Photo, PhotoStatus } from "./domain/photo.entity";
+export type { HeadshotStyle } from "./domain/styles";
+export { getStyleById, HEADSHOT_STYLES } from "./domain/styles";

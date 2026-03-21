@@ -77,7 +77,7 @@ function StudioIndexPage() {
 		if (!file || !selectedStyle) return;
 
 		// Check credits
-		const currentCredits = (session?.user as any)?.currentCredits ?? 0;
+		const currentCredits = session?.user?.currentCredits ?? 0;
 		if (currentCredits < 10) {
 			toast.error(
 				"Insufficient credits. Please top up in the Billing section.",
@@ -132,8 +132,8 @@ function StudioIndexPage() {
 
 			setIsGenerating(false);
 			toast.success("Generation Complete!");
-		} catch (e: any) {
-			toast.error(e.message || "Something went wrong.");
+		} catch (e: unknown) {
+			toast.error(e instanceof Error ? e.message : "Something went wrong.");
 			setIsGenerating(false);
 			setStep(2);
 		}
@@ -178,6 +178,7 @@ function StudioIndexPage() {
 			<div className="absolute inset-0 z-0 flex flex-wrap gap-4 opacity-30 pointer-events-none p-4 select-none justify-center">
 				{[...Array(12)].map((_, i) => (
 					<div
+						// biome-ignore lint/suspicious/noArrayIndexKey: static decorative grid, never reordered
 						key={i}
 						className="relative bg-secondary rounded-2xl overflow-hidden aspect-3/4"
 						style={{
@@ -256,7 +257,10 @@ function StudioIndexPage() {
 								Studio 1.0
 							</span>
 						</div>
-						<button className="flex items-center gap-2 text-xs font-bold tracking-widest text-muted-foreground hover:text-white uppercase transition-colors px-3 py-1.5 rounded-full hover:bg-white/5">
+						<button
+							type="button"
+							className="flex items-center gap-2 text-xs font-bold tracking-widest text-muted-foreground hover:text-white uppercase transition-colors px-3 py-1.5 rounded-full hover:bg-white/5"
+						>
 							Best Practices
 							<Info className="w-4 h-4" />
 						</button>
@@ -281,13 +285,14 @@ function StudioIndexPage() {
 										e.target.files && handleFile(e.target.files[0])
 									}
 								/>
-								<div
+								<button
+									type="button"
 									onClick={() => fileInputRef.current?.click()}
 									onDragOver={onDragOver}
 									onDragLeave={onDragLeave}
 									onDrop={onDrop}
 									className={cn(
-										"relative group rounded-3xl border-2 border-dashed transition-all duration-500 bg-white/5 overflow-hidden cursor-pointer",
+										"relative group rounded-3xl border-2 border-dashed transition-all duration-500 bg-white/5 overflow-hidden cursor-pointer w-full text-left",
 										isDragging
 											? "border-primary bg-primary/10 scale-[1.02]"
 											: "border-white/20 hover:border-primary/50",
@@ -324,7 +329,7 @@ function StudioIndexPage() {
 											</p>
 										</div>
 									</div>
-								</div>
+								</button>
 
 								{/* Footer Actions */}
 								<div className="mt-6 pt-4 border-t border-white/5 flex flex-col sm:flex-row gap-4 justify-between items-center px-2">
@@ -368,6 +373,7 @@ function StudioIndexPage() {
 												className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
 											/>
 											<button
+												type="button"
 												onClick={clearFile}
 												className="absolute top-3 right-3 w-8 h-8 rounded-full bg-black/50 backdrop-blur-md flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-500/80 border border-white/10"
 											>
@@ -390,6 +396,7 @@ function StudioIndexPage() {
 										<div className="grid grid-cols-2 gap-3">
 											{AI_STYLES.map((style) => (
 												<button
+													type="button"
 													key={style.id}
 													onClick={() => setSelectedStyle(style.id)}
 													className={cn(

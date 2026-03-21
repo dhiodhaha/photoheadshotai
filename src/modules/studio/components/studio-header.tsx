@@ -25,8 +25,7 @@ export function StudioHeader({ onMenuOpen }: StudioHeaderProps) {
 					<div className="flex items-center gap-1.5 md:gap-2 bg-primary/20 text-primary px-3 md:px-4 py-1.5 rounded-full">
 						<Bolt className="w-3.5 h-3.5 md:w-4 md:h-4" />
 						<span className="text-[10px] md:text-xs font-bold tracking-wider">
-							{(authClient.useSession().data?.user as any)
-								?.currentCredits ?? 0}{" "}
+							{authClient.useSession().data?.user?.currentCredits ?? 0}{" "}
 							<span className="hidden sm:inline">CREDITS</span>
 						</span>
 					</div>

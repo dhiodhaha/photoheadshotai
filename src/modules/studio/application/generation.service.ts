@@ -3,15 +3,19 @@ import { falImage } from "@tanstack/ai-fal";
 import { prisma } from "#/lib/prisma";
 import { deductUserCredits, refundCredits } from "#/modules/credits";
 import { getPublicUrl } from "#/modules/studio/infrastructure/r2.server";
+import { buildPrompt, getStyleById } from "../domain/styles";
 
 const GENERATION_CREDIT_COST = 10;
 
-const HEADSHOT_PROMPT_TEMPLATE = (style: string) =>
-	`A highly professional, cinematic, hyper-realistic upper-body portrait photography of the exact person in the reference image. The person is dressed cleanly, looking directly at the camera with a confident, slight smile. Style: ${style}. Studio lighting, soft shadows, 8k resolution, shot on 85mm lens.`;
-
 export class GenerationService {
 	async startGeneration(userId: string, photoId: string, style: string) {
-		// 1. Fetch photo and validate ownership
+		// 1. Validate style
+		const headshotStyle = getStyleById(style);
+		if (!headshotStyle) {
+			throw new Error("Invalid style. Please select a valid style.");
+		}
+
+		// 2. Fetch photo and validate ownership
 		const photo = await prisma.photo.findUnique({
 			where: { id: photoId },
 		});
@@ -20,22 +24,28 @@ export class GenerationService {
 			throw new Error("Photo not found or access denied.");
 		}
 
-		// 2. Deduct credits (throws if insufficient)
+		// 3. Deduct credits (throws if insufficient)
 		await deductUserCredits(userId, GENERATION_CREDIT_COST);
 
-		// 3. Create generation job
+		// 4. Create generation job
 		const job = await prisma.generationJob.create({
 			data: {
 				userId,
 				photoId: photo.id,
 				status: "processing",
-				stylePrompt: style,
+				stylePrompt: headshotStyle.prompt,
 				costCredits: GENERATION_CREDIT_COST,
 			},
 		});
 
-		// 4. Start generation (for now we still wait, but logic is modular)
-		return this.processGeneration(job.id, photo.key, style, userId, photo.id);
+		// 5. Start generation (for now we still wait, but logic is modular)
+		return this.processGeneration(
+			job.id,
+			photo.key,
+			headshotStyle.prompt,
+			userId,
+			photo.id,
+		);
 	}
 
 	private async processGeneration(
@@ -50,7 +60,7 @@ export class GenerationService {
 				? "https://fastly.picsum.photos/id/64/4326/2884.jpg"
 				: getPublicUrl(photoKey);
 
-		const prompt = HEADSHOT_PROMPT_TEMPLATE(style);
+		const prompt = buildPrompt(style);
 
 		if (process.env.MOCK_AI_GENERATION === "true") {
 			await new Promise((r) => setTimeout(r, 2000));
@@ -63,10 +73,16 @@ export class GenerationService {
 
 		try {
 			// TODO: Remove `as any` casts when @tanstack/ai-fal ships stable types
+			const falKey = process.env.FAL_KEY;
+			if (!falKey) {
+				throw new Error("FAL_KEY environment variable is not set.");
+			}
+
 			const adapter = falImage("fal-ai/flux-pulid", {
-				apiKey: process.env.FAL_KEY!,
+				apiKey: falKey,
 			});
 			const result = await generateImage({
+				// biome-ignore lint/suspicious/noExplicitAny: @tanstack/ai-fal doesn't export stable types yet
 				adapter: adapter as any,
 				prompt,
 				numberOfImages: 1,
@@ -78,6 +94,7 @@ export class GenerationService {
 					width: 1024,
 					height: 1024,
 					enable_safety_checker: true,
+					// biome-ignore lint/suspicious/noExplicitAny: @tanstack/ai-fal modelOptions type is incomplete
 				} as any,
 			});
 
@@ -89,8 +106,7 @@ export class GenerationService {
 				throw new Error("AI Provider returned no image.");
 			}
 		} catch (error: unknown) {
-			const message =
-				error instanceof Error ? error.message : String(error);
+			const message = error instanceof Error ? error.message : String(error);
 			await this.handleGenerationFailure(jobId, userId, message);
 			throw error;
 		}

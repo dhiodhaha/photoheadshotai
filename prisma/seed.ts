@@ -3,8 +3,9 @@ import pg from "pg";
 import { PrismaClient } from "../src/generated/prisma/client.js";
 
 const pool = new pg.Pool({
-	connectionString: process.env.DATABASE_URL!,
+	connectionString: process.env.DATABASE_URL,
 });
+// biome-ignore lint/suspicious/noExplicitAny: pg.Pool type mismatch with PrismaPg constructor
 const adapter = new PrismaPg(pool as any);
 const prisma = new PrismaClient({ adapter });
 

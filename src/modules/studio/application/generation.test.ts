@@ -24,10 +24,10 @@ vi.mock("#/lib/prisma", () => ({
 describe("GenerationService", () => {
 	it("should throw an error if user has insufficient credits", async () => {
 		// Mock user with 5 credits
-		(prisma.user.findUnique as any).mockResolvedValue({
+		vi.mocked(prisma.user.findUnique).mockResolvedValue({
 			id: "user-1",
 			currentCredits: 5,
-		});
+		} as never);
 
 		await expect(
 			generationService.startGeneration("user-1", "photo-1", "cinematic"),
@@ -36,12 +36,12 @@ describe("GenerationService", () => {
 
 	it("should throw an error if photo does not exist", async () => {
 		// Mock user with enough credits
-		(prisma.user.findUnique as any).mockResolvedValue({
+		vi.mocked(prisma.user.findUnique).mockResolvedValue({
 			id: "user-1",
 			currentCredits: 100,
-		});
+		} as never);
 		// Mock photo as null
-		(prisma.photo.findUnique as any).mockResolvedValue(null);
+		vi.mocked(prisma.photo.findUnique).mockResolvedValue(null);
 
 		await expect(
 			generationService.startGeneration("user-1", "photo-1", "cinematic"),

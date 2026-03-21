@@ -16,20 +16,14 @@ export const Route = createFileRoute("/api/credits/purchase")({
 					const { credits } = purchaseSchema.parse(body);
 
 					// In a real app, we would verify the Stripe payment here.
-					const newBalance = await purchaseCredits(
-						session.user.id,
-						credits,
-					);
+					const newBalance = await purchaseCredits(session.user.id, credits);
 
 					return Response.json({
 						message: `Successfully purchased ${credits} credits!`,
 						newBalance,
 					});
 				} catch (_error) {
-					return Response.json(
-						{ error: "Invalid request" },
-						{ status: 400 },
-					);
+					return Response.json({ error: "Invalid request" }, { status: 400 });
 				}
 			},
 		},

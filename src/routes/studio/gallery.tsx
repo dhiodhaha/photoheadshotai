@@ -33,7 +33,9 @@ const FILTERS = [
 
 function GalleryPage() {
 	const [activeFilter, setActiveFilter] = useState("All");
-	const [gallery, setGallery] = useState<any[]>([]);
+	const [gallery, setGallery] = useState<
+		{ id: string; resultUrl: string; createdAt: string }[]
+	>([]);
 	const [isLoading, setIsLoading] = useState(true);
 
 	const handleDownload = async (url: string) => {
@@ -231,7 +233,11 @@ function GalleryPage() {
 														? "bg-red-500/20 text-red-500 hover:bg-red-500/40"
 														: "bg-black/50 text-white hover:bg-white/20 hover:text-white",
 												)}
-												aria-label={item.isFavorite ? "Remove from favorites" : "Add to favorites"}
+												aria-label={
+													item.isFavorite
+														? "Remove from favorites"
+														: "Add to favorites"
+												}
 											>
 												<Heart
 													className="w-4 h-4 text-inherit"

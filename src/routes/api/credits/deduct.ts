@@ -26,15 +26,10 @@ export const Route = createFileRoute("/api/credits/deduct")({
 					});
 				} catch (error: unknown) {
 					const message =
-						error instanceof Error
-							? error.message
-							: "Internal server error";
+						error instanceof Error ? error.message : "Internal server error";
 
 					if (message === "Insufficient credits") {
-						return Response.json(
-							{ error: message },
-							{ status: 402 },
-						);
+						return Response.json({ error: message }, { status: 402 });
 					}
 
 					return Response.json({ error: message }, { status: 500 });
