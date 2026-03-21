@@ -16,7 +16,7 @@ import { AnimatePresence, motion } from "motion/react";
 import { useRef, useState } from "react";
 import { toast } from "sonner";
 import { authClient } from "#/lib/auth-client";
-import { HEADSHOT_STYLES } from "#/modules/studio";
+import { HEADSHOT_STYLES } from "#/modules/studio/domain/styles";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
