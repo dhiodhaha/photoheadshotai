@@ -167,3 +167,12 @@ export async function requireAuth(request: Request) {
 - [x] All `error: any` → `error: unknown` with `instanceof Error` checks
 - [x] Bounded `generatedHeadshots` query with `take: 1`
 - [x] Fixed `auth.server.ts` indentation (spaces → tabs)
+- [x] Created `credits` module (domain, application, infrastructure, barrel)
+- [x] Refactored `purchase.ts` and `deduct.ts` to use `credits` module
+- [x] Extracted `gallery.service.ts` and `history.service.ts` from routes
+- [x] Refactored `generation.service.ts` to use `credits` module (deduct/refund)
+- [x] Extracted prompt template to `HEADSHOT_PROMPT_TEMPLATE` constant
+- [x] Updated studio `index.ts` barrel with all exports
+- [x] Split `studio.tsx` → `StudioSidebar`, `StudioHeader`, `UserDropdownMenu`
+- [x] Split `signin.tsx` / `signup.tsx` → `AuthLeftPanel`, `SignInForm`, `SignUpForm`
+- [x] Updated auth `index.ts` barrel with component exports

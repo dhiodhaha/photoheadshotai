@@ -1,52 +1,37 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { z } from "zod";
-import { prisma } from "#/lib/prisma";
 import { getServerSession } from "#/modules/auth";
-
-const purchaseSchema = z.object({
-  planId: z.string(),
-  credits: z.number().positive(),
-  amount: z.number().positive(),
-});
+import { purchaseCredits, purchaseSchema } from "#/modules/credits";
 
 export const Route = createFileRoute("/api/credits/purchase")({
-  server: {
-    handlers: {
-      POST: async ({ request }) => {
-        const session = await getServerSession(request);
-        if (!session || !session.user) {
-          return Response.json({ error: "Unauthorized" }, { status: 401 });
-        }
+	server: {
+		handlers: {
+			POST: async ({ request }) => {
+				const session = await getServerSession(request);
+				if (!session || !session.user) {
+					return Response.json({ error: "Unauthorized" }, { status: 401 });
+				}
 
-        try {
-          const body = await request.json();
-          const { credits } = purchaseSchema.parse(body);
+				try {
+					const body = await request.json();
+					const { credits } = purchaseSchema.parse(body);
 
-          // In a real app, we would verify the Stripe payment here.
-          // For now, we simulate a successful transaction.
+					// In a real app, we would verify the Stripe payment here.
+					const newBalance = await purchaseCredits(
+						session.user.id,
+						credits,
+					);
 
-          const result = await prisma.$transaction([
-            prisma.user.update({
-              where: { id: session.user.id },
-              data: { currentCredits: { increment: credits } },
-            }),
-            prisma.creditTransaction.create({
-              data: {
-                userId: session.user.id,
-                amount: credits,
-                transactionType: "purchase",
-              },
-            }),
-          ]);
-
-          return Response.json({
-            message: `Successfully purchased ${credits} credits!`,
-            newBalance: result[0].currentCredits,
-          });
-        } catch (_error) {
-          return Response.json({ error: "Invalid request" }, { status: 400 });
-        }
-      },
-    },
-  },
+					return Response.json({
+						message: `Successfully purchased ${credits} credits!`,
+						newBalance,
+					});
+				} catch (_error) {
+					return Response.json(
+						{ error: "Invalid request" },
+						{ status: 400 },
+					);
+				}
+			},
+		},
+	},
 });

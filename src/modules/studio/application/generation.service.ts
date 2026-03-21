@@ -1,52 +1,41 @@
 import { generateImage } from "@tanstack/ai";
 import { falImage } from "@tanstack/ai-fal";
 import { prisma } from "#/lib/prisma";
+import { deductUserCredits, refundCredits } from "#/modules/credits";
 import { getPublicUrl } from "#/modules/studio/infrastructure/r2.server";
 
 const GENERATION_CREDIT_COST = 10;
 
+const HEADSHOT_PROMPT_TEMPLATE = (style: string) =>
+	`A highly professional, cinematic, hyper-realistic upper-body portrait photography of the exact person in the reference image. The person is dressed cleanly, looking directly at the camera with a confident, slight smile. Style: ${style}. Studio lighting, soft shadows, 8k resolution, shot on 85mm lens.`;
+
 export class GenerationService {
 	async startGeneration(userId: string, photoId: string, style: string) {
-		// 1. Fetch user and photo in parallel
-		const [user, photo] = await Promise.all([
-			prisma.user.findUnique({ where: { id: userId } }),
-			prisma.photo.findUnique({ where: { id: photoId } }),
-		]);
-
-		if (!user || user.currentCredits < GENERATION_CREDIT_COST) {
-			throw new Error("Insufficient credits. Please top up.");
-		}
+		// 1. Fetch photo and validate ownership
+		const photo = await prisma.photo.findUnique({
+			where: { id: photoId },
+		});
 
 		if (!photo || photo.userId !== userId) {
 			throw new Error("Photo not found or access denied.");
 		}
 
-		// 2. Atomically deduct credits, log transaction, and create job
-		const [, , job] = await prisma.$transaction([
-			prisma.user.update({
-				where: { id: user.id },
-				data: { currentCredits: { decrement: GENERATION_CREDIT_COST } },
-			}),
-			prisma.creditTransaction.create({
-				data: {
-					userId: user.id,
-					amount: -GENERATION_CREDIT_COST,
-					transactionType: "generation_deduction",
-				},
-			}),
-			prisma.generationJob.create({
-				data: {
-					userId: user.id,
-					photoId: photo.id,
-					status: "processing",
-					stylePrompt: style,
-					costCredits: GENERATION_CREDIT_COST,
-				},
-			}),
-		]);
+		// 2. Deduct credits (throws if insufficient)
+		await deductUserCredits(userId, GENERATION_CREDIT_COST);
 
-		// Start background process (for now we still wait, but logic is modular)
-		return this.processGeneration(job.id, photo.key, style, user.id, photo.id);
+		// 3. Create generation job
+		const job = await prisma.generationJob.create({
+			data: {
+				userId,
+				photoId: photo.id,
+				status: "processing",
+				stylePrompt: style,
+				costCredits: GENERATION_CREDIT_COST,
+			},
+		});
+
+		// 4. Start generation (for now we still wait, but logic is modular)
+		return this.processGeneration(job.id, photo.key, style, userId, photo.id);
 	}
 
 	private async processGeneration(
@@ -61,7 +50,7 @@ export class GenerationService {
 				? "https://fastly.picsum.photos/id/64/4326/2884.jpg"
 				: getPublicUrl(photoKey);
 
-		const prompt = `A highly professional, cinematic, hyper-realistic upper-body portrait photography of the exact person in the reference image. The person is dressed cleanly, looking directly at the camera with a confident, slight smile. Style: ${style}. Studio lighting, soft shadows, 8k resolution, shot on 85mm lens.`;
+		const prompt = HEADSHOT_PROMPT_TEMPLATE(style);
 
 		if (process.env.MOCK_AI_GENERATION === "true") {
 			await new Promise((r) => setTimeout(r, 2000));
@@ -79,7 +68,7 @@ export class GenerationService {
 			});
 			const result = await generateImage({
 				adapter: adapter as any,
-				prompt: prompt,
+				prompt,
 				numberOfImages: 1,
 				modelOptions: {
 					image_url: photoUrl,
@@ -136,23 +125,13 @@ export class GenerationService {
 		errorMessage: string,
 	) {
 		console.error(`Job ${jobId} failed: ${errorMessage}`);
-		await prisma.$transaction([
-			prisma.generationJob.update({
-				where: { id: jobId },
-				data: { status: "failed" },
-			}),
-			prisma.user.update({
-				where: { id: userId },
-				data: { currentCredits: { increment: GENERATION_CREDIT_COST } },
-			}),
-			prisma.creditTransaction.create({
-				data: {
-					userId: userId,
-					amount: GENERATION_CREDIT_COST,
-					transactionType: "generation_refund",
-				},
-			}),
-		]);
+
+		await prisma.generationJob.update({
+			where: { id: jobId },
+			data: { status: "failed" },
+		});
+
+		await refundCredits(userId, GENERATION_CREDIT_COST);
 	}
 
 	async getJobStatus(jobId: string, userId: string) {
