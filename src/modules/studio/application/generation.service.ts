@@ -1,8 +1,14 @@
 import { fal } from "@fal-ai/client";
-import { prisma } from "#/lib/prisma";
 import { deductUserCredits, refundCredits } from "#/modules/credits";
 import { getPublicUrl } from "#/modules/studio/infrastructure/r2.server";
 import { buildPrompt, getStyleById } from "../domain/styles";
+import {
+	completeGenerationJob,
+	createGenerationJob,
+	failGenerationJob,
+	getJobWithResults,
+	getPhotoByIdAndUser,
+} from "../infrastructure/generation.repository";
 
 const GENERATION_CREDIT_COST = 10;
 const SEEDREAM_MODEL = "fal-ai/bytedance/seedream/v4.5/edit";
@@ -16,11 +22,8 @@ export class GenerationService {
 		}
 
 		// 2. Fetch photo and validate ownership
-		const photo = await prisma.photo.findUnique({
-			where: { id: photoId },
-		});
-
-		if (!photo || photo.userId !== userId) {
+		const photo = await getPhotoByIdAndUser(photoId, userId);
+		if (!photo) {
 			throw new Error("Photo not found or access denied.");
 		}
 
@@ -28,25 +31,26 @@ export class GenerationService {
 		await deductUserCredits(userId, GENERATION_CREDIT_COST);
 
 		// 4. Create generation job
-		const job = await prisma.generationJob.create({
-			data: {
-				userId,
-				photoId: photo.id,
-				status: "processing",
-				styleId: headshotStyle.id,
-				stylePrompt: headshotStyle.prompt,
-				costCredits: GENERATION_CREDIT_COST,
-			},
+		const job = await createGenerationJob({
+			userId,
+			photoId: photo.id,
+			styleId: headshotStyle.id,
+			stylePrompt: headshotStyle.prompt,
+			costCredits: GENERATION_CREDIT_COST,
 		});
 
-		// 5. Start generation
-		return this.processGeneration(
+		// 5. Fire and forget — do NOT await
+		this.processGeneration(
 			job.id,
 			photo.key,
 			headshotStyle.prompt,
 			userId,
 			photo.id,
-		);
+		).catch((error: unknown) => {
+			console.error("Background generation failed:", error);
+		});
+
+		return { job_id: job.id, cost_credits: GENERATION_CREDIT_COST };
 	}
 
 	private async processGeneration(
@@ -68,8 +72,8 @@ export class GenerationService {
 			const mockImageUrl =
 				"https://images.unsplash.com/photo-1544168190-79c154273140?q=80&w=800";
 
-			await this.updateJobSuccess(jobId, photoId, mockImageUrl);
-			return { job_id: jobId, image_url: mockImageUrl };
+			await completeGenerationJob(jobId, photoId, mockImageUrl);
+			return;
 		}
 
 		try {
@@ -92,74 +96,25 @@ export class GenerationService {
 
 			const imageUrl = result.data?.images?.[0]?.url;
 			if (imageUrl) {
-				await this.updateJobSuccess(jobId, photoId, imageUrl);
-				return { job_id: jobId, image_url: imageUrl };
+				await completeGenerationJob(jobId, photoId, imageUrl);
+				return;
 			}
 			throw new Error("AI Provider returned no image.");
 		} catch (error: unknown) {
 			const message = error instanceof Error ? error.message : String(error);
-			await this.handleGenerationFailure(jobId, userId, message);
+			console.error(`Job ${jobId} failed: ${message}`);
+			await failGenerationJob(jobId);
+			await refundCredits(userId, GENERATION_CREDIT_COST);
 			throw error;
 		}
 	}
 
-	private async updateJobSuccess(
-		jobId: string,
-		photoId: string,
-		imageUrl: string,
-	) {
-		await prisma.$transaction([
-			prisma.generationJob.update({
-				where: { id: jobId },
-				data: { status: "completed", completedAt: new Date() },
-			}),
-			prisma.photo.update({
-				where: { id: photoId },
-				data: { status: "completed" },
-			}),
-			prisma.generatedHeadshot.create({
-				data: {
-					generationJobId: jobId,
-					resultUrl: imageUrl,
-				},
-			}),
-		]);
-	}
-
-	private async handleGenerationFailure(
-		jobId: string,
-		userId: string,
-		errorMessage: string,
-	) {
-		console.error(`Job ${jobId} failed: ${errorMessage}`);
-
-		await prisma.generationJob.update({
-			where: { id: jobId },
-			data: { status: "failed" },
-		});
-
-		await refundCredits(userId, GENERATION_CREDIT_COST);
-	}
-
 	async getJobStatus(jobId: string, userId: string) {
-		const job = await prisma.generationJob.findUnique({
-			where: { id: jobId },
-			include: {
-				generatedHeadshots: { take: 1 },
-			},
-		});
-
-		if (!job || job.userId !== userId) {
+		const job = await getJobWithResults(jobId, userId);
+		if (!job) {
 			throw new Error("Job not found or access denied.");
 		}
-
-		return {
-			id: job.id,
-			status: job.status,
-			resultUrl: job.generatedHeadshots[0]?.resultUrl || null,
-			createdAt: job.startedAt,
-			completedAt: job.completedAt,
-		};
+		return job;
 	}
 }
 

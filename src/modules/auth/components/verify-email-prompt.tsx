@@ -1,4 +1,5 @@
-import { Mail, RefreshCw } from "lucide-react";
+import { useNavigate } from "@tanstack/react-router";
+import { ArrowLeft, LogOut, Mail, RefreshCw } from "lucide-react";
 import { motion } from "motion/react";
 import { useEffect, useState } from "react";
 import { authClient } from "#/lib/auth-client";
@@ -9,8 +10,14 @@ interface VerifyEmailPromptProps {
 }
 
 export function VerifyEmailPrompt({ email }: VerifyEmailPromptProps) {
+	const navigate = useNavigate();
 	const [cooldown, setCooldown] = useState(0);
 	const [isSending, setIsSending] = useState(false);
+
+	const handleSignOut = async () => {
+		await authClient.signOut();
+		navigate({ to: "/auth/signin" });
+	};
 
 	useEffect(() => {
 		if (cooldown <= 0) return;
@@ -66,6 +73,28 @@ export function VerifyEmailPrompt({ email }: VerifyEmailPromptProps) {
 			<p className="text-xs text-muted-foreground">
 				Check your spam folder if you don't see it within a few minutes.
 			</p>
+			<div className="flex items-center gap-4 pt-2">
+				<Button
+					type="button"
+					variant="ghost"
+					size="sm"
+					onClick={() => navigate({ to: "/auth/signup" })}
+					className="text-muted-foreground hover:text-white"
+				>
+					<ArrowLeft className="w-4 h-4 mr-1" />
+					Back to Sign Up
+				</Button>
+				<Button
+					type="button"
+					variant="ghost"
+					size="sm"
+					onClick={handleSignOut}
+					className="text-muted-foreground hover:text-white"
+				>
+					<LogOut className="w-4 h-4 mr-1" />
+					Sign Out
+				</Button>
+			</div>
 		</motion.div>
 	);
 }
