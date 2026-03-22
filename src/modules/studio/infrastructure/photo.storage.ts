@@ -1,5 +1,5 @@
 import { DeleteObjectCommand, PutObjectCommand } from "@aws-sdk/client-s3";
-import { getBucketName, getR2Client } from "./r2.client";
+import { getBucketName, getR2Client } from "./r2.server";
 
 export async function uploadToR2(
 	key: string,

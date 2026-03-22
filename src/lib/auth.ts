@@ -10,5 +10,13 @@ export const auth = betterAuth({
 	emailAndPassword: {
 		enabled: true,
 	},
+	user: {
+		additionalFields: {
+			currentCredits: {
+				type: "number",
+				defaultValue: 0,
+			},
+		},
+	},
 	plugins: [tanstackStartCookies()],
 });

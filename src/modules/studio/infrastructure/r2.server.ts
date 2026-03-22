@@ -2,6 +2,10 @@ import { S3Client } from "@aws-sdk/client-s3";
 import { requireEnv } from "#/lib/env";
 
 export function getR2Client() {
+	if (requireEnv("R2_ACCOUNT_ID") === "placeholder_account_id") {
+		return null; // Mock mode
+	}
+
 	return new S3Client({
 		region: "auto",
 		endpoint: `https://${requireEnv("R2_ACCOUNT_ID")}.r2.cloudflarestorage.com`,

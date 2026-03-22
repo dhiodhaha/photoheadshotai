@@ -9,13 +9,72 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as StudioRouteImport } from './routes/studio'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as StudioIndexRouteImport } from './routes/studio/index'
+import { Route as StudioSettingsRouteImport } from './routes/studio/settings'
+import { Route as StudioGalleryRouteImport } from './routes/studio/gallery'
+import { Route as StudioBillingRouteImport } from './routes/studio/billing'
+import { Route as AuthSignupRouteImport } from './routes/auth/signup'
+import { Route as AuthSigninRouteImport } from './routes/auth/signin'
+import { Route as ApiHistoryRouteImport } from './routes/api/history'
+import { Route as ApiUserProfileRouteImport } from './routes/api/user/profile'
 import { Route as ApiStudioUploadRouteImport } from './routes/api/studio/upload'
+import { Route as ApiStudioGenerateRouteImport } from './routes/api/studio/generate'
+import { Route as ApiStudioGalleryRouteImport } from './routes/api/studio/gallery'
+import { Route as ApiCreditsPurchaseRouteImport } from './routes/api/credits/purchase'
+import { Route as ApiCreditsDeductRouteImport } from './routes/api/credits/deduct'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
+import { Route as ApiStudioStatusTaskIdRouteImport } from './routes/api/studio/status/$taskId'
 
+const StudioRoute = StudioRouteImport.update({
+  id: '/studio',
+  path: '/studio',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const StudioIndexRoute = StudioIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => StudioRoute,
+} as any)
+const StudioSettingsRoute = StudioSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => StudioRoute,
+} as any)
+const StudioGalleryRoute = StudioGalleryRouteImport.update({
+  id: '/gallery',
+  path: '/gallery',
+  getParentRoute: () => StudioRoute,
+} as any)
+const StudioBillingRoute = StudioBillingRouteImport.update({
+  id: '/billing',
+  path: '/billing',
+  getParentRoute: () => StudioRoute,
+} as any)
+const AuthSignupRoute = AuthSignupRouteImport.update({
+  id: '/auth/signup',
+  path: '/auth/signup',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthSigninRoute = AuthSigninRouteImport.update({
+  id: '/auth/signin',
+  path: '/auth/signin',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiHistoryRoute = ApiHistoryRouteImport.update({
+  id: '/api/history',
+  path: '/api/history',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiUserProfileRoute = ApiUserProfileRouteImport.update({
+  id: '/api/user/profile',
+  path: '/api/user/profile',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiStudioUploadRoute = ApiStudioUploadRouteImport.update({
@@ -23,49 +82,239 @@ const ApiStudioUploadRoute = ApiStudioUploadRouteImport.update({
   path: '/api/studio/upload',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiStudioGenerateRoute = ApiStudioGenerateRouteImport.update({
+  id: '/api/studio/generate',
+  path: '/api/studio/generate',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiStudioGalleryRoute = ApiStudioGalleryRouteImport.update({
+  id: '/api/studio/gallery',
+  path: '/api/studio/gallery',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiCreditsPurchaseRoute = ApiCreditsPurchaseRouteImport.update({
+  id: '/api/credits/purchase',
+  path: '/api/credits/purchase',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiCreditsDeductRoute = ApiCreditsDeductRouteImport.update({
+  id: '/api/credits/deduct',
+  path: '/api/credits/deduct',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
   id: '/api/auth/$',
   path: '/api/auth/$',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiStudioStatusTaskIdRoute = ApiStudioStatusTaskIdRouteImport.update({
+  id: '/api/studio/status/$taskId',
+  path: '/api/studio/status/$taskId',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/studio': typeof StudioRouteWithChildren
+  '/api/history': typeof ApiHistoryRoute
+  '/auth/signin': typeof AuthSigninRoute
+  '/auth/signup': typeof AuthSignupRoute
+  '/studio/billing': typeof StudioBillingRoute
+  '/studio/gallery': typeof StudioGalleryRoute
+  '/studio/settings': typeof StudioSettingsRoute
+  '/studio/': typeof StudioIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/api/credits/deduct': typeof ApiCreditsDeductRoute
+  '/api/credits/purchase': typeof ApiCreditsPurchaseRoute
+  '/api/studio/gallery': typeof ApiStudioGalleryRoute
+  '/api/studio/generate': typeof ApiStudioGenerateRoute
   '/api/studio/upload': typeof ApiStudioUploadRoute
+  '/api/user/profile': typeof ApiUserProfileRoute
+  '/api/studio/status/$taskId': typeof ApiStudioStatusTaskIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/api/history': typeof ApiHistoryRoute
+  '/auth/signin': typeof AuthSigninRoute
+  '/auth/signup': typeof AuthSignupRoute
+  '/studio/billing': typeof StudioBillingRoute
+  '/studio/gallery': typeof StudioGalleryRoute
+  '/studio/settings': typeof StudioSettingsRoute
+  '/studio': typeof StudioIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/api/credits/deduct': typeof ApiCreditsDeductRoute
+  '/api/credits/purchase': typeof ApiCreditsPurchaseRoute
+  '/api/studio/gallery': typeof ApiStudioGalleryRoute
+  '/api/studio/generate': typeof ApiStudioGenerateRoute
   '/api/studio/upload': typeof ApiStudioUploadRoute
+  '/api/user/profile': typeof ApiUserProfileRoute
+  '/api/studio/status/$taskId': typeof ApiStudioStatusTaskIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/studio': typeof StudioRouteWithChildren
+  '/api/history': typeof ApiHistoryRoute
+  '/auth/signin': typeof AuthSigninRoute
+  '/auth/signup': typeof AuthSignupRoute
+  '/studio/billing': typeof StudioBillingRoute
+  '/studio/gallery': typeof StudioGalleryRoute
+  '/studio/settings': typeof StudioSettingsRoute
+  '/studio/': typeof StudioIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/api/credits/deduct': typeof ApiCreditsDeductRoute
+  '/api/credits/purchase': typeof ApiCreditsPurchaseRoute
+  '/api/studio/gallery': typeof ApiStudioGalleryRoute
+  '/api/studio/generate': typeof ApiStudioGenerateRoute
   '/api/studio/upload': typeof ApiStudioUploadRoute
+  '/api/user/profile': typeof ApiUserProfileRoute
+  '/api/studio/status/$taskId': typeof ApiStudioStatusTaskIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/api/auth/$' | '/api/studio/upload'
+  fullPaths:
+    | '/'
+    | '/studio'
+    | '/api/history'
+    | '/auth/signin'
+    | '/auth/signup'
+    | '/studio/billing'
+    | '/studio/gallery'
+    | '/studio/settings'
+    | '/studio/'
+    | '/api/auth/$'
+    | '/api/credits/deduct'
+    | '/api/credits/purchase'
+    | '/api/studio/gallery'
+    | '/api/studio/generate'
+    | '/api/studio/upload'
+    | '/api/user/profile'
+    | '/api/studio/status/$taskId'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/api/auth/$' | '/api/studio/upload'
-  id: '__root__' | '/' | '/api/auth/$' | '/api/studio/upload'
+  to:
+    | '/'
+    | '/api/history'
+    | '/auth/signin'
+    | '/auth/signup'
+    | '/studio/billing'
+    | '/studio/gallery'
+    | '/studio/settings'
+    | '/studio'
+    | '/api/auth/$'
+    | '/api/credits/deduct'
+    | '/api/credits/purchase'
+    | '/api/studio/gallery'
+    | '/api/studio/generate'
+    | '/api/studio/upload'
+    | '/api/user/profile'
+    | '/api/studio/status/$taskId'
+  id:
+    | '__root__'
+    | '/'
+    | '/studio'
+    | '/api/history'
+    | '/auth/signin'
+    | '/auth/signup'
+    | '/studio/billing'
+    | '/studio/gallery'
+    | '/studio/settings'
+    | '/studio/'
+    | '/api/auth/$'
+    | '/api/credits/deduct'
+    | '/api/credits/purchase'
+    | '/api/studio/gallery'
+    | '/api/studio/generate'
+    | '/api/studio/upload'
+    | '/api/user/profile'
+    | '/api/studio/status/$taskId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  StudioRoute: typeof StudioRouteWithChildren
+  ApiHistoryRoute: typeof ApiHistoryRoute
+  AuthSigninRoute: typeof AuthSigninRoute
+  AuthSignupRoute: typeof AuthSignupRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
+  ApiCreditsDeductRoute: typeof ApiCreditsDeductRoute
+  ApiCreditsPurchaseRoute: typeof ApiCreditsPurchaseRoute
+  ApiStudioGalleryRoute: typeof ApiStudioGalleryRoute
+  ApiStudioGenerateRoute: typeof ApiStudioGenerateRoute
   ApiStudioUploadRoute: typeof ApiStudioUploadRoute
+  ApiUserProfileRoute: typeof ApiUserProfileRoute
+  ApiStudioStatusTaskIdRoute: typeof ApiStudioStatusTaskIdRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/studio': {
+      id: '/studio'
+      path: '/studio'
+      fullPath: '/studio'
+      preLoaderRoute: typeof StudioRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/studio/': {
+      id: '/studio/'
+      path: '/'
+      fullPath: '/studio/'
+      preLoaderRoute: typeof StudioIndexRouteImport
+      parentRoute: typeof StudioRoute
+    }
+    '/studio/settings': {
+      id: '/studio/settings'
+      path: '/settings'
+      fullPath: '/studio/settings'
+      preLoaderRoute: typeof StudioSettingsRouteImport
+      parentRoute: typeof StudioRoute
+    }
+    '/studio/gallery': {
+      id: '/studio/gallery'
+      path: '/gallery'
+      fullPath: '/studio/gallery'
+      preLoaderRoute: typeof StudioGalleryRouteImport
+      parentRoute: typeof StudioRoute
+    }
+    '/studio/billing': {
+      id: '/studio/billing'
+      path: '/billing'
+      fullPath: '/studio/billing'
+      preLoaderRoute: typeof StudioBillingRouteImport
+      parentRoute: typeof StudioRoute
+    }
+    '/auth/signup': {
+      id: '/auth/signup'
+      path: '/auth/signup'
+      fullPath: '/auth/signup'
+      preLoaderRoute: typeof AuthSignupRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth/signin': {
+      id: '/auth/signin'
+      path: '/auth/signin'
+      fullPath: '/auth/signin'
+      preLoaderRoute: typeof AuthSigninRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/history': {
+      id: '/api/history'
+      path: '/api/history'
+      fullPath: '/api/history'
+      preLoaderRoute: typeof ApiHistoryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/user/profile': {
+      id: '/api/user/profile'
+      path: '/api/user/profile'
+      fullPath: '/api/user/profile'
+      preLoaderRoute: typeof ApiUserProfileRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/studio/upload': {
@@ -75,6 +324,34 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiStudioUploadRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/studio/generate': {
+      id: '/api/studio/generate'
+      path: '/api/studio/generate'
+      fullPath: '/api/studio/generate'
+      preLoaderRoute: typeof ApiStudioGenerateRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/studio/gallery': {
+      id: '/api/studio/gallery'
+      path: '/api/studio/gallery'
+      fullPath: '/api/studio/gallery'
+      preLoaderRoute: typeof ApiStudioGalleryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/credits/purchase': {
+      id: '/api/credits/purchase'
+      path: '/api/credits/purchase'
+      fullPath: '/api/credits/purchase'
+      preLoaderRoute: typeof ApiCreditsPurchaseRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/credits/deduct': {
+      id: '/api/credits/deduct'
+      path: '/api/credits/deduct'
+      fullPath: '/api/credits/deduct'
+      preLoaderRoute: typeof ApiCreditsDeductRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/auth/$': {
       id: '/api/auth/$'
       path: '/api/auth/$'
@@ -82,13 +359,47 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAuthSplatRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/studio/status/$taskId': {
+      id: '/api/studio/status/$taskId'
+      path: '/api/studio/status/$taskId'
+      fullPath: '/api/studio/status/$taskId'
+      preLoaderRoute: typeof ApiStudioStatusTaskIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
+interface StudioRouteChildren {
+  StudioBillingRoute: typeof StudioBillingRoute
+  StudioGalleryRoute: typeof StudioGalleryRoute
+  StudioSettingsRoute: typeof StudioSettingsRoute
+  StudioIndexRoute: typeof StudioIndexRoute
+}
+
+const StudioRouteChildren: StudioRouteChildren = {
+  StudioBillingRoute: StudioBillingRoute,
+  StudioGalleryRoute: StudioGalleryRoute,
+  StudioSettingsRoute: StudioSettingsRoute,
+  StudioIndexRoute: StudioIndexRoute,
+}
+
+const StudioRouteWithChildren =
+  StudioRoute._addFileChildren(StudioRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  StudioRoute: StudioRouteWithChildren,
+  ApiHistoryRoute: ApiHistoryRoute,
+  AuthSigninRoute: AuthSigninRoute,
+  AuthSignupRoute: AuthSignupRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
+  ApiCreditsDeductRoute: ApiCreditsDeductRoute,
+  ApiCreditsPurchaseRoute: ApiCreditsPurchaseRoute,
+  ApiStudioGalleryRoute: ApiStudioGalleryRoute,
+  ApiStudioGenerateRoute: ApiStudioGenerateRoute,
   ApiStudioUploadRoute: ApiStudioUploadRoute,
+  ApiUserProfileRoute: ApiUserProfileRoute,
+  ApiStudioStatusTaskIdRoute: ApiStudioStatusTaskIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

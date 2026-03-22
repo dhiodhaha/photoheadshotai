@@ -9,7 +9,31 @@
 * 🟢 You can import this file directly.
 */
 
+export const PhotoStatus = {
+  pending: 'pending',
+  uploaded: 'uploaded',
+  processing: 'processing',
+  completed: 'completed',
+  failed: 'failed'
+} as const
+
+export type PhotoStatus = (typeof PhotoStatus)[keyof typeof PhotoStatus]
 
 
-// This file is empty because there are no enums in the schema.
-export {}
+export const GenerationJobStatus = {
+  pending: 'pending',
+  processing: 'processing',
+  completed: 'completed',
+  failed: 'failed'
+} as const
+
+export type GenerationJobStatus = (typeof GenerationJobStatus)[keyof typeof GenerationJobStatus]
+
+
+export const TransactionType = {
+  purchase: 'purchase',
+  generation_deduction: 'generation_deduction',
+  generation_refund: 'generation_refund'
+} as const
+
+export type TransactionType = (typeof TransactionType)[keyof typeof TransactionType]

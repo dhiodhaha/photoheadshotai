@@ -38,7 +38,7 @@ export type CreditTransactionMinAggregateOutputType = {
   id: string | null
   userId: string | null
   amount: number | null
-  transactionType: string | null
+  transactionType: $Enums.TransactionType | null
   createdAt: Date | null
 }
 
@@ -46,7 +46,7 @@ export type CreditTransactionMaxAggregateOutputType = {
   id: string | null
   userId: string | null
   amount: number | null
-  transactionType: string | null
+  transactionType: $Enums.TransactionType | null
   createdAt: Date | null
 }
 
@@ -183,7 +183,7 @@ export type CreditTransactionGroupByOutputType = {
   id: string
   userId: string
   amount: number
-  transactionType: string
+  transactionType: $Enums.TransactionType
   createdAt: Date
   _count: CreditTransactionCountAggregateOutputType | null
   _avg: CreditTransactionAvgAggregateOutputType | null
@@ -214,7 +214,7 @@ export type CreditTransactionWhereInput = {
   id?: Prisma.StringFilter<"CreditTransaction"> | string
   userId?: Prisma.StringFilter<"CreditTransaction"> | string
   amount?: Prisma.IntFilter<"CreditTransaction"> | number
-  transactionType?: Prisma.StringFilter<"CreditTransaction"> | string
+  transactionType?: Prisma.EnumTransactionTypeFilter<"CreditTransaction"> | $Enums.TransactionType
   createdAt?: Prisma.DateTimeFilter<"CreditTransaction"> | Date | string
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
 }
@@ -235,7 +235,7 @@ export type CreditTransactionWhereUniqueInput = Prisma.AtLeast<{
   NOT?: Prisma.CreditTransactionWhereInput | Prisma.CreditTransactionWhereInput[]
   userId?: Prisma.StringFilter<"CreditTransaction"> | string
   amount?: Prisma.IntFilter<"CreditTransaction"> | number
-  transactionType?: Prisma.StringFilter<"CreditTransaction"> | string
+  transactionType?: Prisma.EnumTransactionTypeFilter<"CreditTransaction"> | $Enums.TransactionType
   createdAt?: Prisma.DateTimeFilter<"CreditTransaction"> | Date | string
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
 }, "id">
@@ -260,14 +260,14 @@ export type CreditTransactionScalarWhereWithAggregatesInput = {
   id?: Prisma.StringWithAggregatesFilter<"CreditTransaction"> | string
   userId?: Prisma.StringWithAggregatesFilter<"CreditTransaction"> | string
   amount?: Prisma.IntWithAggregatesFilter<"CreditTransaction"> | number
-  transactionType?: Prisma.StringWithAggregatesFilter<"CreditTransaction"> | string
+  transactionType?: Prisma.EnumTransactionTypeWithAggregatesFilter<"CreditTransaction"> | $Enums.TransactionType
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"CreditTransaction"> | Date | string
 }
 
 export type CreditTransactionCreateInput = {
   id?: string
   amount: number
-  transactionType: string
+  transactionType: $Enums.TransactionType
   createdAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutCreditTransactionsInput
 }
@@ -276,14 +276,14 @@ export type CreditTransactionUncheckedCreateInput = {
   id?: string
   userId: string
   amount: number
-  transactionType: string
+  transactionType: $Enums.TransactionType
   createdAt?: Date | string
 }
 
 export type CreditTransactionUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   amount?: Prisma.IntFieldUpdateOperationsInput | number
-  transactionType?: Prisma.StringFieldUpdateOperationsInput | string
+  transactionType?: Prisma.EnumTransactionTypeFieldUpdateOperationsInput | $Enums.TransactionType
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutCreditTransactionsNestedInput
 }
@@ -292,7 +292,7 @@ export type CreditTransactionUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   amount?: Prisma.IntFieldUpdateOperationsInput | number
-  transactionType?: Prisma.StringFieldUpdateOperationsInput | string
+  transactionType?: Prisma.EnumTransactionTypeFieldUpdateOperationsInput | $Enums.TransactionType
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -300,14 +300,14 @@ export type CreditTransactionCreateManyInput = {
   id?: string
   userId: string
   amount: number
-  transactionType: string
+  transactionType: $Enums.TransactionType
   createdAt?: Date | string
 }
 
 export type CreditTransactionUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   amount?: Prisma.IntFieldUpdateOperationsInput | number
-  transactionType?: Prisma.StringFieldUpdateOperationsInput | string
+  transactionType?: Prisma.EnumTransactionTypeFieldUpdateOperationsInput | $Enums.TransactionType
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -315,7 +315,7 @@ export type CreditTransactionUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   amount?: Prisma.IntFieldUpdateOperationsInput | number
-  transactionType?: Prisma.StringFieldUpdateOperationsInput | string
+  transactionType?: Prisma.EnumTransactionTypeFieldUpdateOperationsInput | $Enums.TransactionType
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -403,17 +403,21 @@ export type CreditTransactionUncheckedUpdateManyWithoutUserNestedInput = {
   deleteMany?: Prisma.CreditTransactionScalarWhereInput | Prisma.CreditTransactionScalarWhereInput[]
 }
 
+export type EnumTransactionTypeFieldUpdateOperationsInput = {
+  set?: $Enums.TransactionType
+}
+
 export type CreditTransactionCreateWithoutUserInput = {
   id?: string
   amount: number
-  transactionType: string
+  transactionType: $Enums.TransactionType
   createdAt?: Date | string
 }
 
 export type CreditTransactionUncheckedCreateWithoutUserInput = {
   id?: string
   amount: number
-  transactionType: string
+  transactionType: $Enums.TransactionType
   createdAt?: Date | string
 }
 
@@ -450,35 +454,35 @@ export type CreditTransactionScalarWhereInput = {
   id?: Prisma.StringFilter<"CreditTransaction"> | string
   userId?: Prisma.StringFilter<"CreditTransaction"> | string
   amount?: Prisma.IntFilter<"CreditTransaction"> | number
-  transactionType?: Prisma.StringFilter<"CreditTransaction"> | string
+  transactionType?: Prisma.EnumTransactionTypeFilter<"CreditTransaction"> | $Enums.TransactionType
   createdAt?: Prisma.DateTimeFilter<"CreditTransaction"> | Date | string
 }
 
 export type CreditTransactionCreateManyUserInput = {
   id?: string
   amount: number
-  transactionType: string
+  transactionType: $Enums.TransactionType
   createdAt?: Date | string
 }
 
 export type CreditTransactionUpdateWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   amount?: Prisma.IntFieldUpdateOperationsInput | number
-  transactionType?: Prisma.StringFieldUpdateOperationsInput | string
+  transactionType?: Prisma.EnumTransactionTypeFieldUpdateOperationsInput | $Enums.TransactionType
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type CreditTransactionUncheckedUpdateWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   amount?: Prisma.IntFieldUpdateOperationsInput | number
-  transactionType?: Prisma.StringFieldUpdateOperationsInput | string
+  transactionType?: Prisma.EnumTransactionTypeFieldUpdateOperationsInput | $Enums.TransactionType
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type CreditTransactionUncheckedUpdateManyWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   amount?: Prisma.IntFieldUpdateOperationsInput | number
-  transactionType?: Prisma.StringFieldUpdateOperationsInput | string
+  transactionType?: Prisma.EnumTransactionTypeFieldUpdateOperationsInput | $Enums.TransactionType
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -539,7 +543,7 @@ export type $CreditTransactionPayload<ExtArgs extends runtime.Types.Extensions.I
     id: string
     userId: string
     amount: number
-    transactionType: string
+    transactionType: $Enums.TransactionType
     createdAt: Date
   }, ExtArgs["result"]["creditTransaction"]>
   composites: {}
@@ -968,7 +972,7 @@ export interface CreditTransactionFieldRefs {
   readonly id: Prisma.FieldRef<"CreditTransaction", 'String'>
   readonly userId: Prisma.FieldRef<"CreditTransaction", 'String'>
   readonly amount: Prisma.FieldRef<"CreditTransaction", 'Int'>
-  readonly transactionType: Prisma.FieldRef<"CreditTransaction", 'String'>
+  readonly transactionType: Prisma.FieldRef<"CreditTransaction", 'TransactionType'>
   readonly createdAt: Prisma.FieldRef<"CreditTransaction", 'DateTime'>
 }
     

@@ -1120,6 +1120,7 @@ export const GenerationJobScalarFieldEnum = {
   id: 'id',
   userId: 'userId',
   photoId: 'photoId',
+  styleId: 'styleId',
   stylePrompt: 'stylePrompt',
   status: 'status',
   costCredits: 'costCredits',
@@ -1228,6 +1229,48 @@ export type DateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel
  * Reference to a field of type 'DateTime[]'
  */
 export type ListDateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DateTime[]'>
+    
+
+
+/**
+ * Reference to a field of type 'PhotoStatus'
+ */
+export type EnumPhotoStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'PhotoStatus'>
+    
+
+
+/**
+ * Reference to a field of type 'PhotoStatus[]'
+ */
+export type ListEnumPhotoStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'PhotoStatus[]'>
+    
+
+
+/**
+ * Reference to a field of type 'GenerationJobStatus'
+ */
+export type EnumGenerationJobStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'GenerationJobStatus'>
+    
+
+
+/**
+ * Reference to a field of type 'GenerationJobStatus[]'
+ */
+export type ListEnumGenerationJobStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'GenerationJobStatus[]'>
+    
+
+
+/**
+ * Reference to a field of type 'TransactionType'
+ */
+export type EnumTransactionTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'TransactionType'>
+    
+
+
+/**
+ * Reference to a field of type 'TransactionType[]'
+ */
+export type ListEnumTransactionTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'TransactionType[]'>
     
 
 

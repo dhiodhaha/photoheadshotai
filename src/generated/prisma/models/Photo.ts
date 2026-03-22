@@ -41,7 +41,7 @@ export type PhotoMinAggregateOutputType = {
   filename: string | null
   contentType: string | null
   size: number | null
-  status: string | null
+  status: $Enums.PhotoStatus | null
   hasFaceDetected: boolean | null
   createdAt: Date | null
 }
@@ -53,7 +53,7 @@ export type PhotoMaxAggregateOutputType = {
   filename: string | null
   contentType: string | null
   size: number | null
-  status: string | null
+  status: $Enums.PhotoStatus | null
   hasFaceDetected: boolean | null
   createdAt: Date | null
 }
@@ -210,7 +210,7 @@ export type PhotoGroupByOutputType = {
   filename: string
   contentType: string
   size: number
-  status: string
+  status: $Enums.PhotoStatus
   hasFaceDetected: boolean | null
   createdAt: Date
   _count: PhotoCountAggregateOutputType | null
@@ -245,7 +245,7 @@ export type PhotoWhereInput = {
   filename?: Prisma.StringFilter<"Photo"> | string
   contentType?: Prisma.StringFilter<"Photo"> | string
   size?: Prisma.IntFilter<"Photo"> | number
-  status?: Prisma.StringFilter<"Photo"> | string
+  status?: Prisma.EnumPhotoStatusFilter<"Photo"> | $Enums.PhotoStatus
   hasFaceDetected?: Prisma.BoolNullableFilter<"Photo"> | boolean | null
   createdAt?: Prisma.DateTimeFilter<"Photo"> | Date | string
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
@@ -276,7 +276,7 @@ export type PhotoWhereUniqueInput = Prisma.AtLeast<{
   filename?: Prisma.StringFilter<"Photo"> | string
   contentType?: Prisma.StringFilter<"Photo"> | string
   size?: Prisma.IntFilter<"Photo"> | number
-  status?: Prisma.StringFilter<"Photo"> | string
+  status?: Prisma.EnumPhotoStatusFilter<"Photo"> | $Enums.PhotoStatus
   hasFaceDetected?: Prisma.BoolNullableFilter<"Photo"> | boolean | null
   createdAt?: Prisma.DateTimeFilter<"Photo"> | Date | string
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
@@ -310,7 +310,7 @@ export type PhotoScalarWhereWithAggregatesInput = {
   filename?: Prisma.StringWithAggregatesFilter<"Photo"> | string
   contentType?: Prisma.StringWithAggregatesFilter<"Photo"> | string
   size?: Prisma.IntWithAggregatesFilter<"Photo"> | number
-  status?: Prisma.StringWithAggregatesFilter<"Photo"> | string
+  status?: Prisma.EnumPhotoStatusWithAggregatesFilter<"Photo"> | $Enums.PhotoStatus
   hasFaceDetected?: Prisma.BoolNullableWithAggregatesFilter<"Photo"> | boolean | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Photo"> | Date | string
 }
@@ -321,7 +321,7 @@ export type PhotoCreateInput = {
   filename: string
   contentType: string
   size: number
-  status?: string
+  status?: $Enums.PhotoStatus
   hasFaceDetected?: boolean | null
   createdAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutPhotosInput
@@ -335,7 +335,7 @@ export type PhotoUncheckedCreateInput = {
   filename: string
   contentType: string
   size: number
-  status?: string
+  status?: $Enums.PhotoStatus
   hasFaceDetected?: boolean | null
   createdAt?: Date | string
   generationJobs?: Prisma.GenerationJobUncheckedCreateNestedManyWithoutPhotoInput
@@ -347,7 +347,7 @@ export type PhotoUpdateInput = {
   filename?: Prisma.StringFieldUpdateOperationsInput | string
   contentType?: Prisma.StringFieldUpdateOperationsInput | string
   size?: Prisma.IntFieldUpdateOperationsInput | number
-  status?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumPhotoStatusFieldUpdateOperationsInput | $Enums.PhotoStatus
   hasFaceDetected?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutPhotosNestedInput
@@ -361,7 +361,7 @@ export type PhotoUncheckedUpdateInput = {
   filename?: Prisma.StringFieldUpdateOperationsInput | string
   contentType?: Prisma.StringFieldUpdateOperationsInput | string
   size?: Prisma.IntFieldUpdateOperationsInput | number
-  status?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumPhotoStatusFieldUpdateOperationsInput | $Enums.PhotoStatus
   hasFaceDetected?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   generationJobs?: Prisma.GenerationJobUncheckedUpdateManyWithoutPhotoNestedInput
@@ -374,7 +374,7 @@ export type PhotoCreateManyInput = {
   filename: string
   contentType: string
   size: number
-  status?: string
+  status?: $Enums.PhotoStatus
   hasFaceDetected?: boolean | null
   createdAt?: Date | string
 }
@@ -385,7 +385,7 @@ export type PhotoUpdateManyMutationInput = {
   filename?: Prisma.StringFieldUpdateOperationsInput | string
   contentType?: Prisma.StringFieldUpdateOperationsInput | string
   size?: Prisma.IntFieldUpdateOperationsInput | number
-  status?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumPhotoStatusFieldUpdateOperationsInput | $Enums.PhotoStatus
   hasFaceDetected?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -397,7 +397,7 @@ export type PhotoUncheckedUpdateManyInput = {
   filename?: Prisma.StringFieldUpdateOperationsInput | string
   contentType?: Prisma.StringFieldUpdateOperationsInput | string
   size?: Prisma.IntFieldUpdateOperationsInput | number
-  status?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumPhotoStatusFieldUpdateOperationsInput | $Enums.PhotoStatus
   hasFaceDetected?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -503,6 +503,10 @@ export type PhotoUncheckedUpdateManyWithoutUserNestedInput = {
   deleteMany?: Prisma.PhotoScalarWhereInput | Prisma.PhotoScalarWhereInput[]
 }
 
+export type EnumPhotoStatusFieldUpdateOperationsInput = {
+  set?: $Enums.PhotoStatus
+}
+
 export type NullableBoolFieldUpdateOperationsInput = {
   set?: boolean | null
 }
@@ -527,7 +531,7 @@ export type PhotoCreateWithoutUserInput = {
   filename: string
   contentType: string
   size: number
-  status?: string
+  status?: $Enums.PhotoStatus
   hasFaceDetected?: boolean | null
   createdAt?: Date | string
   generationJobs?: Prisma.GenerationJobCreateNestedManyWithoutPhotoInput
@@ -539,7 +543,7 @@ export type PhotoUncheckedCreateWithoutUserInput = {
   filename: string
   contentType: string
   size: number
-  status?: string
+  status?: $Enums.PhotoStatus
   hasFaceDetected?: boolean | null
   createdAt?: Date | string
   generationJobs?: Prisma.GenerationJobUncheckedCreateNestedManyWithoutPhotoInput
@@ -581,7 +585,7 @@ export type PhotoScalarWhereInput = {
   filename?: Prisma.StringFilter<"Photo"> | string
   contentType?: Prisma.StringFilter<"Photo"> | string
   size?: Prisma.IntFilter<"Photo"> | number
-  status?: Prisma.StringFilter<"Photo"> | string
+  status?: Prisma.EnumPhotoStatusFilter<"Photo"> | $Enums.PhotoStatus
   hasFaceDetected?: Prisma.BoolNullableFilter<"Photo"> | boolean | null
   createdAt?: Prisma.DateTimeFilter<"Photo"> | Date | string
 }
@@ -592,7 +596,7 @@ export type PhotoCreateWithoutGenerationJobsInput = {
   filename: string
   contentType: string
   size: number
-  status?: string
+  status?: $Enums.PhotoStatus
   hasFaceDetected?: boolean | null
   createdAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutPhotosInput
@@ -605,7 +609,7 @@ export type PhotoUncheckedCreateWithoutGenerationJobsInput = {
   filename: string
   contentType: string
   size: number
-  status?: string
+  status?: $Enums.PhotoStatus
   hasFaceDetected?: boolean | null
   createdAt?: Date | string
 }
@@ -632,7 +636,7 @@ export type PhotoUpdateWithoutGenerationJobsInput = {
   filename?: Prisma.StringFieldUpdateOperationsInput | string
   contentType?: Prisma.StringFieldUpdateOperationsInput | string
   size?: Prisma.IntFieldUpdateOperationsInput | number
-  status?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumPhotoStatusFieldUpdateOperationsInput | $Enums.PhotoStatus
   hasFaceDetected?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutPhotosNestedInput
@@ -645,7 +649,7 @@ export type PhotoUncheckedUpdateWithoutGenerationJobsInput = {
   filename?: Prisma.StringFieldUpdateOperationsInput | string
   contentType?: Prisma.StringFieldUpdateOperationsInput | string
   size?: Prisma.IntFieldUpdateOperationsInput | number
-  status?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumPhotoStatusFieldUpdateOperationsInput | $Enums.PhotoStatus
   hasFaceDetected?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -656,7 +660,7 @@ export type PhotoCreateManyUserInput = {
   filename: string
   contentType: string
   size: number
-  status?: string
+  status?: $Enums.PhotoStatus
   hasFaceDetected?: boolean | null
   createdAt?: Date | string
 }
@@ -667,7 +671,7 @@ export type PhotoUpdateWithoutUserInput = {
   filename?: Prisma.StringFieldUpdateOperationsInput | string
   contentType?: Prisma.StringFieldUpdateOperationsInput | string
   size?: Prisma.IntFieldUpdateOperationsInput | number
-  status?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumPhotoStatusFieldUpdateOperationsInput | $Enums.PhotoStatus
   hasFaceDetected?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   generationJobs?: Prisma.GenerationJobUpdateManyWithoutPhotoNestedInput
@@ -679,7 +683,7 @@ export type PhotoUncheckedUpdateWithoutUserInput = {
   filename?: Prisma.StringFieldUpdateOperationsInput | string
   contentType?: Prisma.StringFieldUpdateOperationsInput | string
   size?: Prisma.IntFieldUpdateOperationsInput | number
-  status?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumPhotoStatusFieldUpdateOperationsInput | $Enums.PhotoStatus
   hasFaceDetected?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   generationJobs?: Prisma.GenerationJobUncheckedUpdateManyWithoutPhotoNestedInput
@@ -691,7 +695,7 @@ export type PhotoUncheckedUpdateManyWithoutUserInput = {
   filename?: Prisma.StringFieldUpdateOperationsInput | string
   contentType?: Prisma.StringFieldUpdateOperationsInput | string
   size?: Prisma.IntFieldUpdateOperationsInput | number
-  status?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumPhotoStatusFieldUpdateOperationsInput | $Enums.PhotoStatus
   hasFaceDetected?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -806,7 +810,7 @@ export type $PhotoPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs 
     filename: string
     contentType: string
     size: number
-    status: string
+    status: $Enums.PhotoStatus
     hasFaceDetected: boolean | null
     createdAt: Date
   }, ExtArgs["result"]["photo"]>
@@ -1240,7 +1244,7 @@ export interface PhotoFieldRefs {
   readonly filename: Prisma.FieldRef<"Photo", 'String'>
   readonly contentType: Prisma.FieldRef<"Photo", 'String'>
   readonly size: Prisma.FieldRef<"Photo", 'Int'>
-  readonly status: Prisma.FieldRef<"Photo", 'String'>
+  readonly status: Prisma.FieldRef<"Photo", 'PhotoStatus'>
   readonly hasFaceDetected: Prisma.FieldRef<"Photo", 'Boolean'>
   readonly createdAt: Prisma.FieldRef<"Photo", 'DateTime'>
 }
