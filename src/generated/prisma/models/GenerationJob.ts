@@ -39,7 +39,7 @@ export type GenerationJobMinAggregateOutputType = {
   userId: string | null
   photoId: string | null
   stylePrompt: string | null
-  status: string | null
+  status: $Enums.GenerationJobStatus | null
   costCredits: number | null
   startedAt: Date | null
   completedAt: Date | null
@@ -50,7 +50,7 @@ export type GenerationJobMaxAggregateOutputType = {
   userId: string | null
   photoId: string | null
   stylePrompt: string | null
-  status: string | null
+  status: $Enums.GenerationJobStatus | null
   costCredits: number | null
   startedAt: Date | null
   completedAt: Date | null
@@ -202,7 +202,7 @@ export type GenerationJobGroupByOutputType = {
   userId: string
   photoId: string
   stylePrompt: string
-  status: string
+  status: $Enums.GenerationJobStatus
   costCredits: number
   startedAt: Date
   completedAt: Date | null
@@ -236,7 +236,7 @@ export type GenerationJobWhereInput = {
   userId?: Prisma.StringFilter<"GenerationJob"> | string
   photoId?: Prisma.StringFilter<"GenerationJob"> | string
   stylePrompt?: Prisma.StringFilter<"GenerationJob"> | string
-  status?: Prisma.StringFilter<"GenerationJob"> | string
+  status?: Prisma.EnumGenerationJobStatusFilter<"GenerationJob"> | $Enums.GenerationJobStatus
   costCredits?: Prisma.IntFilter<"GenerationJob"> | number
   startedAt?: Prisma.DateTimeFilter<"GenerationJob"> | Date | string
   completedAt?: Prisma.DateTimeNullableFilter<"GenerationJob"> | Date | string | null
@@ -267,7 +267,7 @@ export type GenerationJobWhereUniqueInput = Prisma.AtLeast<{
   userId?: Prisma.StringFilter<"GenerationJob"> | string
   photoId?: Prisma.StringFilter<"GenerationJob"> | string
   stylePrompt?: Prisma.StringFilter<"GenerationJob"> | string
-  status?: Prisma.StringFilter<"GenerationJob"> | string
+  status?: Prisma.EnumGenerationJobStatusFilter<"GenerationJob"> | $Enums.GenerationJobStatus
   costCredits?: Prisma.IntFilter<"GenerationJob"> | number
   startedAt?: Prisma.DateTimeFilter<"GenerationJob"> | Date | string
   completedAt?: Prisma.DateTimeNullableFilter<"GenerationJob"> | Date | string | null
@@ -300,7 +300,7 @@ export type GenerationJobScalarWhereWithAggregatesInput = {
   userId?: Prisma.StringWithAggregatesFilter<"GenerationJob"> | string
   photoId?: Prisma.StringWithAggregatesFilter<"GenerationJob"> | string
   stylePrompt?: Prisma.StringWithAggregatesFilter<"GenerationJob"> | string
-  status?: Prisma.StringWithAggregatesFilter<"GenerationJob"> | string
+  status?: Prisma.EnumGenerationJobStatusWithAggregatesFilter<"GenerationJob"> | $Enums.GenerationJobStatus
   costCredits?: Prisma.IntWithAggregatesFilter<"GenerationJob"> | number
   startedAt?: Prisma.DateTimeWithAggregatesFilter<"GenerationJob"> | Date | string
   completedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"GenerationJob"> | Date | string | null
@@ -309,7 +309,7 @@ export type GenerationJobScalarWhereWithAggregatesInput = {
 export type GenerationJobCreateInput = {
   id?: string
   stylePrompt: string
-  status?: string
+  status?: $Enums.GenerationJobStatus
   costCredits: number
   startedAt?: Date | string
   completedAt?: Date | string | null
@@ -323,7 +323,7 @@ export type GenerationJobUncheckedCreateInput = {
   userId: string
   photoId: string
   stylePrompt: string
-  status?: string
+  status?: $Enums.GenerationJobStatus
   costCredits: number
   startedAt?: Date | string
   completedAt?: Date | string | null
@@ -333,7 +333,7 @@ export type GenerationJobUncheckedCreateInput = {
 export type GenerationJobUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   stylePrompt?: Prisma.StringFieldUpdateOperationsInput | string
-  status?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumGenerationJobStatusFieldUpdateOperationsInput | $Enums.GenerationJobStatus
   costCredits?: Prisma.IntFieldUpdateOperationsInput | number
   startedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -347,7 +347,7 @@ export type GenerationJobUncheckedUpdateInput = {
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   photoId?: Prisma.StringFieldUpdateOperationsInput | string
   stylePrompt?: Prisma.StringFieldUpdateOperationsInput | string
-  status?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumGenerationJobStatusFieldUpdateOperationsInput | $Enums.GenerationJobStatus
   costCredits?: Prisma.IntFieldUpdateOperationsInput | number
   startedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -359,7 +359,7 @@ export type GenerationJobCreateManyInput = {
   userId: string
   photoId: string
   stylePrompt: string
-  status?: string
+  status?: $Enums.GenerationJobStatus
   costCredits: number
   startedAt?: Date | string
   completedAt?: Date | string | null
@@ -368,7 +368,7 @@ export type GenerationJobCreateManyInput = {
 export type GenerationJobUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   stylePrompt?: Prisma.StringFieldUpdateOperationsInput | string
-  status?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumGenerationJobStatusFieldUpdateOperationsInput | $Enums.GenerationJobStatus
   costCredits?: Prisma.IntFieldUpdateOperationsInput | number
   startedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -379,7 +379,7 @@ export type GenerationJobUncheckedUpdateManyInput = {
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   photoId?: Prisma.StringFieldUpdateOperationsInput | string
   stylePrompt?: Prisma.StringFieldUpdateOperationsInput | string
-  status?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumGenerationJobStatusFieldUpdateOperationsInput | $Enums.GenerationJobStatus
   costCredits?: Prisma.IntFieldUpdateOperationsInput | number
   startedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -525,6 +525,10 @@ export type GenerationJobUncheckedUpdateManyWithoutPhotoNestedInput = {
   deleteMany?: Prisma.GenerationJobScalarWhereInput | Prisma.GenerationJobScalarWhereInput[]
 }
 
+export type EnumGenerationJobStatusFieldUpdateOperationsInput = {
+  set?: $Enums.GenerationJobStatus
+}
+
 export type GenerationJobCreateNestedOneWithoutGeneratedHeadshotsInput = {
   create?: Prisma.XOR<Prisma.GenerationJobCreateWithoutGeneratedHeadshotsInput, Prisma.GenerationJobUncheckedCreateWithoutGeneratedHeadshotsInput>
   connectOrCreate?: Prisma.GenerationJobCreateOrConnectWithoutGeneratedHeadshotsInput
@@ -542,7 +546,7 @@ export type GenerationJobUpdateOneRequiredWithoutGeneratedHeadshotsNestedInput =
 export type GenerationJobCreateWithoutUserInput = {
   id?: string
   stylePrompt: string
-  status?: string
+  status?: $Enums.GenerationJobStatus
   costCredits: number
   startedAt?: Date | string
   completedAt?: Date | string | null
@@ -554,7 +558,7 @@ export type GenerationJobUncheckedCreateWithoutUserInput = {
   id?: string
   photoId: string
   stylePrompt: string
-  status?: string
+  status?: $Enums.GenerationJobStatus
   costCredits: number
   startedAt?: Date | string
   completedAt?: Date | string | null
@@ -595,7 +599,7 @@ export type GenerationJobScalarWhereInput = {
   userId?: Prisma.StringFilter<"GenerationJob"> | string
   photoId?: Prisma.StringFilter<"GenerationJob"> | string
   stylePrompt?: Prisma.StringFilter<"GenerationJob"> | string
-  status?: Prisma.StringFilter<"GenerationJob"> | string
+  status?: Prisma.EnumGenerationJobStatusFilter<"GenerationJob"> | $Enums.GenerationJobStatus
   costCredits?: Prisma.IntFilter<"GenerationJob"> | number
   startedAt?: Prisma.DateTimeFilter<"GenerationJob"> | Date | string
   completedAt?: Prisma.DateTimeNullableFilter<"GenerationJob"> | Date | string | null
@@ -604,7 +608,7 @@ export type GenerationJobScalarWhereInput = {
 export type GenerationJobCreateWithoutPhotoInput = {
   id?: string
   stylePrompt: string
-  status?: string
+  status?: $Enums.GenerationJobStatus
   costCredits: number
   startedAt?: Date | string
   completedAt?: Date | string | null
@@ -616,7 +620,7 @@ export type GenerationJobUncheckedCreateWithoutPhotoInput = {
   id?: string
   userId: string
   stylePrompt: string
-  status?: string
+  status?: $Enums.GenerationJobStatus
   costCredits: number
   startedAt?: Date | string
   completedAt?: Date | string | null
@@ -652,7 +656,7 @@ export type GenerationJobUpdateManyWithWhereWithoutPhotoInput = {
 export type GenerationJobCreateWithoutGeneratedHeadshotsInput = {
   id?: string
   stylePrompt: string
-  status?: string
+  status?: $Enums.GenerationJobStatus
   costCredits: number
   startedAt?: Date | string
   completedAt?: Date | string | null
@@ -665,7 +669,7 @@ export type GenerationJobUncheckedCreateWithoutGeneratedHeadshotsInput = {
   userId: string
   photoId: string
   stylePrompt: string
-  status?: string
+  status?: $Enums.GenerationJobStatus
   costCredits: number
   startedAt?: Date | string
   completedAt?: Date | string | null
@@ -690,7 +694,7 @@ export type GenerationJobUpdateToOneWithWhereWithoutGeneratedHeadshotsInput = {
 export type GenerationJobUpdateWithoutGeneratedHeadshotsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   stylePrompt?: Prisma.StringFieldUpdateOperationsInput | string
-  status?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumGenerationJobStatusFieldUpdateOperationsInput | $Enums.GenerationJobStatus
   costCredits?: Prisma.IntFieldUpdateOperationsInput | number
   startedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -703,7 +707,7 @@ export type GenerationJobUncheckedUpdateWithoutGeneratedHeadshotsInput = {
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   photoId?: Prisma.StringFieldUpdateOperationsInput | string
   stylePrompt?: Prisma.StringFieldUpdateOperationsInput | string
-  status?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumGenerationJobStatusFieldUpdateOperationsInput | $Enums.GenerationJobStatus
   costCredits?: Prisma.IntFieldUpdateOperationsInput | number
   startedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -713,7 +717,7 @@ export type GenerationJobCreateManyUserInput = {
   id?: string
   photoId: string
   stylePrompt: string
-  status?: string
+  status?: $Enums.GenerationJobStatus
   costCredits: number
   startedAt?: Date | string
   completedAt?: Date | string | null
@@ -722,7 +726,7 @@ export type GenerationJobCreateManyUserInput = {
 export type GenerationJobUpdateWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   stylePrompt?: Prisma.StringFieldUpdateOperationsInput | string
-  status?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumGenerationJobStatusFieldUpdateOperationsInput | $Enums.GenerationJobStatus
   costCredits?: Prisma.IntFieldUpdateOperationsInput | number
   startedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -734,7 +738,7 @@ export type GenerationJobUncheckedUpdateWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   photoId?: Prisma.StringFieldUpdateOperationsInput | string
   stylePrompt?: Prisma.StringFieldUpdateOperationsInput | string
-  status?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumGenerationJobStatusFieldUpdateOperationsInput | $Enums.GenerationJobStatus
   costCredits?: Prisma.IntFieldUpdateOperationsInput | number
   startedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -745,7 +749,7 @@ export type GenerationJobUncheckedUpdateManyWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   photoId?: Prisma.StringFieldUpdateOperationsInput | string
   stylePrompt?: Prisma.StringFieldUpdateOperationsInput | string
-  status?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumGenerationJobStatusFieldUpdateOperationsInput | $Enums.GenerationJobStatus
   costCredits?: Prisma.IntFieldUpdateOperationsInput | number
   startedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -755,7 +759,7 @@ export type GenerationJobCreateManyPhotoInput = {
   id?: string
   userId: string
   stylePrompt: string
-  status?: string
+  status?: $Enums.GenerationJobStatus
   costCredits: number
   startedAt?: Date | string
   completedAt?: Date | string | null
@@ -764,7 +768,7 @@ export type GenerationJobCreateManyPhotoInput = {
 export type GenerationJobUpdateWithoutPhotoInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   stylePrompt?: Prisma.StringFieldUpdateOperationsInput | string
-  status?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumGenerationJobStatusFieldUpdateOperationsInput | $Enums.GenerationJobStatus
   costCredits?: Prisma.IntFieldUpdateOperationsInput | number
   startedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -776,7 +780,7 @@ export type GenerationJobUncheckedUpdateWithoutPhotoInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   stylePrompt?: Prisma.StringFieldUpdateOperationsInput | string
-  status?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumGenerationJobStatusFieldUpdateOperationsInput | $Enums.GenerationJobStatus
   costCredits?: Prisma.IntFieldUpdateOperationsInput | number
   startedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -787,7 +791,7 @@ export type GenerationJobUncheckedUpdateManyWithoutPhotoInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   stylePrompt?: Prisma.StringFieldUpdateOperationsInput | string
-  status?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumGenerationJobStatusFieldUpdateOperationsInput | $Enums.GenerationJobStatus
   costCredits?: Prisma.IntFieldUpdateOperationsInput | number
   startedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -904,7 +908,7 @@ export type $GenerationJobPayload<ExtArgs extends runtime.Types.Extensions.Inter
     userId: string
     photoId: string
     stylePrompt: string
-    status: string
+    status: $Enums.GenerationJobStatus
     costCredits: number
     startedAt: Date
     completedAt: Date | null
@@ -1338,7 +1342,7 @@ export interface GenerationJobFieldRefs {
   readonly userId: Prisma.FieldRef<"GenerationJob", 'String'>
   readonly photoId: Prisma.FieldRef<"GenerationJob", 'String'>
   readonly stylePrompt: Prisma.FieldRef<"GenerationJob", 'String'>
-  readonly status: Prisma.FieldRef<"GenerationJob", 'String'>
+  readonly status: Prisma.FieldRef<"GenerationJob", 'GenerationJobStatus'>
   readonly costCredits: Prisma.FieldRef<"GenerationJob", 'Int'>
   readonly startedAt: Prisma.FieldRef<"GenerationJob", 'DateTime'>
   readonly completedAt: Prisma.FieldRef<"GenerationJob", 'DateTime'>

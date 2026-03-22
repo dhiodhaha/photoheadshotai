@@ -17,6 +17,9 @@ importers:
       '@base-ui/react':
         specifier: ^1.3.0
         version: 1.3.0(@types/react@19.2.14)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+      '@fal-ai/client':
+        specifier: ^1.9.4
+        version: 1.9.4
       '@hookform/resolvers':
         specifier: ^5.2.2
         version: 5.2.2(react-hook-form@7.71.2(react@19.2.4))
@@ -29,12 +32,6 @@ importers:
       '@tailwindcss/vite':
         specifier: ^4.1.18
         version: 4.2.2(vite@7.3.1(@types/node@22.19.15)(jiti@2.6.1)(lightningcss@1.32.0)(tsx@4.21.0)(yaml@2.8.3))
-      '@tanstack/ai':
-        specifier: ^0.8.1
-        version: 0.8.1
-      '@tanstack/ai-fal':
-        specifier: ^0.6.6
-        version: 0.6.6(@tanstack/ai@0.8.1)
       '@tanstack/react-devtools':
         specifier: latest
         version: 0.10.0(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(csstype@3.2.3)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(solid-js@1.9.11)
@@ -2191,20 +2188,6 @@ packages:
     peerDependencies:
       vite: ^5.2.0 || ^6 || ^7 || ^8
 
-  '@tanstack/ai-event-client@0.1.1':
-    resolution: {integrity: sha512-cAjpbE4ilwoEvmkk7sCJ3Wea9GI9V/qlKaNrH276jqY9cm8HpOYq8IuRb47Pcxt0XY3VwNjxtdKDlX4PUkr+0g==}
-    peerDependencies:
-      '@tanstack/ai': 0.8.1
-
-  '@tanstack/ai-fal@0.6.6':
-    resolution: {integrity: sha512-HXiecZkgU2hd4U+TLfWwj/ESOXtnR0LkeW2wt5PQqrHS1PnKIsdEfLLejaEp4Qxz285f206xqVSsVsdCOetJEw==}
-    peerDependencies:
-      '@tanstack/ai': 0.8.1
-
-  '@tanstack/ai@0.8.1':
-    resolution: {integrity: sha512-BMWrPJCpJNXPsXeqQOXrg6eHBTZcAVwmc9UFQkcWYeC/B50ilIwVmBQUzCvUq+2R5jz5+MBCY4gEqtH6ERju3A==}
-    engines: {node: '>=18'}
-
   '@tanstack/devtools-client@0.0.6':
     resolution: {integrity: sha512-f85ZJXJnDIFOoykG/BFIixuAevJovCvJF391LPs6YjBAPhGYC50NWlx1y4iF/UmK5/cCMx+/JqI5SBOz7FanQQ==}
     engines: {node: '>=18'}
@@ -3530,9 +3513,6 @@ packages:
 
   parse5@8.0.0:
     resolution: {integrity: sha512-9m4m5GSgXjL4AjumKzq1Fgfp3Z8rsvjRNbnkVwfu2ImRqE5D0LnY2QfDen18FSY9C573YU5XxSapdHZTZ2WolA==}
-
-  partial-json@0.1.7:
-    resolution: {integrity: sha512-Njv/59hHaokb/hRUjce3Hdv12wd60MtM9Z5Olmn+nehe0QDAsRtRbJPvJ0Z91TusF0SuZRIvnM+S4l6EIP8leA==}
 
   path-expression-matcher@1.1.3:
     resolution: {integrity: sha512-qdVgY8KXmVdJZRSS1JdEPOKPdTiEK/pi0RkcT2sw1RhXxohdujUlJFPuS1TSkevZ9vzd3ZlL7ULl1MHGTApKzQ==}
@@ -6647,21 +6627,6 @@ snapshots:
       tailwindcss: 4.2.2
       vite: 7.3.1(@types/node@22.19.15)(jiti@2.6.1)(lightningcss@1.32.0)(tsx@4.21.0)(yaml@2.8.3)
 
-  '@tanstack/ai-event-client@0.1.1(@tanstack/ai@0.8.1)':
-    dependencies:
-      '@tanstack/ai': 0.8.1
-      '@tanstack/devtools-event-client': 0.4.3
-
-  '@tanstack/ai-fal@0.6.6(@tanstack/ai@0.8.1)':
-    dependencies:
-      '@fal-ai/client': 1.9.4
-      '@tanstack/ai': 0.8.1
-
-  '@tanstack/ai@0.8.1':
-    dependencies:
-      '@tanstack/ai-event-client': 0.1.1(@tanstack/ai@0.8.1)
-      partial-json: 0.1.7
-
   '@tanstack/devtools-client@0.0.6':
     dependencies:
       '@tanstack/devtools-event-client': 0.4.3
@@ -8023,8 +7988,6 @@ snapshots:
   parse5@8.0.0:
     dependencies:
       entities: 6.0.1
-
-  partial-json@0.1.7: {}
 
   path-expression-matcher@1.1.3: {}
 

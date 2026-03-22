@@ -1,11 +1,11 @@
-import { generateImage } from "@tanstack/ai";
-import { falImage } from "@tanstack/ai-fal";
+import { fal } from "@fal-ai/client";
 import { prisma } from "#/lib/prisma";
 import { deductUserCredits, refundCredits } from "#/modules/credits";
 import { getPublicUrl } from "#/modules/studio/infrastructure/r2.server";
 import { buildPrompt, getStyleById } from "../domain/styles";
 
 const GENERATION_CREDIT_COST = 10;
+const SEEDREAM_MODEL = "fal-ai/bytedance/seedream/v4.5/edit";
 
 export class GenerationService {
 	async startGeneration(userId: string, photoId: string, style: string) {
@@ -38,7 +38,7 @@ export class GenerationService {
 			},
 		});
 
-		// 5. Start generation (for now we still wait, but logic is modular)
+		// 5. Start generation
 		return this.processGeneration(
 			job.id,
 			photo.key,
@@ -57,7 +57,7 @@ export class GenerationService {
 	) {
 		const photoUrl =
 			process.env.R2_ACCOUNT_ID === "placeholder_account_id"
-				? "https://fastly.picsum.photos/id/64/4326/2884.jpg"
+				? "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=1024&q=80"
 				: getPublicUrl(photoKey);
 
 		const prompt = buildPrompt(style);
@@ -72,39 +72,29 @@ export class GenerationService {
 		}
 
 		try {
-			// TODO: Remove `as any` casts when @tanstack/ai-fal ships stable types
 			const falKey = process.env.FAL_KEY;
 			if (!falKey) {
 				throw new Error("FAL_KEY environment variable is not set.");
 			}
 
-			const adapter = falImage("fal-ai/flux-pulid", {
-				apiKey: falKey,
-			});
-			const result = await generateImage({
-				// biome-ignore lint/suspicious/noExplicitAny: @tanstack/ai-fal doesn't export stable types yet
-				adapter: adapter as any,
-				prompt,
-				numberOfImages: 1,
-				modelOptions: {
-					image_url: photoUrl,
-					id_weight: 1.0,
-					num_inference_steps: 30,
-					guidance_scale: 1.2,
-					width: 1024,
-					height: 1024,
+			fal.config({ credentials: falKey });
+
+			const result = await fal.subscribe(SEEDREAM_MODEL, {
+				input: {
+					prompt,
+					image_urls: [photoUrl],
+					image_size: { width: 1024, height: 1024 },
+					num_images: 1,
 					enable_safety_checker: true,
-					// biome-ignore lint/suspicious/noExplicitAny: @tanstack/ai-fal modelOptions type is incomplete
-				} as any,
+				},
 			});
 
-			if (result.images?.[0]?.url) {
-				const imageUrl = result.images[0].url;
+			const imageUrl = result.data?.images?.[0]?.url;
+			if (imageUrl) {
 				await this.updateJobSuccess(jobId, photoId, imageUrl);
 				return { job_id: jobId, image_url: imageUrl };
-			} else {
-				throw new Error("AI Provider returned no image.");
 			}
+			throw new Error("AI Provider returned no image.");
 		} catch (error: unknown) {
 			const message = error instanceof Error ? error.message : String(error);
 			await this.handleGenerationFailure(jobId, userId, message);

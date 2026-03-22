@@ -12,7 +12,7 @@ export const HEADSHOT_STYLES: HeadshotStyle[] = [
 		label: "Executive Classic",
 		description: "Authoritative and refined for C-suite and leadership pages",
 		prompt:
-			"Executive portrait, premium tailored suit, dark moody background, Rembrandt lighting, commanding presence, ultra sharp",
+			"Transform the person in Figure 1 into an executive portrait. Dress them in a premium tailored dark suit with a subtle tie. Place them against a dark moody studio background with Rembrandt lighting. Keep their face, features, and identity exactly the same. Ultra sharp, 8k quality.",
 		image: "/hero_headshot_preview_1773972472569.png",
 	},
 	{
@@ -20,7 +20,7 @@ export const HEADSHOT_STYLES: HeadshotStyle[] = [
 		label: "Corporate",
 		description: "Clean, polished look for LinkedIn and business profiles",
 		prompt:
-			"Professional corporate headshot, clean navy suit, neutral background, soft studio lighting, sharp focus",
+			"Transform the person in Figure 1 into a professional corporate headshot. Dress them in a clean navy business suit. Place them against a neutral gray studio background with soft even lighting. Keep their face, features, and identity exactly the same. Sharp focus, professional quality.",
 		image: "/auth_fashion_portrait_1.png",
 	},
 	{
@@ -28,7 +28,7 @@ export const HEADSHOT_STYLES: HeadshotStyle[] = [
 		label: "Creative",
 		description: "Artistic and editorial for portfolios and personal branding",
 		prompt:
-			"Modern creative portrait, artistic lighting, vibrant but professional, editorial style, dramatic shadows",
+			"Transform the person in Figure 1 into a modern creative portrait. Use artistic dramatic lighting with vibrant but professional tones. Add editorial-style dramatic shadows and a colorful gradient background. Keep their face, features, and identity exactly the same. High fashion editorial quality.",
 		image: "/auth_fashion_portrait_2.png",
 	},
 	{
@@ -36,7 +36,7 @@ export const HEADSHOT_STYLES: HeadshotStyle[] = [
 		label: "Casual Professional",
 		description: "Relaxed yet professional for startups and personal sites",
 		prompt:
-			"Relaxed professional portrait, smart casual attire, warm natural lighting, approachable expression, soft bokeh background",
+			"Transform the person in Figure 1 into a casual professional portrait. Dress them in smart casual attire like a crisp button-up shirt. Use warm natural lighting with a soft bokeh outdoor background. Keep their face, features, and identity exactly the same. Approachable and friendly expression.",
 		image: "/auth_fashion_portrait_1.png",
 	},
 	{
@@ -44,7 +44,7 @@ export const HEADSHOT_STYLES: HeadshotStyle[] = [
 		label: "Minimal",
 		description: "Clean and simple with white or light background",
 		prompt:
-			"Minimalist headshot, clean white background, simple elegant attire, even flat lighting, modern and crisp",
+			"Transform the person in Figure 1 into a minimalist headshot. Dress them in simple elegant attire. Place them against a clean pure white background with even flat lighting. Keep their face, features, and identity exactly the same. Modern, crisp, and clean aesthetic.",
 		image: "/auth_fashion_portrait_2.png",
 	},
 ];
@@ -54,5 +54,5 @@ export function getStyleById(id: string): HeadshotStyle | undefined {
 }
 
 export function buildPrompt(stylePrompt: string): string {
-	return `A highly professional, cinematic, hyper-realistic upper-body portrait photography of the exact person in the reference image. The person is dressed cleanly, looking directly at the camera with a confident, slight smile. Style: ${stylePrompt}. Studio lighting, soft shadows, 8k resolution, shot on 85mm lens.`;
+	return stylePrompt;
 }
