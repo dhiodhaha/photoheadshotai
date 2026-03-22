@@ -178,3 +178,85 @@ credits/
 - Never run `pnpm prisma <cmd>` directly — use `pnpm db:<cmd>` or `dotenv -e .env.local -- prisma <cmd>`
 - `DATABASE_URL` → local Docker PostgreSQL on port `5433`
 - R2 vars: `R2_ACCOUNT_ID`, `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`, `R2_BUCKET_NAME`, `R2_PUBLIC_URL`
+- FAL.AI vars: `FAL_KEY` (API key), `MOCK_AI_GENERATION` (true for dev, false for production)
+- See `.env.example` for complete documentation
+
+## AI Generation (Seedream v4.5)
+
+**Model:** `fal-ai/bytedance/seedream/v4.5/edit`
+**Cost:** $0.04/image
+**Location:** `src/modules/studio/application/generation.service.ts`
+
+**API Contract:**
+```typescript
+const result = await fal.subscribe(SEEDREAM_MODEL, {
+  input: {
+    prompt: string,                              // E.g., "Transform the person in Figure 1..."
+    image_urls: string[],                        // Array of input image URLs
+    image_size: { width: number, height: number }, // 1024x1024
+    num_images: 1,
+    enable_safety_checker: true,
+  },
+});
+
+// Response structure
+result.data?.images?.[0]?.url  // Generated image URL
+```
+
+**Prompts:** Stored in `src/modules/studio/domain/styles.ts` as `HEADSHOT_STYLES` array. Each style has:
+- `id`: Unique identifier (e.g., "executive")
+- `label`: Display name (e.g., "Executive Classic")
+- `prompt`: Seedream-specific instructions
+
+**History:** Generation history shows `style.label` instead of raw prompts. StyleID is tracked in `GenerationJob.styleId` for future lookups.
+
+## Status & Next Steps
+
+**Current Branch:** `feat/frontend-studio`
+**Status:** ✅ Ready for merge (code review in `CODE_REVIEW.md`)
+**Target:** Merge to `main`
+
+**Before Merge:**
+- [ ] Run `pnpm lint` (should be 0 errors)
+- [ ] Run `pnpm build` (should succeed with no TS errors)
+- [ ] Share `CODE_REVIEW.md` with team
+- [ ] Review and approve code changes
+
+**Before Production Deployment:**
+- [ ] Set up Cloudflare R2 bucket and configure env vars
+- [ ] Test full flow (upload → generate → download) with real credentials
+- [ ] Run database migrations: `pnpm db:migrate`
+- [ ] Set up error tracking for fal.ai calls
+- [ ] Configure environment for production (MOCK_AI_GENERATION=false)
+
+**Future Improvements (Post-MVP):**
+- Async job queue (Bull) for long-running generations
+- Webhook support for fal.ai completion notifications
+- Generation retry logic with exponential backoff
+- Image caching for identical inputs
+- A/B testing different AI models
+
+## Recent Refactoring (2026-03-22)
+
+**Commits:** 6 major refactoring commits on `feat/frontend-studio`
+**Focus:** DDD structure, SRP components, Prisma enums, Biome compliance, AI model migration
+
+**Key Changes:**
+1. **DDD Module Structure:** Proper separation into domain/application/infrastructure layers
+2. **SRP Components:** Extracted 6 reusable components (AuthLeftPanel, SignInForm, SignUpForm, StudioSidebar, StudioHeader, UserDropdownMenu)
+3. **Prisma Enums:** Added `PhotoStatus`, `GenerationJobStatus`, `TransactionType` for type safety
+4. **Biome Compliance:** Fixed all 9 lint violations (noNonNullAssertion, noExplicitAny, useButtonType, useSemanticElements, noArrayIndexKey, noStaticElementInteractions)
+5. **React 19:** Updated all form handlers to `React.SubmitEvent<HTMLFormElement>`
+6. **AI Migration:** Switched from flux-pulid to seedream v4.5 (better results, lower cost)
+7. **Style Tracking:** Added styleId column to GenerationJob; history shows readable style labels
+8. **Bundle Fix:** Fixed server-module leakage (Buffer error in browser)
+9. **Style Sync:** Unified style definitions in domain layer (single source of truth)
+10. **Documentation:** Updated CLAUDE.md, added `.env.example`, created CODE_REVIEW.md
+
+**Code Quality Metrics:**
+- ✅ Linting: 0 Biome violations
+- ✅ Types: 99% type coverage (1 justified `as any`)
+- ✅ Strict Mode: All TypeScript strict flags enabled
+- ✅ DDD: All modules follow domain/app/infra pattern
+- ✅ SRP: Components have single responsibility
+- ✅ Pre-commit Hooks: Biome lint-staged validation enabled

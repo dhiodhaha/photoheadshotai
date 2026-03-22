@@ -15,6 +15,7 @@ import { Route as StudioIndexRouteImport } from './routes/studio/index'
 import { Route as StudioSettingsRouteImport } from './routes/studio/settings'
 import { Route as StudioGalleryRouteImport } from './routes/studio/gallery'
 import { Route as StudioBillingRouteImport } from './routes/studio/billing'
+import { Route as AuthVerifyEmailRouteImport } from './routes/auth/verify-email'
 import { Route as AuthSignupRouteImport } from './routes/auth/signup'
 import { Route as AuthSigninRouteImport } from './routes/auth/signin'
 import { Route as ApiHistoryRouteImport } from './routes/api/history'
@@ -56,6 +57,11 @@ const StudioBillingRoute = StudioBillingRouteImport.update({
   id: '/billing',
   path: '/billing',
   getParentRoute: () => StudioRoute,
+} as any)
+const AuthVerifyEmailRoute = AuthVerifyEmailRouteImport.update({
+  id: '/auth/verify-email',
+  path: '/auth/verify-email',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const AuthSignupRoute = AuthSignupRouteImport.update({
   id: '/auth/signup',
@@ -119,6 +125,7 @@ export interface FileRoutesByFullPath {
   '/api/history': typeof ApiHistoryRoute
   '/auth/signin': typeof AuthSigninRoute
   '/auth/signup': typeof AuthSignupRoute
+  '/auth/verify-email': typeof AuthVerifyEmailRoute
   '/studio/billing': typeof StudioBillingRoute
   '/studio/gallery': typeof StudioGalleryRoute
   '/studio/settings': typeof StudioSettingsRoute
@@ -137,6 +144,7 @@ export interface FileRoutesByTo {
   '/api/history': typeof ApiHistoryRoute
   '/auth/signin': typeof AuthSigninRoute
   '/auth/signup': typeof AuthSignupRoute
+  '/auth/verify-email': typeof AuthVerifyEmailRoute
   '/studio/billing': typeof StudioBillingRoute
   '/studio/gallery': typeof StudioGalleryRoute
   '/studio/settings': typeof StudioSettingsRoute
@@ -157,6 +165,7 @@ export interface FileRoutesById {
   '/api/history': typeof ApiHistoryRoute
   '/auth/signin': typeof AuthSigninRoute
   '/auth/signup': typeof AuthSignupRoute
+  '/auth/verify-email': typeof AuthVerifyEmailRoute
   '/studio/billing': typeof StudioBillingRoute
   '/studio/gallery': typeof StudioGalleryRoute
   '/studio/settings': typeof StudioSettingsRoute
@@ -178,6 +187,7 @@ export interface FileRouteTypes {
     | '/api/history'
     | '/auth/signin'
     | '/auth/signup'
+    | '/auth/verify-email'
     | '/studio/billing'
     | '/studio/gallery'
     | '/studio/settings'
@@ -196,6 +206,7 @@ export interface FileRouteTypes {
     | '/api/history'
     | '/auth/signin'
     | '/auth/signup'
+    | '/auth/verify-email'
     | '/studio/billing'
     | '/studio/gallery'
     | '/studio/settings'
@@ -215,6 +226,7 @@ export interface FileRouteTypes {
     | '/api/history'
     | '/auth/signin'
     | '/auth/signup'
+    | '/auth/verify-email'
     | '/studio/billing'
     | '/studio/gallery'
     | '/studio/settings'
@@ -235,6 +247,7 @@ export interface RootRouteChildren {
   ApiHistoryRoute: typeof ApiHistoryRoute
   AuthSigninRoute: typeof AuthSigninRoute
   AuthSignupRoute: typeof AuthSignupRoute
+  AuthVerifyEmailRoute: typeof AuthVerifyEmailRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
   ApiCreditsDeductRoute: typeof ApiCreditsDeductRoute
   ApiCreditsPurchaseRoute: typeof ApiCreditsPurchaseRoute
@@ -288,6 +301,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/studio/billing'
       preLoaderRoute: typeof StudioBillingRouteImport
       parentRoute: typeof StudioRoute
+    }
+    '/auth/verify-email': {
+      id: '/auth/verify-email'
+      path: '/auth/verify-email'
+      fullPath: '/auth/verify-email'
+      preLoaderRoute: typeof AuthVerifyEmailRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/auth/signup': {
       id: '/auth/signup'
@@ -392,6 +412,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiHistoryRoute: ApiHistoryRoute,
   AuthSigninRoute: AuthSigninRoute,
   AuthSignupRoute: AuthSignupRoute,
+  AuthVerifyEmailRoute: AuthVerifyEmailRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
   ApiCreditsDeductRoute: ApiCreditsDeductRoute,
   ApiCreditsPurchaseRoute: ApiCreditsPurchaseRoute,

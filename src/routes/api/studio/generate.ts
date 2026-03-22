@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { getServerSession } from "#/modules/auth";
+import { generateSchema } from "#/modules/studio/application/generation.schema";
 import { generationService } from "#/modules/studio/application/generation.service";
 
 export const Route = createFileRoute("/api/studio/generate")({
@@ -13,14 +14,7 @@ export const Route = createFileRoute("/api/studio/generate")({
 
 				try {
 					const body = await request.json();
-					const { image_id, style } = body;
-
-					if (!image_id || !style) {
-						return Response.json(
-							{ error: "Missing image_id or style" },
-							{ status: 400 },
-						);
-					}
+					const { image_id, style } = generateSchema.parse(body);
 
 					const result = await generationService.startGeneration(
 						session.user.id,
@@ -30,11 +24,11 @@ export const Route = createFileRoute("/api/studio/generate")({
 
 					return Response.json(
 						{
-							message: "Generation started successfully",
+							message: "Generation started",
 							job_id: result.job_id,
-							image_url: result.image_url,
+							cost_credits: result.cost_credits,
 						},
-						{ status: 200 },
+						{ status: 202 },
 					);
 				} catch (error: unknown) {
 					console.error("AI Generate Error:", error);

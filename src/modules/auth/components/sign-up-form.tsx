@@ -26,14 +26,17 @@ export function SignUpForm() {
 				email: formData.email,
 				password: formData.password,
 				name: formData.name,
-				callbackURL: "/",
+				callbackURL: "/studio",
 			});
 
 			if (error) {
 				toast.error(error.message || "Failed to create account");
 			} else {
-				toast.success("Account created successfully!");
-				navigate({ to: "/studio" });
+				toast.success("Please check your email to verify your account");
+				navigate({
+					to: "/auth/verify-email",
+					search: { email: formData.email },
+				});
 			}
 		} catch (_err) {
 			toast.error("An unexpected error occurred");
