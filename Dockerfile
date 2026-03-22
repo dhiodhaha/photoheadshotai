@@ -35,10 +35,11 @@ WORKDIR /app
 ENV NODE_ENV=production
 
 COPY --from=deps /app/node_modules ./node_modules
-COPY --from=builder /app/.output ./.output
+COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/prisma ./prisma
 COPY --from=builder /app/prisma.config.ts ./prisma.config.ts
-COPY package.json ./
+COPY package.json pnpm-lock.yaml ./
+COPY server.mjs ./
 
 COPY docker-entrypoint.sh ./
 RUN chmod +x docker-entrypoint.sh
