@@ -12,6 +12,12 @@ export const Route = createFileRoute("/studio")({
 				to: "/auth/signin",
 			});
 		}
+		if (!session.user.emailVerified) {
+			throw redirect({
+				to: "/auth/verify-email",
+				search: { email: session.user.email },
+			});
+		}
 		return { session };
 	},
 	component: StudioLayout,

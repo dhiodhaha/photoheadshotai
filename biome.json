@@ -12,7 +12,14 @@
 	},
 	"files": {
 		"ignoreUnknown": false,
-		"includes": ["**/*", "!**/generated/*", "!**/*.gen.ts", "!**/ui/*"]
+		"includes": [
+			"**/*",
+			"!dist",
+			"!node_modules",
+			"!**/generated/*",
+			"!**/*.gen.ts",
+			"!**/ui/*"
+		]
 	},
 	"formatter": {
 		"enabled": true,

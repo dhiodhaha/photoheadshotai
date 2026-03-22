@@ -9,6 +9,23 @@ export const auth = betterAuth({
 	}),
 	emailAndPassword: {
 		enabled: true,
+		requireEmailVerification: true,
+	},
+	emailVerification: {
+		sendOnSignUp: true,
+		sendVerificationEmail: async ({ user, url }) => {
+			const { sendEmail } = await import(
+				"#/modules/auth/infrastructure/email.server"
+			);
+			const { buildVerificationEmailHtml } = await import(
+				"#/modules/auth/infrastructure/email-templates"
+			);
+			await sendEmail(
+				user.email,
+				"Verify your email — Studio AI",
+				buildVerificationEmailHtml(user.name, url),
+			);
+		},
 	},
 	user: {
 		additionalFields: {
