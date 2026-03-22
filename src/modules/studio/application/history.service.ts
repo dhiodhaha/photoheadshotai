@@ -1,4 +1,5 @@
 import { prisma } from "#/lib/prisma";
+import { getStyleById } from "../domain/styles";
 
 interface HistoryOptions {
 	userId: string;
@@ -33,7 +34,7 @@ export async function getGenerationHistory({
 		headshots: headshots.map((h) => ({
 			id: h.id,
 			src: h.resultUrl,
-			style: h.generationJob.stylePrompt,
+			style: getStyleById(h.generationJob.styleId)?.label ?? "Custom",
 			createdAt: h.createdAt,
 		})),
 		pagination: {

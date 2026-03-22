@@ -120,6 +120,7 @@ model GenerationJob {
   id            String    @id @default(cuid())
   userId        String    @map("user_id")
   photoId       String    @map("photo_id")
+  styleId       String    @default("") @map("style_id")
   stylePrompt   String    @map("style_prompt")
   status        GenerationJobStatus @default(pending)
   costCredits   Int                @map("cost_credits")

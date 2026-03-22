@@ -38,6 +38,7 @@ export type GenerationJobMinAggregateOutputType = {
   id: string | null
   userId: string | null
   photoId: string | null
+  styleId: string | null
   stylePrompt: string | null
   status: $Enums.GenerationJobStatus | null
   costCredits: number | null
@@ -49,6 +50,7 @@ export type GenerationJobMaxAggregateOutputType = {
   id: string | null
   userId: string | null
   photoId: string | null
+  styleId: string | null
   stylePrompt: string | null
   status: $Enums.GenerationJobStatus | null
   costCredits: number | null
@@ -60,6 +62,7 @@ export type GenerationJobCountAggregateOutputType = {
   id: number
   userId: number
   photoId: number
+  styleId: number
   stylePrompt: number
   status: number
   costCredits: number
@@ -81,6 +84,7 @@ export type GenerationJobMinAggregateInputType = {
   id?: true
   userId?: true
   photoId?: true
+  styleId?: true
   stylePrompt?: true
   status?: true
   costCredits?: true
@@ -92,6 +96,7 @@ export type GenerationJobMaxAggregateInputType = {
   id?: true
   userId?: true
   photoId?: true
+  styleId?: true
   stylePrompt?: true
   status?: true
   costCredits?: true
@@ -103,6 +108,7 @@ export type GenerationJobCountAggregateInputType = {
   id?: true
   userId?: true
   photoId?: true
+  styleId?: true
   stylePrompt?: true
   status?: true
   costCredits?: true
@@ -201,6 +207,7 @@ export type GenerationJobGroupByOutputType = {
   id: string
   userId: string
   photoId: string
+  styleId: string
   stylePrompt: string
   status: $Enums.GenerationJobStatus
   costCredits: number
@@ -235,6 +242,7 @@ export type GenerationJobWhereInput = {
   id?: Prisma.StringFilter<"GenerationJob"> | string
   userId?: Prisma.StringFilter<"GenerationJob"> | string
   photoId?: Prisma.StringFilter<"GenerationJob"> | string
+  styleId?: Prisma.StringFilter<"GenerationJob"> | string
   stylePrompt?: Prisma.StringFilter<"GenerationJob"> | string
   status?: Prisma.EnumGenerationJobStatusFilter<"GenerationJob"> | $Enums.GenerationJobStatus
   costCredits?: Prisma.IntFilter<"GenerationJob"> | number
@@ -249,6 +257,7 @@ export type GenerationJobOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   photoId?: Prisma.SortOrder
+  styleId?: Prisma.SortOrder
   stylePrompt?: Prisma.SortOrder
   status?: Prisma.SortOrder
   costCredits?: Prisma.SortOrder
@@ -266,6 +275,7 @@ export type GenerationJobWhereUniqueInput = Prisma.AtLeast<{
   NOT?: Prisma.GenerationJobWhereInput | Prisma.GenerationJobWhereInput[]
   userId?: Prisma.StringFilter<"GenerationJob"> | string
   photoId?: Prisma.StringFilter<"GenerationJob"> | string
+  styleId?: Prisma.StringFilter<"GenerationJob"> | string
   stylePrompt?: Prisma.StringFilter<"GenerationJob"> | string
   status?: Prisma.EnumGenerationJobStatusFilter<"GenerationJob"> | $Enums.GenerationJobStatus
   costCredits?: Prisma.IntFilter<"GenerationJob"> | number
@@ -280,6 +290,7 @@ export type GenerationJobOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   photoId?: Prisma.SortOrder
+  styleId?: Prisma.SortOrder
   stylePrompt?: Prisma.SortOrder
   status?: Prisma.SortOrder
   costCredits?: Prisma.SortOrder
@@ -299,6 +310,7 @@ export type GenerationJobScalarWhereWithAggregatesInput = {
   id?: Prisma.StringWithAggregatesFilter<"GenerationJob"> | string
   userId?: Prisma.StringWithAggregatesFilter<"GenerationJob"> | string
   photoId?: Prisma.StringWithAggregatesFilter<"GenerationJob"> | string
+  styleId?: Prisma.StringWithAggregatesFilter<"GenerationJob"> | string
   stylePrompt?: Prisma.StringWithAggregatesFilter<"GenerationJob"> | string
   status?: Prisma.EnumGenerationJobStatusWithAggregatesFilter<"GenerationJob"> | $Enums.GenerationJobStatus
   costCredits?: Prisma.IntWithAggregatesFilter<"GenerationJob"> | number
@@ -308,6 +320,7 @@ export type GenerationJobScalarWhereWithAggregatesInput = {
 
 export type GenerationJobCreateInput = {
   id?: string
+  styleId?: string
   stylePrompt: string
   status?: $Enums.GenerationJobStatus
   costCredits: number
@@ -322,6 +335,7 @@ export type GenerationJobUncheckedCreateInput = {
   id?: string
   userId: string
   photoId: string
+  styleId?: string
   stylePrompt: string
   status?: $Enums.GenerationJobStatus
   costCredits: number
@@ -332,6 +346,7 @@ export type GenerationJobUncheckedCreateInput = {
 
 export type GenerationJobUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  styleId?: Prisma.StringFieldUpdateOperationsInput | string
   stylePrompt?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumGenerationJobStatusFieldUpdateOperationsInput | $Enums.GenerationJobStatus
   costCredits?: Prisma.IntFieldUpdateOperationsInput | number
@@ -346,6 +361,7 @@ export type GenerationJobUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   photoId?: Prisma.StringFieldUpdateOperationsInput | string
+  styleId?: Prisma.StringFieldUpdateOperationsInput | string
   stylePrompt?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumGenerationJobStatusFieldUpdateOperationsInput | $Enums.GenerationJobStatus
   costCredits?: Prisma.IntFieldUpdateOperationsInput | number
@@ -358,6 +374,7 @@ export type GenerationJobCreateManyInput = {
   id?: string
   userId: string
   photoId: string
+  styleId?: string
   stylePrompt: string
   status?: $Enums.GenerationJobStatus
   costCredits: number
@@ -367,6 +384,7 @@ export type GenerationJobCreateManyInput = {
 
 export type GenerationJobUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  styleId?: Prisma.StringFieldUpdateOperationsInput | string
   stylePrompt?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumGenerationJobStatusFieldUpdateOperationsInput | $Enums.GenerationJobStatus
   costCredits?: Prisma.IntFieldUpdateOperationsInput | number
@@ -378,6 +396,7 @@ export type GenerationJobUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   photoId?: Prisma.StringFieldUpdateOperationsInput | string
+  styleId?: Prisma.StringFieldUpdateOperationsInput | string
   stylePrompt?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumGenerationJobStatusFieldUpdateOperationsInput | $Enums.GenerationJobStatus
   costCredits?: Prisma.IntFieldUpdateOperationsInput | number
@@ -399,6 +418,7 @@ export type GenerationJobCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   photoId?: Prisma.SortOrder
+  styleId?: Prisma.SortOrder
   stylePrompt?: Prisma.SortOrder
   status?: Prisma.SortOrder
   costCredits?: Prisma.SortOrder
@@ -414,6 +434,7 @@ export type GenerationJobMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   photoId?: Prisma.SortOrder
+  styleId?: Prisma.SortOrder
   stylePrompt?: Prisma.SortOrder
   status?: Prisma.SortOrder
   costCredits?: Prisma.SortOrder
@@ -425,6 +446,7 @@ export type GenerationJobMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   photoId?: Prisma.SortOrder
+  styleId?: Prisma.SortOrder
   stylePrompt?: Prisma.SortOrder
   status?: Prisma.SortOrder
   costCredits?: Prisma.SortOrder
@@ -545,6 +567,7 @@ export type GenerationJobUpdateOneRequiredWithoutGeneratedHeadshotsNestedInput =
 
 export type GenerationJobCreateWithoutUserInput = {
   id?: string
+  styleId?: string
   stylePrompt: string
   status?: $Enums.GenerationJobStatus
   costCredits: number
@@ -557,6 +580,7 @@ export type GenerationJobCreateWithoutUserInput = {
 export type GenerationJobUncheckedCreateWithoutUserInput = {
   id?: string
   photoId: string
+  styleId?: string
   stylePrompt: string
   status?: $Enums.GenerationJobStatus
   costCredits: number
@@ -598,6 +622,7 @@ export type GenerationJobScalarWhereInput = {
   id?: Prisma.StringFilter<"GenerationJob"> | string
   userId?: Prisma.StringFilter<"GenerationJob"> | string
   photoId?: Prisma.StringFilter<"GenerationJob"> | string
+  styleId?: Prisma.StringFilter<"GenerationJob"> | string
   stylePrompt?: Prisma.StringFilter<"GenerationJob"> | string
   status?: Prisma.EnumGenerationJobStatusFilter<"GenerationJob"> | $Enums.GenerationJobStatus
   costCredits?: Prisma.IntFilter<"GenerationJob"> | number
@@ -607,6 +632,7 @@ export type GenerationJobScalarWhereInput = {
 
 export type GenerationJobCreateWithoutPhotoInput = {
   id?: string
+  styleId?: string
   stylePrompt: string
   status?: $Enums.GenerationJobStatus
   costCredits: number
@@ -619,6 +645,7 @@ export type GenerationJobCreateWithoutPhotoInput = {
 export type GenerationJobUncheckedCreateWithoutPhotoInput = {
   id?: string
   userId: string
+  styleId?: string
   stylePrompt: string
   status?: $Enums.GenerationJobStatus
   costCredits: number
@@ -655,6 +682,7 @@ export type GenerationJobUpdateManyWithWhereWithoutPhotoInput = {
 
 export type GenerationJobCreateWithoutGeneratedHeadshotsInput = {
   id?: string
+  styleId?: string
   stylePrompt: string
   status?: $Enums.GenerationJobStatus
   costCredits: number
@@ -668,6 +696,7 @@ export type GenerationJobUncheckedCreateWithoutGeneratedHeadshotsInput = {
   id?: string
   userId: string
   photoId: string
+  styleId?: string
   stylePrompt: string
   status?: $Enums.GenerationJobStatus
   costCredits: number
@@ -693,6 +722,7 @@ export type GenerationJobUpdateToOneWithWhereWithoutGeneratedHeadshotsInput = {
 
 export type GenerationJobUpdateWithoutGeneratedHeadshotsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  styleId?: Prisma.StringFieldUpdateOperationsInput | string
   stylePrompt?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumGenerationJobStatusFieldUpdateOperationsInput | $Enums.GenerationJobStatus
   costCredits?: Prisma.IntFieldUpdateOperationsInput | number
@@ -706,6 +736,7 @@ export type GenerationJobUncheckedUpdateWithoutGeneratedHeadshotsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   photoId?: Prisma.StringFieldUpdateOperationsInput | string
+  styleId?: Prisma.StringFieldUpdateOperationsInput | string
   stylePrompt?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumGenerationJobStatusFieldUpdateOperationsInput | $Enums.GenerationJobStatus
   costCredits?: Prisma.IntFieldUpdateOperationsInput | number
@@ -716,6 +747,7 @@ export type GenerationJobUncheckedUpdateWithoutGeneratedHeadshotsInput = {
 export type GenerationJobCreateManyUserInput = {
   id?: string
   photoId: string
+  styleId?: string
   stylePrompt: string
   status?: $Enums.GenerationJobStatus
   costCredits: number
@@ -725,6 +757,7 @@ export type GenerationJobCreateManyUserInput = {
 
 export type GenerationJobUpdateWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  styleId?: Prisma.StringFieldUpdateOperationsInput | string
   stylePrompt?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumGenerationJobStatusFieldUpdateOperationsInput | $Enums.GenerationJobStatus
   costCredits?: Prisma.IntFieldUpdateOperationsInput | number
@@ -737,6 +770,7 @@ export type GenerationJobUpdateWithoutUserInput = {
 export type GenerationJobUncheckedUpdateWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   photoId?: Prisma.StringFieldUpdateOperationsInput | string
+  styleId?: Prisma.StringFieldUpdateOperationsInput | string
   stylePrompt?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumGenerationJobStatusFieldUpdateOperationsInput | $Enums.GenerationJobStatus
   costCredits?: Prisma.IntFieldUpdateOperationsInput | number
@@ -748,6 +782,7 @@ export type GenerationJobUncheckedUpdateWithoutUserInput = {
 export type GenerationJobUncheckedUpdateManyWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   photoId?: Prisma.StringFieldUpdateOperationsInput | string
+  styleId?: Prisma.StringFieldUpdateOperationsInput | string
   stylePrompt?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumGenerationJobStatusFieldUpdateOperationsInput | $Enums.GenerationJobStatus
   costCredits?: Prisma.IntFieldUpdateOperationsInput | number
@@ -758,6 +793,7 @@ export type GenerationJobUncheckedUpdateManyWithoutUserInput = {
 export type GenerationJobCreateManyPhotoInput = {
   id?: string
   userId: string
+  styleId?: string
   stylePrompt: string
   status?: $Enums.GenerationJobStatus
   costCredits: number
@@ -767,6 +803,7 @@ export type GenerationJobCreateManyPhotoInput = {
 
 export type GenerationJobUpdateWithoutPhotoInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  styleId?: Prisma.StringFieldUpdateOperationsInput | string
   stylePrompt?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumGenerationJobStatusFieldUpdateOperationsInput | $Enums.GenerationJobStatus
   costCredits?: Prisma.IntFieldUpdateOperationsInput | number
@@ -779,6 +816,7 @@ export type GenerationJobUpdateWithoutPhotoInput = {
 export type GenerationJobUncheckedUpdateWithoutPhotoInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
+  styleId?: Prisma.StringFieldUpdateOperationsInput | string
   stylePrompt?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumGenerationJobStatusFieldUpdateOperationsInput | $Enums.GenerationJobStatus
   costCredits?: Prisma.IntFieldUpdateOperationsInput | number
@@ -790,6 +828,7 @@ export type GenerationJobUncheckedUpdateWithoutPhotoInput = {
 export type GenerationJobUncheckedUpdateManyWithoutPhotoInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
+  styleId?: Prisma.StringFieldUpdateOperationsInput | string
   stylePrompt?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumGenerationJobStatusFieldUpdateOperationsInput | $Enums.GenerationJobStatus
   costCredits?: Prisma.IntFieldUpdateOperationsInput | number
@@ -832,6 +871,7 @@ export type GenerationJobSelect<ExtArgs extends runtime.Types.Extensions.Interna
   id?: boolean
   userId?: boolean
   photoId?: boolean
+  styleId?: boolean
   stylePrompt?: boolean
   status?: boolean
   costCredits?: boolean
@@ -847,6 +887,7 @@ export type GenerationJobSelectCreateManyAndReturn<ExtArgs extends runtime.Types
   id?: boolean
   userId?: boolean
   photoId?: boolean
+  styleId?: boolean
   stylePrompt?: boolean
   status?: boolean
   costCredits?: boolean
@@ -860,6 +901,7 @@ export type GenerationJobSelectUpdateManyAndReturn<ExtArgs extends runtime.Types
   id?: boolean
   userId?: boolean
   photoId?: boolean
+  styleId?: boolean
   stylePrompt?: boolean
   status?: boolean
   costCredits?: boolean
@@ -873,6 +915,7 @@ export type GenerationJobSelectScalar = {
   id?: boolean
   userId?: boolean
   photoId?: boolean
+  styleId?: boolean
   stylePrompt?: boolean
   status?: boolean
   costCredits?: boolean
@@ -880,7 +923,7 @@ export type GenerationJobSelectScalar = {
   completedAt?: boolean
 }
 
-export type GenerationJobOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "photoId" | "stylePrompt" | "status" | "costCredits" | "startedAt" | "completedAt", ExtArgs["result"]["generationJob"]>
+export type GenerationJobOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "photoId" | "styleId" | "stylePrompt" | "status" | "costCredits" | "startedAt" | "completedAt", ExtArgs["result"]["generationJob"]>
 export type GenerationJobInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   photo?: boolean | Prisma.PhotoDefaultArgs<ExtArgs>
@@ -907,6 +950,7 @@ export type $GenerationJobPayload<ExtArgs extends runtime.Types.Extensions.Inter
     id: string
     userId: string
     photoId: string
+    styleId: string
     stylePrompt: string
     status: $Enums.GenerationJobStatus
     costCredits: number
@@ -1341,6 +1385,7 @@ export interface GenerationJobFieldRefs {
   readonly id: Prisma.FieldRef<"GenerationJob", 'String'>
   readonly userId: Prisma.FieldRef<"GenerationJob", 'String'>
   readonly photoId: Prisma.FieldRef<"GenerationJob", 'String'>
+  readonly styleId: Prisma.FieldRef<"GenerationJob", 'String'>
   readonly stylePrompt: Prisma.FieldRef<"GenerationJob", 'String'>
   readonly status: Prisma.FieldRef<"GenerationJob", 'GenerationJobStatus'>
   readonly costCredits: Prisma.FieldRef<"GenerationJob", 'Int'>

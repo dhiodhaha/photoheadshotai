@@ -33,6 +33,7 @@ export class GenerationService {
 				userId,
 				photoId: photo.id,
 				status: "processing",
+				styleId: headshotStyle.id,
 				stylePrompt: headshotStyle.prompt,
 				costCredits: GENERATION_CREDIT_COST,
 			},

@@ -155,6 +155,7 @@ export const GenerationJobScalarFieldEnum = {
   id: 'id',
   userId: 'userId',
   photoId: 'photoId',
+  styleId: 'styleId',
   stylePrompt: 'stylePrompt',
   status: 'status',
   costCredits: 'costCredits',
