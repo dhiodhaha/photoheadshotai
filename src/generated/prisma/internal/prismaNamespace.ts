@@ -385,6 +385,9 @@ type FieldRefInputType<Model, FieldType> = Model extends never ? never : FieldRe
 
 export const ModelName = {
   User: 'User',
+  BootstrapCode: 'BootstrapCode',
+  BootstrapRedemption: 'BootstrapRedemption',
+  ReferralReward: 'ReferralReward',
   Session: 'Session',
   Account: 'Account',
   Verification: 'Verification',
@@ -407,7 +410,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "session" | "account" | "verification" | "photo" | "generationJob" | "generatedHeadshot" | "creditTransaction"
+    modelProps: "user" | "bootstrapCode" | "bootstrapRedemption" | "referralReward" | "session" | "account" | "verification" | "photo" | "generationJob" | "generatedHeadshot" | "creditTransaction"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -482,6 +485,228 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.UserCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.UserCountAggregateOutputType> | number
+        }
+      }
+    }
+    BootstrapCode: {
+      payload: Prisma.$BootstrapCodePayload<ExtArgs>
+      fields: Prisma.BootstrapCodeFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.BootstrapCodeFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BootstrapCodePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.BootstrapCodeFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BootstrapCodePayload>
+        }
+        findFirst: {
+          args: Prisma.BootstrapCodeFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BootstrapCodePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.BootstrapCodeFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BootstrapCodePayload>
+        }
+        findMany: {
+          args: Prisma.BootstrapCodeFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BootstrapCodePayload>[]
+        }
+        create: {
+          args: Prisma.BootstrapCodeCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BootstrapCodePayload>
+        }
+        createMany: {
+          args: Prisma.BootstrapCodeCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.BootstrapCodeCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BootstrapCodePayload>[]
+        }
+        delete: {
+          args: Prisma.BootstrapCodeDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BootstrapCodePayload>
+        }
+        update: {
+          args: Prisma.BootstrapCodeUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BootstrapCodePayload>
+        }
+        deleteMany: {
+          args: Prisma.BootstrapCodeDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.BootstrapCodeUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.BootstrapCodeUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BootstrapCodePayload>[]
+        }
+        upsert: {
+          args: Prisma.BootstrapCodeUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BootstrapCodePayload>
+        }
+        aggregate: {
+          args: Prisma.BootstrapCodeAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateBootstrapCode>
+        }
+        groupBy: {
+          args: Prisma.BootstrapCodeGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.BootstrapCodeGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.BootstrapCodeCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.BootstrapCodeCountAggregateOutputType> | number
+        }
+      }
+    }
+    BootstrapRedemption: {
+      payload: Prisma.$BootstrapRedemptionPayload<ExtArgs>
+      fields: Prisma.BootstrapRedemptionFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.BootstrapRedemptionFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BootstrapRedemptionPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.BootstrapRedemptionFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BootstrapRedemptionPayload>
+        }
+        findFirst: {
+          args: Prisma.BootstrapRedemptionFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BootstrapRedemptionPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.BootstrapRedemptionFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BootstrapRedemptionPayload>
+        }
+        findMany: {
+          args: Prisma.BootstrapRedemptionFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BootstrapRedemptionPayload>[]
+        }
+        create: {
+          args: Prisma.BootstrapRedemptionCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BootstrapRedemptionPayload>
+        }
+        createMany: {
+          args: Prisma.BootstrapRedemptionCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.BootstrapRedemptionCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BootstrapRedemptionPayload>[]
+        }
+        delete: {
+          args: Prisma.BootstrapRedemptionDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BootstrapRedemptionPayload>
+        }
+        update: {
+          args: Prisma.BootstrapRedemptionUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BootstrapRedemptionPayload>
+        }
+        deleteMany: {
+          args: Prisma.BootstrapRedemptionDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.BootstrapRedemptionUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.BootstrapRedemptionUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BootstrapRedemptionPayload>[]
+        }
+        upsert: {
+          args: Prisma.BootstrapRedemptionUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BootstrapRedemptionPayload>
+        }
+        aggregate: {
+          args: Prisma.BootstrapRedemptionAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateBootstrapRedemption>
+        }
+        groupBy: {
+          args: Prisma.BootstrapRedemptionGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.BootstrapRedemptionGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.BootstrapRedemptionCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.BootstrapRedemptionCountAggregateOutputType> | number
+        }
+      }
+    }
+    ReferralReward: {
+      payload: Prisma.$ReferralRewardPayload<ExtArgs>
+      fields: Prisma.ReferralRewardFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.ReferralRewardFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ReferralRewardPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.ReferralRewardFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ReferralRewardPayload>
+        }
+        findFirst: {
+          args: Prisma.ReferralRewardFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ReferralRewardPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.ReferralRewardFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ReferralRewardPayload>
+        }
+        findMany: {
+          args: Prisma.ReferralRewardFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ReferralRewardPayload>[]
+        }
+        create: {
+          args: Prisma.ReferralRewardCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ReferralRewardPayload>
+        }
+        createMany: {
+          args: Prisma.ReferralRewardCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.ReferralRewardCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ReferralRewardPayload>[]
+        }
+        delete: {
+          args: Prisma.ReferralRewardDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ReferralRewardPayload>
+        }
+        update: {
+          args: Prisma.ReferralRewardUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ReferralRewardPayload>
+        }
+        deleteMany: {
+          args: Prisma.ReferralRewardDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.ReferralRewardUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.ReferralRewardUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ReferralRewardPayload>[]
+        }
+        upsert: {
+          args: Prisma.ReferralRewardUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ReferralRewardPayload>
+        }
+        aggregate: {
+          args: Prisma.ReferralRewardAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateReferralReward>
+        }
+        groupBy: {
+          args: Prisma.ReferralRewardGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ReferralRewardGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.ReferralRewardCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ReferralRewardCountAggregateOutputType> | number
         }
       }
     }
@@ -1049,11 +1274,45 @@ export const UserScalarFieldEnum = {
   emailVerified: 'emailVerified',
   image: 'image',
   currentCredits: 'currentCredits',
+  referralCode: 'referralCode',
+  referredBy: 'referredBy',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
 
 export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
+
+
+export const BootstrapCodeScalarFieldEnum = {
+  id: 'id',
+  code: 'code',
+  maxRedeems: 'maxRedeems',
+  redeemCount: 'redeemCount',
+  createdAt: 'createdAt'
+} as const
+
+export type BootstrapCodeScalarFieldEnum = (typeof BootstrapCodeScalarFieldEnum)[keyof typeof BootstrapCodeScalarFieldEnum]
+
+
+export const BootstrapRedemptionScalarFieldEnum = {
+  id: 'id',
+  bootstrapCodeId: 'bootstrapCodeId',
+  userId: 'userId',
+  redeemedAt: 'redeemedAt'
+} as const
+
+export type BootstrapRedemptionScalarFieldEnum = (typeof BootstrapRedemptionScalarFieldEnum)[keyof typeof BootstrapRedemptionScalarFieldEnum]
+
+
+export const ReferralRewardScalarFieldEnum = {
+  id: 'id',
+  referrerId: 'referrerId',
+  newUserId: 'newUserId',
+  amount: 'amount',
+  rewardedAt: 'rewardedAt'
+} as const
+
+export type ReferralRewardScalarFieldEnum = (typeof ReferralRewardScalarFieldEnum)[keyof typeof ReferralRewardScalarFieldEnum]
 
 
 export const SessionScalarFieldEnum = {
@@ -1383,6 +1642,9 @@ export type PrismaClientOptions = ({
 }
 export type GlobalOmitConfig = {
   user?: Prisma.UserOmit
+  bootstrapCode?: Prisma.BootstrapCodeOmit
+  bootstrapRedemption?: Prisma.BootstrapRedemptionOmit
+  referralReward?: Prisma.ReferralRewardOmit
   session?: Prisma.SessionOmit
   account?: Prisma.AccountOmit
   verification?: Prisma.VerificationOmit

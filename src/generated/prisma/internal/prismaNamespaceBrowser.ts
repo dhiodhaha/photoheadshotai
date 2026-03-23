@@ -52,6 +52,9 @@ export const AnyNull = runtime.AnyNull
 
 export const ModelName = {
   User: 'User',
+  BootstrapCode: 'BootstrapCode',
+  BootstrapRedemption: 'BootstrapRedemption',
+  ReferralReward: 'ReferralReward',
   Session: 'Session',
   Account: 'Account',
   Verification: 'Verification',
@@ -84,11 +87,45 @@ export const UserScalarFieldEnum = {
   emailVerified: 'emailVerified',
   image: 'image',
   currentCredits: 'currentCredits',
+  referralCode: 'referralCode',
+  referredBy: 'referredBy',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
 
 export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
+
+
+export const BootstrapCodeScalarFieldEnum = {
+  id: 'id',
+  code: 'code',
+  maxRedeems: 'maxRedeems',
+  redeemCount: 'redeemCount',
+  createdAt: 'createdAt'
+} as const
+
+export type BootstrapCodeScalarFieldEnum = (typeof BootstrapCodeScalarFieldEnum)[keyof typeof BootstrapCodeScalarFieldEnum]
+
+
+export const BootstrapRedemptionScalarFieldEnum = {
+  id: 'id',
+  bootstrapCodeId: 'bootstrapCodeId',
+  userId: 'userId',
+  redeemedAt: 'redeemedAt'
+} as const
+
+export type BootstrapRedemptionScalarFieldEnum = (typeof BootstrapRedemptionScalarFieldEnum)[keyof typeof BootstrapRedemptionScalarFieldEnum]
+
+
+export const ReferralRewardScalarFieldEnum = {
+  id: 'id',
+  referrerId: 'referrerId',
+  newUserId: 'newUserId',
+  amount: 'amount',
+  rewardedAt: 'rewardedAt'
+} as const
+
+export type ReferralRewardScalarFieldEnum = (typeof ReferralRewardScalarFieldEnum)[keyof typeof ReferralRewardScalarFieldEnum]
 
 
 export const SessionScalarFieldEnum = {

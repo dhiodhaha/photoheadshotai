@@ -11,8 +11,9 @@ import {
 } from "lucide-react";
 import { motion } from "motion/react";
 import { useState } from "react";
-// import { authClient } from '@/lib/auth-client'; // We'll uncomment when wiring up full backend
 import { toast } from "sonner";
+import { authClient } from "#/lib/auth-client";
+import { ReferralCard } from "#/modules/referral/components/referral-card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -29,7 +30,7 @@ const SETTINGS_TABS = [
 ];
 
 function SettingsPage() {
-	// const { data: session } = authClient.useSession();
+	const { data: session } = authClient.useSession();
 	const [activeTab, setActiveTab] = useState("profile");
 	const [isSaving, setIsSaving] = useState(false);
 
@@ -183,6 +184,12 @@ function SettingsPage() {
 									>
 										{isSaving ? "Saving..." : "Save Changes"}
 									</Button>
+
+									{session?.user?.referralCode && (
+										<div className="pt-4">
+											<ReferralCard referralCode={session.user.referralCode} />
+										</div>
+									)}
 								</div>
 							)}
 

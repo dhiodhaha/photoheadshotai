@@ -47,6 +47,21 @@ export { Prisma }
  */
 export type User = Prisma.UserModel
 /**
+ * Model BootstrapCode
+ * 
+ */
+export type BootstrapCode = Prisma.BootstrapCodeModel
+/**
+ * Model BootstrapRedemption
+ * 
+ */
+export type BootstrapRedemption = Prisma.BootstrapRedemptionModel
+/**
+ * Model ReferralReward
+ * 
+ */
+export type ReferralReward = Prisma.ReferralRewardModel
+/**
  * Model Session
  * 
  */

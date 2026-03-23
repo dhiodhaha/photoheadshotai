@@ -12,38 +12,19 @@ const prisma = new PrismaClient({ adapter });
 async function main() {
 	console.log("🌱 Seeding database...");
 
-	// 1. Create a Test User
-	const user = await prisma.user.upsert({
-		where: { email: "test@example.com" },
-		update: {},
-		create: {
-			email: "test@example.com",
-			name: "Test User",
-			currentCredits: 500,
-		},
-	});
-
-	console.log(
-		`✅ User seeded: ${user.email} (Credits: ${user.currentCredits})`,
-	);
-
-	// 2. Add Sample Credit Transactions
-	const transactions = await prisma.creditTransaction.createMany({
-		data: [
-			{
-				userId: user.id,
-				amount: 500,
-				transactionType: "purchase",
-			},
-			{
-				userId: user.id,
-				amount: -10,
-				transactionType: "generation_deduction",
-			},
-		],
-	});
-
-	console.log(`✅ Seeded ${transactions.count} transactions.`);
+	// 1. Bootstrap codes (invitation-only launch codes, max 5 uses each)
+	const bootstrapCodes = ["LAUNCH-001", "LAUNCH-002", "LAUNCH-003"];
+	for (const code of bootstrapCodes) {
+		await prisma.bootstrapCode.upsert({
+			where: { code },
+			update: {},
+			create: { code, maxRedeems: 5, redeemCount: 0 },
+		});
+	}
+	console.log("✅ Bootstrap codes seeded (5 uses each):");
+	for (const code of bootstrapCodes) {
+		console.log(`   ${code}`);
+	}
 }
 
 main()

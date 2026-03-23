@@ -43,5 +43,9 @@ jobs:
             cd /opt/photoheadshot
             docker compose -f docker-compose.prod.yml pull app
             docker compose -f docker-compose.prod.yml up -d
+            # Run migrations (safe to run on every deploy, applies only pending ones)
+            docker compose -f docker-compose.prod.yml exec -T app pnpm dotenv -e .env.production -- prisma migrate deploy
+            # Seed bootstrap codes (idempotent - safe to run multiple times)
+            docker compose -f docker-compose.prod.yml exec -T app pnpm db:seed
             docker image prune -f
           EOF

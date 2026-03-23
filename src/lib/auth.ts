@@ -27,11 +27,21 @@ export const auth = betterAuth({
 				buildVerificationEmailHtml(user.name, url),
 			);
 		},
+		afterEmailVerification: async (user) => {
+			// Award referrer credits when new user verifies email
+			if (user.referredBy) {
+				const { rewardReferrerOnVerification } = await import(
+					"#/modules/referral"
+				);
+				await rewardReferrerOnVerification(user.referredBy, user.id);
+			}
+		},
 	},
 	databaseHooks: {
 		user: {
 			create: {
 				before: async (user) => {
+					// Block disposable emails
 					const { isDisposableEmail } = await import(
 						"#/modules/auth/infrastructure/disposable-email"
 					);
@@ -41,6 +51,41 @@ export const auth = betterAuth({
 								"Disposable email addresses are not allowed. Please use a permanent email.",
 						});
 					}
+
+					// Require referral code
+					const code = (user as Record<string, unknown>).referralCode as
+						| string
+						| undefined;
+					if (!code || code.trim() === "") {
+						throw new APIError("BAD_REQUEST", {
+							message: "A referral code is required to sign up.",
+						});
+					}
+
+					// Validate referral code
+					const { validateReferralCode } = await import("#/modules/referral");
+					const result = await validateReferralCode(code.trim());
+					if (!result.valid) {
+						throw new APIError("BAD_REQUEST", { message: result.reason });
+					}
+
+					// Store referrerId on user if it's a user referral code
+					if (result.type === "referral") {
+						(user as Record<string, unknown>).referredBy = result.referrerId;
+					}
+				},
+				after: async (user) => {
+					// Process bootstrap redemption or referral tracking
+					const code = (user as Record<string, unknown>).referralCode as
+						| string
+						| undefined;
+					if (!code) return;
+
+					const { validateReferralCode, processSignupCode } = await import(
+						"#/modules/referral"
+					);
+					const result = await validateReferralCode(code.trim());
+					await processSignupCode(result, user.id);
 				},
 			},
 		},
@@ -50,6 +95,16 @@ export const auth = betterAuth({
 			currentCredits: {
 				type: "number",
 				defaultValue: 0,
+			},
+			referralCode: {
+				type: "string",
+				defaultValue: "",
+				input: true,
+			},
+			referredBy: {
+				type: "string",
+				required: false,
+				input: true,
 			},
 		},
 	},
