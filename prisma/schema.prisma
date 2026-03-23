@@ -35,6 +35,8 @@ model User {
   emailVerified  Boolean  @default(false) @map("email_verified")
   image          String?
   currentCredits Int      @default(0) @map("current_credits")
+  referralCode   String   @unique @default(cuid()) @map("referral_code")
+  referredBy     String?  @map("referred_by")
   createdAt      DateTime @default(now()) @map("created_at")
   updatedAt      DateTime @updatedAt @map("updated_at")
 
@@ -45,6 +47,41 @@ model User {
   creditTransactions CreditTransaction[]
 
   @@map("users")
+}
+
+model BootstrapCode {
+  id          String   @id @default(cuid())
+  code        String   @unique
+  maxRedeems  Int      @default(5) @map("max_redeems")
+  redeemCount Int      @default(0) @map("redeem_count")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  redemptions BootstrapRedemption[]
+
+  @@map("bootstrap_codes")
+}
+
+model BootstrapRedemption {
+  id              String   @id @default(cuid())
+  bootstrapCodeId String   @map("bootstrap_code_id")
+  userId          String   @unique @map("user_id")
+  redeemedAt      DateTime @default(now()) @map("redeemed_at")
+
+  bootstrapCode BootstrapCode @relation(fields: [bootstrapCodeId], references: [id], onDelete: Cascade)
+
+  @@index([bootstrapCodeId])
+  @@map("bootstrap_redemptions")
+}
+
+model ReferralReward {
+  id         String   @id @default(cuid())
+  referrerId String   @map("referrer_id")
+  newUserId  String   @unique @map("new_user_id")
+  amount     Int      @default(10)
+  rewardedAt DateTime @default(now()) @map("rewarded_at")
+
+  @@index([referrerId])
+  @@map("referral_rewards")
 }
 
 model Session {

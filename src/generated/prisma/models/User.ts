@@ -41,6 +41,8 @@ export type UserMinAggregateOutputType = {
   emailVerified: boolean | null
   image: string | null
   currentCredits: number | null
+  referralCode: string | null
+  referredBy: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -52,6 +54,8 @@ export type UserMaxAggregateOutputType = {
   emailVerified: boolean | null
   image: string | null
   currentCredits: number | null
+  referralCode: string | null
+  referredBy: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -63,6 +67,8 @@ export type UserCountAggregateOutputType = {
   emailVerified: number
   image: number
   currentCredits: number
+  referralCode: number
+  referredBy: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -84,6 +90,8 @@ export type UserMinAggregateInputType = {
   emailVerified?: true
   image?: true
   currentCredits?: true
+  referralCode?: true
+  referredBy?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -95,6 +103,8 @@ export type UserMaxAggregateInputType = {
   emailVerified?: true
   image?: true
   currentCredits?: true
+  referralCode?: true
+  referredBy?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -106,6 +116,8 @@ export type UserCountAggregateInputType = {
   emailVerified?: true
   image?: true
   currentCredits?: true
+  referralCode?: true
+  referredBy?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -204,6 +216,8 @@ export type UserGroupByOutputType = {
   emailVerified: boolean
   image: string | null
   currentCredits: number
+  referralCode: string
+  referredBy: string | null
   createdAt: Date
   updatedAt: Date
   _count: UserCountAggregateOutputType | null
@@ -238,6 +252,8 @@ export type UserWhereInput = {
   emailVerified?: Prisma.BoolFilter<"User"> | boolean
   image?: Prisma.StringNullableFilter<"User"> | string | null
   currentCredits?: Prisma.IntFilter<"User"> | number
+  referralCode?: Prisma.StringFilter<"User"> | string
+  referredBy?: Prisma.StringNullableFilter<"User"> | string | null
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"User"> | Date | string
   sessions?: Prisma.SessionListRelationFilter
@@ -254,6 +270,8 @@ export type UserOrderByWithRelationInput = {
   emailVerified?: Prisma.SortOrder
   image?: Prisma.SortOrderInput | Prisma.SortOrder
   currentCredits?: Prisma.SortOrder
+  referralCode?: Prisma.SortOrder
+  referredBy?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   sessions?: Prisma.SessionOrderByRelationAggregateInput
@@ -266,6 +284,7 @@ export type UserOrderByWithRelationInput = {
 export type UserWhereUniqueInput = Prisma.AtLeast<{
   id?: string
   email?: string
+  referralCode?: string
   AND?: Prisma.UserWhereInput | Prisma.UserWhereInput[]
   OR?: Prisma.UserWhereInput[]
   NOT?: Prisma.UserWhereInput | Prisma.UserWhereInput[]
@@ -273,6 +292,7 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   emailVerified?: Prisma.BoolFilter<"User"> | boolean
   image?: Prisma.StringNullableFilter<"User"> | string | null
   currentCredits?: Prisma.IntFilter<"User"> | number
+  referredBy?: Prisma.StringNullableFilter<"User"> | string | null
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"User"> | Date | string
   sessions?: Prisma.SessionListRelationFilter
@@ -280,7 +300,7 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   photos?: Prisma.PhotoListRelationFilter
   generationJobs?: Prisma.GenerationJobListRelationFilter
   creditTransactions?: Prisma.CreditTransactionListRelationFilter
-}, "id" | "email">
+}, "id" | "email" | "referralCode">
 
 export type UserOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
@@ -289,6 +309,8 @@ export type UserOrderByWithAggregationInput = {
   emailVerified?: Prisma.SortOrder
   image?: Prisma.SortOrderInput | Prisma.SortOrder
   currentCredits?: Prisma.SortOrder
+  referralCode?: Prisma.SortOrder
+  referredBy?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.UserCountOrderByAggregateInput
@@ -308,6 +330,8 @@ export type UserScalarWhereWithAggregatesInput = {
   emailVerified?: Prisma.BoolWithAggregatesFilter<"User"> | boolean
   image?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
   currentCredits?: Prisma.IntWithAggregatesFilter<"User"> | number
+  referralCode?: Prisma.StringWithAggregatesFilter<"User"> | string
+  referredBy?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"User"> | Date | string
 }
@@ -319,6 +343,8 @@ export type UserCreateInput = {
   emailVerified?: boolean
   image?: string | null
   currentCredits?: number
+  referralCode?: string
+  referredBy?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
@@ -335,6 +361,8 @@ export type UserUncheckedCreateInput = {
   emailVerified?: boolean
   image?: string | null
   currentCredits?: number
+  referralCode?: string
+  referredBy?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
@@ -351,6 +379,8 @@ export type UserUpdateInput = {
   emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   currentCredits?: Prisma.IntFieldUpdateOperationsInput | number
+  referralCode?: Prisma.StringFieldUpdateOperationsInput | string
+  referredBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
@@ -367,6 +397,8 @@ export type UserUncheckedUpdateInput = {
   emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   currentCredits?: Prisma.IntFieldUpdateOperationsInput | number
+  referralCode?: Prisma.StringFieldUpdateOperationsInput | string
+  referredBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
@@ -383,6 +415,8 @@ export type UserCreateManyInput = {
   emailVerified?: boolean
   image?: string | null
   currentCredits?: number
+  referralCode?: string
+  referredBy?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -394,6 +428,8 @@ export type UserUpdateManyMutationInput = {
   emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   currentCredits?: Prisma.IntFieldUpdateOperationsInput | number
+  referralCode?: Prisma.StringFieldUpdateOperationsInput | string
+  referredBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -405,6 +441,8 @@ export type UserUncheckedUpdateManyInput = {
   emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   currentCredits?: Prisma.IntFieldUpdateOperationsInput | number
+  referralCode?: Prisma.StringFieldUpdateOperationsInput | string
+  referredBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -416,6 +454,8 @@ export type UserCountOrderByAggregateInput = {
   emailVerified?: Prisma.SortOrder
   image?: Prisma.SortOrder
   currentCredits?: Prisma.SortOrder
+  referralCode?: Prisma.SortOrder
+  referredBy?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -431,6 +471,8 @@ export type UserMaxOrderByAggregateInput = {
   emailVerified?: Prisma.SortOrder
   image?: Prisma.SortOrder
   currentCredits?: Prisma.SortOrder
+  referralCode?: Prisma.SortOrder
+  referredBy?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -442,6 +484,8 @@ export type UserMinOrderByAggregateInput = {
   emailVerified?: Prisma.SortOrder
   image?: Prisma.SortOrder
   currentCredits?: Prisma.SortOrder
+  referralCode?: Prisma.SortOrder
+  referredBy?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -556,6 +600,8 @@ export type UserCreateWithoutSessionsInput = {
   emailVerified?: boolean
   image?: string | null
   currentCredits?: number
+  referralCode?: string
+  referredBy?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
@@ -571,6 +617,8 @@ export type UserUncheckedCreateWithoutSessionsInput = {
   emailVerified?: boolean
   image?: string | null
   currentCredits?: number
+  referralCode?: string
+  referredBy?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
@@ -602,6 +650,8 @@ export type UserUpdateWithoutSessionsInput = {
   emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   currentCredits?: Prisma.IntFieldUpdateOperationsInput | number
+  referralCode?: Prisma.StringFieldUpdateOperationsInput | string
+  referredBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
@@ -617,6 +667,8 @@ export type UserUncheckedUpdateWithoutSessionsInput = {
   emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   currentCredits?: Prisma.IntFieldUpdateOperationsInput | number
+  referralCode?: Prisma.StringFieldUpdateOperationsInput | string
+  referredBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
@@ -632,6 +684,8 @@ export type UserCreateWithoutAccountsInput = {
   emailVerified?: boolean
   image?: string | null
   currentCredits?: number
+  referralCode?: string
+  referredBy?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
@@ -647,6 +701,8 @@ export type UserUncheckedCreateWithoutAccountsInput = {
   emailVerified?: boolean
   image?: string | null
   currentCredits?: number
+  referralCode?: string
+  referredBy?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
@@ -678,6 +734,8 @@ export type UserUpdateWithoutAccountsInput = {
   emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   currentCredits?: Prisma.IntFieldUpdateOperationsInput | number
+  referralCode?: Prisma.StringFieldUpdateOperationsInput | string
+  referredBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
@@ -693,6 +751,8 @@ export type UserUncheckedUpdateWithoutAccountsInput = {
   emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   currentCredits?: Prisma.IntFieldUpdateOperationsInput | number
+  referralCode?: Prisma.StringFieldUpdateOperationsInput | string
+  referredBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
@@ -708,6 +768,8 @@ export type UserCreateWithoutPhotosInput = {
   emailVerified?: boolean
   image?: string | null
   currentCredits?: number
+  referralCode?: string
+  referredBy?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
@@ -723,6 +785,8 @@ export type UserUncheckedCreateWithoutPhotosInput = {
   emailVerified?: boolean
   image?: string | null
   currentCredits?: number
+  referralCode?: string
+  referredBy?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
@@ -754,6 +818,8 @@ export type UserUpdateWithoutPhotosInput = {
   emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   currentCredits?: Prisma.IntFieldUpdateOperationsInput | number
+  referralCode?: Prisma.StringFieldUpdateOperationsInput | string
+  referredBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
@@ -769,6 +835,8 @@ export type UserUncheckedUpdateWithoutPhotosInput = {
   emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   currentCredits?: Prisma.IntFieldUpdateOperationsInput | number
+  referralCode?: Prisma.StringFieldUpdateOperationsInput | string
+  referredBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
@@ -784,6 +852,8 @@ export type UserCreateWithoutGenerationJobsInput = {
   emailVerified?: boolean
   image?: string | null
   currentCredits?: number
+  referralCode?: string
+  referredBy?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
@@ -799,6 +869,8 @@ export type UserUncheckedCreateWithoutGenerationJobsInput = {
   emailVerified?: boolean
   image?: string | null
   currentCredits?: number
+  referralCode?: string
+  referredBy?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
@@ -830,6 +902,8 @@ export type UserUpdateWithoutGenerationJobsInput = {
   emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   currentCredits?: Prisma.IntFieldUpdateOperationsInput | number
+  referralCode?: Prisma.StringFieldUpdateOperationsInput | string
+  referredBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
@@ -845,6 +919,8 @@ export type UserUncheckedUpdateWithoutGenerationJobsInput = {
   emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   currentCredits?: Prisma.IntFieldUpdateOperationsInput | number
+  referralCode?: Prisma.StringFieldUpdateOperationsInput | string
+  referredBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
@@ -860,6 +936,8 @@ export type UserCreateWithoutCreditTransactionsInput = {
   emailVerified?: boolean
   image?: string | null
   currentCredits?: number
+  referralCode?: string
+  referredBy?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
@@ -875,6 +953,8 @@ export type UserUncheckedCreateWithoutCreditTransactionsInput = {
   emailVerified?: boolean
   image?: string | null
   currentCredits?: number
+  referralCode?: string
+  referredBy?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
@@ -906,6 +986,8 @@ export type UserUpdateWithoutCreditTransactionsInput = {
   emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   currentCredits?: Prisma.IntFieldUpdateOperationsInput | number
+  referralCode?: Prisma.StringFieldUpdateOperationsInput | string
+  referredBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
@@ -921,6 +1003,8 @@ export type UserUncheckedUpdateWithoutCreditTransactionsInput = {
   emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   currentCredits?: Prisma.IntFieldUpdateOperationsInput | number
+  referralCode?: Prisma.StringFieldUpdateOperationsInput | string
+  referredBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
@@ -1003,6 +1087,8 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   emailVerified?: boolean
   image?: boolean
   currentCredits?: boolean
+  referralCode?: boolean
+  referredBy?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   sessions?: boolean | Prisma.User$sessionsArgs<ExtArgs>
@@ -1020,6 +1106,8 @@ export type UserSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   emailVerified?: boolean
   image?: boolean
   currentCredits?: boolean
+  referralCode?: boolean
+  referredBy?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["user"]>
@@ -1031,6 +1119,8 @@ export type UserSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   emailVerified?: boolean
   image?: boolean
   currentCredits?: boolean
+  referralCode?: boolean
+  referredBy?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["user"]>
@@ -1042,11 +1132,13 @@ export type UserSelectScalar = {
   emailVerified?: boolean
   image?: boolean
   currentCredits?: boolean
+  referralCode?: boolean
+  referredBy?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "email" | "emailVerified" | "image" | "currentCredits" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
+export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "email" | "emailVerified" | "image" | "currentCredits" | "referralCode" | "referredBy" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
 export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   sessions?: boolean | Prisma.User$sessionsArgs<ExtArgs>
   accounts?: boolean | Prisma.User$accountsArgs<ExtArgs>
@@ -1074,6 +1166,8 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     emailVerified: boolean
     image: string | null
     currentCredits: number
+    referralCode: string
+    referredBy: string | null
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["user"]>
@@ -1510,6 +1604,8 @@ export interface UserFieldRefs {
   readonly emailVerified: Prisma.FieldRef<"User", 'Boolean'>
   readonly image: Prisma.FieldRef<"User", 'String'>
   readonly currentCredits: Prisma.FieldRef<"User", 'Int'>
+  readonly referralCode: Prisma.FieldRef<"User", 'String'>
+  readonly referredBy: Prisma.FieldRef<"User", 'String'>
   readonly createdAt: Prisma.FieldRef<"User", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"User", 'DateTime'>
 }

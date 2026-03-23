@@ -8,13 +8,18 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
-export function SignUpForm() {
+type Props = {
+	initialCode?: string;
+};
+
+export function SignUpForm({ initialCode = "" }: Props) {
 	const navigate = useNavigate();
 	const [isLoading, setIsLoading] = useState(false);
 	const [formData, setFormData] = useState({
 		name: "",
 		email: "",
 		password: "",
+		referralCode: initialCode,
 	});
 
 	const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
@@ -26,6 +31,7 @@ export function SignUpForm() {
 				email: formData.email,
 				password: formData.password,
 				name: formData.name,
+				referralCode: formData.referralCode.trim(),
 				callbackURL: "/studio",
 			});
 
@@ -122,6 +128,27 @@ export function SignUpForm() {
 									setFormData({ ...formData, password: e.target.value })
 								}
 							/>
+						</div>
+						<div className="space-y-2">
+							<Label
+								htmlFor="referralCode"
+								className="text-[10px] uppercase tracking-widest text-muted-foreground"
+							>
+								Referral Code
+							</Label>
+							<Input
+								id="referralCode"
+								placeholder="Enter your referral code"
+								className="rounded-none border-0 border-b border-white/10 bg-transparent px-2 h-10 focus-visible:ring-0 focus-visible:border-primary transition-colors text-lg"
+								required
+								value={formData.referralCode}
+								onChange={(e) =>
+									setFormData({ ...formData, referralCode: e.target.value })
+								}
+							/>
+							<p className="text-[10px] text-muted-foreground/60 pt-1">
+								Ask the person who invited you for their referral code
+							</p>
 						</div>
 					</div>
 
