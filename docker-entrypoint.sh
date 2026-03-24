@@ -5,4 +5,4 @@ echo "Running database migrations..."
 pnpm prisma migrate deploy
 
 echo "Starting server..."
-exec node server.mjs
+exec node .output/server/index.mjs
