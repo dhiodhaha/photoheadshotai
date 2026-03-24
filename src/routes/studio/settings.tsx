@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useRouteContext } from "@tanstack/react-router";
 import {
 	Bell,
 	Camera,
@@ -12,7 +12,6 @@ import {
 import { motion } from "motion/react";
 import { useState } from "react";
 import { toast } from "sonner";
-import { authClient } from "#/lib/auth-client";
 import { ReferralCard } from "#/modules/referral/components/referral-card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -30,7 +29,7 @@ const SETTINGS_TABS = [
 ];
 
 function SettingsPage() {
-	const { data: session } = authClient.useSession();
+	const { session } = useRouteContext({ from: "/studio" });
 	const [activeTab, setActiveTab] = useState("profile");
 	const [isSaving, setIsSaving] = useState(false);
 

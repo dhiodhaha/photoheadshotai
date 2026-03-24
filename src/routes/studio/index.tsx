@@ -244,6 +244,7 @@ function BackgroundGrid() {
 					<img
 						src={GRID_IMAGES[i % 3]}
 						alt=""
+						aria-hidden="true"
 						className="w-full h-full object-cover scale-110"
 						draggable={false}
 						loading="lazy"
