@@ -23,6 +23,15 @@ services:
       - "127.0.0.1:3000:3000"
     env_file:
       - .env.production
+    environment:
+      UV_THREADPOOL_SIZE: "4"
+    deploy:
+      resources:
+        limits:
+          cpus: "1.5"
+          memory: 1536M
+        reservations:
+          memory: 512M
     depends_on:
       postgres:
         condition: service_healthy
