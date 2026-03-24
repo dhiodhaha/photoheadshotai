@@ -52,11 +52,11 @@ export const auth = betterAuth({
 						});
 					}
 
-					// Admin domain bypass — standoutheadshot.com can register without referral
-					const emailDomain = user.email.split("@")[1]?.toLowerCase();
-					const isAdminDomain = emailDomain === "standoutheadshot.com";
-
-					if (!isAdminDomain) {
+					// Admin domain bypass — no referral code required, email verification still enforced
+					const { isAdminDomain } = await import(
+						"#/modules/auth/infrastructure/admin-domain"
+					);
+					if (!isAdminDomain(user.email)) {
 						// Require referral code for everyone else
 						const code = (user as Record<string, unknown>).referralCode as
 							| string
