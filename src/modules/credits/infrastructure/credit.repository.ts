@@ -31,14 +31,26 @@ export async function deductCredits(
 	amount: number,
 	transactionType: TransactionType,
 ) {
-	const [user] = await prisma.$transaction([
-		prisma.user.update({
+	// Atomic check-and-deduct inside a single transaction to prevent TOCTOU:
+	// without this, two concurrent requests can both pass the balance check
+	// and together deduct more than the user has.
+	return prisma.$transaction(async (tx) => {
+		const user = await tx.user.findUnique({
 			where: { id: userId },
-			data: { currentCredits: { decrement: amount } },
-		}),
-		prisma.creditTransaction.create({
-			data: { userId, amount: -amount, transactionType },
-		}),
-	]);
-	return user.currentCredits;
+			select: { currentCredits: true },
+		});
+		if (!user || user.currentCredits < amount) {
+			throw new Error("Insufficient credits");
+		}
+		const [updated] = await Promise.all([
+			tx.user.update({
+				where: { id: userId },
+				data: { currentCredits: { decrement: amount } },
+			}),
+			tx.creditTransaction.create({
+				data: { userId, amount: -amount, transactionType },
+			}),
+		]);
+		return updated.currentCredits;
+	});
 }
