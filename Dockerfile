@@ -36,8 +36,9 @@ COPY --from=builder /app/.output ./.output
 COPY --from=builder /app/prisma ./prisma
 COPY --from=builder /app/prisma.config.ts ./prisma.config.ts
 
-# Install only Prisma CLI for migrations (Nitro bundles all other deps in .output)
-RUN npm install -g prisma@latest
+# Install Prisma locally so prisma/config resolves correctly for migrations
+COPY --from=deps /app/node_modules ./node_modules
+COPY package.json ./
 
 COPY docker-entrypoint.sh ./
 RUN chmod +x docker-entrypoint.sh

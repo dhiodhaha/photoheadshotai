@@ -1,7 +1,6 @@
 import { TanStackDevtools } from "@tanstack/react-devtools";
 import type { QueryClient } from "@tanstack/react-query";
 import {
-	ClientOnly,
 	createRootRouteWithContext,
 	HeadContent,
 	Scripts,
@@ -72,12 +71,10 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 			<body className="font-sans antialiased selection:bg-primary selection:text-primary-foreground">
 				<div className="noise-overlay" />
 				<TanStackQueryProvider>
-					<ClientOnly>
-						<ThemeProvider defaultTheme="dark">
-							<TooltipProvider>{children}</TooltipProvider>
-							<Toaster position="top-center" richColors />
-						</ThemeProvider>
-					</ClientOnly>
+					<ThemeProvider defaultTheme="dark">
+						<TooltipProvider>{children}</TooltipProvider>
+						<Toaster position="top-center" richColors />
+					</ThemeProvider>
 					{process.env.NODE_ENV !== "production" && (
 						<TanStackDevtools
 							config={{
