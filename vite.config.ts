@@ -15,6 +15,9 @@ const config = defineConfig({
 		nitro(),
 		viteReact(),
 	],
+	ssr: {
+		external: ["pg", "@prisma/adapter-pg", "@prisma/client"],
+	},
 });
 
 export default config;
