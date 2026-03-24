@@ -1,10 +1,25 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { createServerFn } from "@tanstack/react-start";
+import { setResponseHeaders } from "@tanstack/react-start/server";
 import { ArrowRight, Camera, Sparkles, Upload } from "lucide-react";
 import { motion } from "motion/react";
 import { authClient } from "#/lib/auth-client";
 import { Button } from "@/components/ui/button";
 
-export const Route = createFileRoute("/")({ component: App });
+const setLandingPageCacheHeaders = createServerFn({ method: "GET" }).handler(
+	async () => {
+		setResponseHeaders({
+			"Cache-Control": "public, s-maxage=3600, stale-while-revalidate=21600",
+		});
+	},
+);
+
+export const Route = createFileRoute("/")({
+	loader: async () => {
+		await setLandingPageCacheHeaders();
+	},
+	component: App,
+});
 
 function App() {
 	const { data: session } = authClient.useSession();
