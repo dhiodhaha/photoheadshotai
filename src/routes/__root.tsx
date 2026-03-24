@@ -47,8 +47,16 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
 				crossOrigin: "anonymous",
 			},
 			{
+				rel: "preload",
+				as: "style",
+				href: "https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300..700;1,300..700&family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap",
+			},
+			{
 				rel: "stylesheet",
-				href: "https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap",
+				href: "https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300..700;1,300..700&family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap",
+				// @ts-expect-error — media swap trick: load non-blocking, apply when ready
+				media: "print",
+				onLoad: "this.media='all'",
 			},
 		],
 	}),
@@ -70,18 +78,20 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 							<Toaster position="top-center" richColors />
 						</ThemeProvider>
 					</ClientOnly>
-					<TanStackDevtools
-						config={{
-							position: "bottom-right",
-						}}
-						plugins={[
-							{
-								name: "Tanstack Router",
-								render: <TanStackRouterDevtoolsPanel />,
-							},
-							TanStackQueryDevtools,
-						]}
-					/>
+					{process.env.NODE_ENV !== "production" && (
+						<TanStackDevtools
+							config={{
+								position: "bottom-right",
+							}}
+							plugins={[
+								{
+									name: "Tanstack Router",
+									render: <TanStackRouterDevtoolsPanel />,
+								},
+								TanStackQueryDevtools,
+							]}
+						/>
+					)}
 				</TanStackQueryProvider>
 				<Scripts />
 			</body>

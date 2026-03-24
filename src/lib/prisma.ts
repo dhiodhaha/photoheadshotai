@@ -1,9 +1,3 @@
-import { PrismaPg } from "@prisma/adapter-pg";
-import { PrismaClient } from "generated/prisma/client";
-import { requireEnv } from "#/lib/env";
-
-const adapter = new PrismaPg({
-	connectionString: requireEnv("DATABASE_URL"),
-});
-
-export const prisma = new PrismaClient({ adapter });
+// Re-exports from the canonical Prisma singleton with pg.Pool connection pooling.
+// All imports should use this file — do not instantiate PrismaClient elsewhere.
+export { prisma } from "../db.js";

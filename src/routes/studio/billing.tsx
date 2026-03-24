@@ -1,4 +1,4 @@
-import { createFileRoute, useRouter } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import {
 	CheckCircle2,
 	CreditCard,
@@ -7,7 +7,7 @@ import {
 	Zap,
 } from "lucide-react";
 import { motion } from "motion/react";
-import { authClient } from "#/lib/auth-client";
+
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -60,39 +60,12 @@ const PLANS = [
 ];
 
 function BillingPage() {
-	const router = useRouter();
-	const { refetch } = authClient.useSession();
-
-	const handlePurchase = async (plan: (typeof PLANS)[0]) => {
-		try {
-			const res = await fetch("/api/credits/purchase", {
-				method: "POST",
-				body: JSON.stringify({
-					planId: plan.id,
-					credits: plan.credits,
-					amount: parseInt(plan.price.replace("$", ""), 10),
-				}),
-			});
-
-			if (!res.ok) throw new Error("Purchase failed");
-
-			const data = await res.json();
-			console.log("Purchase success:", data);
-
-			// Revalidate Better Auth session AND TanStack router
-			await refetch();
-			router.invalidate();
-
-			import("sonner").then(({ toast }) => {
-				toast.success(
-					`Success! ${plan.credits} credits added to your account.`,
-				);
-			});
-		} catch (_error) {
-			import("sonner").then(({ toast }) => {
-				toast.error("Failed to process purchase. Please try again.");
-			});
-		}
+	const handlePurchase = async () => {
+		import("sonner").then(({ toast }) => {
+			toast.info(
+				"Fitur premium dan top-up sedang dalam tahap persiapan. Coming soon!",
+			);
+		});
 	};
 
 	return (
@@ -197,7 +170,7 @@ function BillingPage() {
 											? "bg-primary text-primary-foreground hover:brightness-110 shadow-lg shadow-primary/20"
 											: "bg-white/5 text-white hover:bg-white/10 border border-white/10",
 									)}
-									onClick={() => handlePurchase(plan)}
+									onClick={handlePurchase}
 								>
 									Purchase {plan.credits} Credits
 								</Button>

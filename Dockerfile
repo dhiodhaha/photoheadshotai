@@ -28,8 +28,6 @@ RUN NODE_OPTIONS="--max-old-space-size=4096" pnpm build
 # ─── Stage 3: runner ──────────────────────────────────────────────────────────
 FROM node:24-alpine AS runner
 
-RUN corepack enable && corepack prepare pnpm@latest --activate
-
 WORKDIR /app
 
 ENV NODE_ENV=production
@@ -37,8 +35,9 @@ ENV NODE_ENV=production
 COPY --from=builder /app/.output ./.output
 COPY --from=builder /app/prisma ./prisma
 COPY --from=builder /app/prisma.config.ts ./prisma.config.ts
-COPY --from=deps /app/node_modules ./node_modules
-COPY package.json pnpm-lock.yaml ./
+
+# Install only Prisma CLI for migrations (Nitro bundles all other deps in .output)
+RUN npm install -g prisma@latest
 
 COPY docker-entrypoint.sh ./
 RUN chmod +x docker-entrypoint.sh
