@@ -7,3 +7,6 @@ export interface User {
 	createdAt: Date;
 	updatedAt: Date;
 }
+
+// Domains that can register without a referral code (still require email verification)
+export const ADMIN_DOMAINS = new Set(["standoutheadshot.com"]);
