@@ -218,10 +218,19 @@ function StudioIndexPage() {
 	);
 }
 
+const GRID_IMAGES = [
+	"/hero_headshot_preview_1773972472569.png",
+	"/auth_fashion_portrait_1.png",
+	"/auth_fashion_portrait_2.png",
+];
+
+// Static offsets replace Math.random() to avoid SSR hydration mismatch
+const GRID_OFFSETS = [0, 20, 5, 15, 0, 20, 10, 5, 20, 0, 15, 10];
+
 function BackgroundGrid() {
 	return (
 		<div className="absolute inset-0 z-0 flex flex-wrap gap-4 opacity-30 pointer-events-none p-4 select-none justify-center">
-			{[...Array(12)].map((_, i) => (
+			{GRID_OFFSETS.map((offset, i) => (
 				<div
 					// biome-ignore lint/suspicious/noArrayIndexKey: static decorative grid, never reordered
 					key={i}
@@ -229,20 +238,16 @@ function BackgroundGrid() {
 					style={{
 						width: `calc(25% - 1rem)`,
 						transform: `translateY(${i % 2 === 0 ? "20px" : "-20px"})`,
-						top: `${Math.random() * 20}px`,
+						top: `${offset}px`,
 					}}
 				>
 					<img
-						src={
-							i % 3 === 0
-								? "/hero_headshot_preview_1773972472569.png"
-								: i % 2 === 0
-									? "/auth_fashion_portrait_1.png"
-									: "/auth_fashion_portrait_2.png"
-						}
+						src={GRID_IMAGES[i % 3]}
 						alt=""
+						aria-hidden="true"
 						className="w-full h-full object-cover scale-110"
 						draggable={false}
+						loading="lazy"
 					/>
 				</div>
 			))}

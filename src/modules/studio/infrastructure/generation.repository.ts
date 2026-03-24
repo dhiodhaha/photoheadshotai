@@ -1,14 +1,8 @@
+import { GenerationJobStatus, PhotoStatus } from "#/generated/prisma/enums.js";
 import { prisma } from "#/lib/prisma";
 
 export async function getPhotoByIdAndUser(photoId: string, userId: string) {
-	return prisma.photo
-		.findUnique({
-			where: { id: photoId },
-		})
-		.then((photo) => {
-			if (!photo || photo.userId !== userId) return null;
-			return photo;
-		});
+	return prisma.photo.findFirst({ where: { id: photoId, userId } });
 }
 
 export async function createGenerationJob(data: {
@@ -22,7 +16,7 @@ export async function createGenerationJob(data: {
 		data: {
 			userId: data.userId,
 			photoId: data.photoId,
-			status: "processing",
+			status: GenerationJobStatus.processing,
 			styleId: data.styleId,
 			stylePrompt: data.stylePrompt,
 			costCredits: data.costCredits,
@@ -38,11 +32,11 @@ export async function completeGenerationJob(
 	await prisma.$transaction([
 		prisma.generationJob.update({
 			where: { id: jobId },
-			data: { status: "completed", completedAt: new Date() },
+			data: { status: GenerationJobStatus.completed, completedAt: new Date() },
 		}),
 		prisma.photo.update({
 			where: { id: photoId },
-			data: { status: "completed" },
+			data: { status: PhotoStatus.completed },
 		}),
 		prisma.generatedHeadshot.create({
 			data: {
@@ -56,7 +50,7 @@ export async function completeGenerationJob(
 export async function failGenerationJob(jobId: string) {
 	await prisma.generationJob.update({
 		where: { id: jobId },
-		data: { status: "failed" },
+		data: { status: GenerationJobStatus.failed },
 	});
 }
 

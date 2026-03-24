@@ -9,10 +9,7 @@ export async function purchaseCredits(userId: string, amount: number) {
 }
 
 export async function deductUserCredits(userId: string, amount: number) {
-	const currentCredits = await getUserCredits(userId);
-	if (currentCredits < amount) {
-		throw new Error("Insufficient credits");
-	}
+	// Balance check is enforced atomically inside deductCredits transaction
 	return deductCredits(userId, amount, "generation_deduction");
 }
 

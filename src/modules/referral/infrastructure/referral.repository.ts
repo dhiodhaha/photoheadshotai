@@ -1,3 +1,4 @@
+import { TransactionType } from "#/generated/prisma/enums.js";
 import { prisma } from "#/lib/prisma";
 
 export async function findBootstrapCode(code: string) {
@@ -8,15 +9,29 @@ export async function findBootstrapCode(code: string) {
 }
 
 export async function redeemBootstrapCode(codeId: string, userId: string) {
-	return prisma.$transaction([
-		prisma.bootstrapCode.update({
+	// Atomic: only increments redeemCount if still under maxRedeems,
+	// preventing concurrent requests from exceeding the redemption limit.
+	return prisma.$transaction(async (tx) => {
+		const bootstrapCode = await tx.bootstrapCode.findUnique({
 			where: { id: codeId },
-			data: { redeemCount: { increment: 1 } },
-		}),
-		prisma.bootstrapRedemption.create({
-			data: { bootstrapCodeId: codeId, userId },
-		}),
-	]);
+			select: { redeemCount: true, maxRedeems: true },
+		});
+		if (
+			!bootstrapCode ||
+			bootstrapCode.redeemCount >= bootstrapCode.maxRedeems
+		) {
+			throw new Error("Bootstrap code has reached its redemption limit");
+		}
+		return Promise.all([
+			tx.bootstrapCode.update({
+				where: { id: codeId },
+				data: { redeemCount: { increment: 1 } },
+			}),
+			tx.bootstrapRedemption.create({
+				data: { bootstrapCodeId: codeId, userId },
+			}),
+		]);
+	});
 }
 
 export async function findUserByReferralCode(referralCode: string) {
@@ -40,7 +55,7 @@ export async function awardReferralCredits(
 			data: {
 				userId: referrerId,
 				amount,
-				transactionType: "purchase",
+				transactionType: TransactionType.purchase,
 			},
 		}),
 		prisma.referralReward.create({

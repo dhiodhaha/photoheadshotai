@@ -141,6 +141,7 @@ function App() {
 							src="/hero_headshot_preview_1773972472569.png"
 							alt="Professional AI Headshot Preview"
 							className="w-full h-full object-cover scale-110 group-hover:scale-100 transition-transform duration-1000"
+							fetchPriority="high"
 						/>
 						{/* Dramatic Lighting Overlay */}
 						<div className="absolute inset-0 bg-linear-to-tr from-background/40 via-transparent to-white/10" />

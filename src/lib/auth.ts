@@ -1,8 +1,18 @@
+import { randomBytes } from "node:crypto";
 import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
 import { APIError } from "better-auth/api";
 import { tanstackStartCookies } from "better-auth/tanstack-start";
 import { prisma } from "#/lib/prisma";
+
+// Bridges the entered referral code from before → after hook.
+// before() validates it; after() processes the redemption using user.id.
+// Keyed by email (unique per signup attempt), cleaned up in after().
+const _pendingRedemptions = new Map<string, string>();
+
+function generateReferralCode(): string {
+	return randomBytes(4).toString("hex").toUpperCase(); // e.g. "A3F2B1C4"
+}
 
 export const auth = betterAuth({
 	database: prismaAdapter(prisma, {
@@ -52,16 +62,17 @@ export const auth = betterAuth({
 						});
 					}
 
+					const enteredCode = (user as Record<string, unknown>).referralCode as
+						| string
+						| undefined;
+
 					// Admin domain bypass — no referral code required, email verification still enforced
 					const { isAdminDomain } = await import(
 						"#/modules/auth/infrastructure/admin-domain"
 					);
 					if (!isAdminDomain(user.email)) {
 						// Require referral code for everyone else
-						const code = (user as Record<string, unknown>).referralCode as
-							| string
-							| undefined;
-						if (!code || code.trim() === "") {
+						if (!enteredCode || enteredCode.trim() === "") {
 							throw new APIError("BAD_REQUEST", {
 								message: "A referral code is required to sign up.",
 							});
@@ -69,7 +80,7 @@ export const auth = betterAuth({
 
 						// Validate referral code
 						const { validateReferralCode } = await import("#/modules/referral");
-						const result = await validateReferralCode(code.trim());
+						const result = await validateReferralCode(enteredCode.trim());
 						if (!result.valid) {
 							throw new APIError("BAD_REQUEST", { message: result.reason });
 						}
@@ -78,19 +89,25 @@ export const auth = betterAuth({
 						if (result.type === "referral") {
 							(user as Record<string, unknown>).referredBy = result.referrerId;
 						}
+
+						// Save entered code for after() to process the redemption
+						_pendingRedemptions.set(user.email, enteredCode.trim());
 					}
+
+					// Replace the entered code with the user's own unique shareable referral code.
+					// Without this, Better Auth stores "" (defaultValue) and violates the unique constraint.
+					(user as Record<string, unknown>).referralCode =
+						generateReferralCode();
 				},
 				after: async (user) => {
-					// Process bootstrap redemption (only if referral code was used)
-					const code = (user as Record<string, unknown>).referralCode as
-						| string
-						| undefined;
-					if (!code) return;
+					const enteredCode = _pendingRedemptions.get(user.email);
+					_pendingRedemptions.delete(user.email);
+					if (!enteredCode) return;
 
 					const { validateReferralCode, processSignupCode } = await import(
 						"#/modules/referral"
 					);
-					const result = await validateReferralCode(code.trim());
+					const result = await validateReferralCode(enteredCode);
 					await processSignupCode(result, user.id);
 				},
 			},
@@ -105,6 +122,9 @@ export const auth = betterAuth({
 			referralCode: {
 				type: "string",
 				defaultValue: "",
+				// input: true kept so Better Auth accepts it from signup form.
+				// The before() hook replaces this value with a generated unique code
+				// before it reaches the DB; the entered value is bridged via _pendingRedemptions.
 				input: true,
 			},
 			referredBy: {
