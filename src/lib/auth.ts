@@ -52,30 +52,36 @@ export const auth = betterAuth({
 						});
 					}
 
-					// Require referral code
-					const code = (user as Record<string, unknown>).referralCode as
-						| string
-						| undefined;
-					if (!code || code.trim() === "") {
-						throw new APIError("BAD_REQUEST", {
-							message: "A referral code is required to sign up.",
-						});
-					}
+					// Admin domain bypass — standoutheadshot.com can register without referral
+					const emailDomain = user.email.split("@")[1]?.toLowerCase();
+					const isAdminDomain = emailDomain === "standoutheadshot.com";
 
-					// Validate referral code
-					const { validateReferralCode } = await import("#/modules/referral");
-					const result = await validateReferralCode(code.trim());
-					if (!result.valid) {
-						throw new APIError("BAD_REQUEST", { message: result.reason });
-					}
+					if (!isAdminDomain) {
+						// Require referral code for everyone else
+						const code = (user as Record<string, unknown>).referralCode as
+							| string
+							| undefined;
+						if (!code || code.trim() === "") {
+							throw new APIError("BAD_REQUEST", {
+								message: "A referral code is required to sign up.",
+							});
+						}
 
-					// Store referrerId on user if it's a user referral code
-					if (result.type === "referral") {
-						(user as Record<string, unknown>).referredBy = result.referrerId;
+						// Validate referral code
+						const { validateReferralCode } = await import("#/modules/referral");
+						const result = await validateReferralCode(code.trim());
+						if (!result.valid) {
+							throw new APIError("BAD_REQUEST", { message: result.reason });
+						}
+
+						// Store referrerId on user if it's a user referral code
+						if (result.type === "referral") {
+							(user as Record<string, unknown>).referredBy = result.referrerId;
+						}
 					}
 				},
 				after: async (user) => {
-					// Process bootstrap redemption or referral tracking
+					// Process bootstrap redemption (only if referral code was used)
 					const code = (user as Record<string, unknown>).referralCode as
 						| string
 						| undefined;

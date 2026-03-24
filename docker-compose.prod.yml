@@ -15,7 +15,7 @@ services:
       retries: 5
 
   app:
-    image: ghcr.io/dhiodhaha/photoheadshot:latest
+    image: ghcr.io/dhiodhaha/photoheadshotai:latest
     restart: unless-stopped
     ports:
       - "127.0.0.1:3000:3000"
