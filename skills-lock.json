@@ -11,6 +11,11 @@
 			"sourceType": "github",
 			"computedHash": "b05e88d284c4a754d3624697c2f749e21f7da3fc1f4319b6658df318e84b0dd9"
 		},
+		"prisma-expert": {
+			"source": "sickn33/antigravity-awesome-skills",
+			"sourceType": "github",
+			"computedHash": "ef6d7e3d63d9b028bb52112506dc901b2d94a24918f06865914c8e66bda22c63"
+		},
 		"tanstack-start-best-practices": {
 			"source": "deckardger/tanstack-agent-skills",
 			"sourceType": "github",
