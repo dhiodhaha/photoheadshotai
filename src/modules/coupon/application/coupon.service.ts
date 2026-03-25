@@ -13,22 +13,9 @@ export async function redeemCoupon(userId: string, code: string) {
 		throw new Error("Invalid coupon code");
 	}
 
-	if (coupon.redeemCount >= coupon.maxRedeems) {
-		throw new Error("Coupon has reached its redemption limit");
-	}
+	// All state checks (limit, expiry, duplicate) are re-validated atomically
+	// inside redeemCouponAtomic — no pre-checks here to avoid TOCTOU.
+	const { credits, newBalance } = await redeemCouponAtomic(coupon.id, userId);
 
-	if (coupon.expiresAt && coupon.expiresAt < new Date()) {
-		throw new Error("Coupon has expired");
-	}
-
-	const newBalance = await redeemCouponAtomic(
-		coupon.id,
-		userId,
-		coupon.credits,
-	);
-
-	return {
-		credits: coupon.credits,
-		newBalance,
-	};
+	return { credits, newBalance };
 }

@@ -164,7 +164,15 @@ function TrashPage() {
 										</Button>
 										<button
 											type="button"
-											onClick={() => deleteMutation.mutate(item.id)}
+											onClick={() => {
+												if (
+													confirm(
+														"Permanently delete this image? This cannot be undone.",
+													)
+												) {
+													deleteMutation.mutate(item.id);
+												}
+											}}
 											disabled={deleteMutation.isPending}
 											className="w-9 h-9 rounded-xl flex items-center justify-center backdrop-blur-md border border-white/10 bg-red-500/20 text-red-400 hover:bg-red-500 hover:text-white transition-colors"
 											aria-label="Permanently delete"

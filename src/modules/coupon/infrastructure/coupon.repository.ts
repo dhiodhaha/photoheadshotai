@@ -7,16 +7,17 @@ export async function findCouponByCode(code: string) {
 	});
 }
 
-export async function redeemCouponAtomic(
-	couponId: string,
-	userId: string,
-	credits: number,
-) {
+export async function redeemCouponAtomic(couponId: string, userId: string) {
 	return prisma.$transaction(async (tx) => {
-		// Re-check coupon inside transaction to prevent TOCTOU
+		// Fetch credits inside the transaction so we never use a stale value
 		const coupon = await tx.coupon.findUnique({
 			where: { id: couponId },
-			select: { redeemCount: true, maxRedeems: true, expiresAt: true },
+			select: {
+				redeemCount: true,
+				maxRedeems: true,
+				expiresAt: true,
+				credits: true,
+			},
 		});
 
 		if (!coupon) {
@@ -42,12 +43,12 @@ export async function redeemCouponAtomic(
 		const [updatedUser] = await Promise.all([
 			tx.user.update({
 				where: { id: userId },
-				data: { currentCredits: { increment: credits } },
+				data: { currentCredits: { increment: coupon.credits } },
 			}),
 			tx.creditTransaction.create({
 				data: {
 					userId,
-					amount: credits,
+					amount: coupon.credits,
 					transactionType: TransactionType.coupon_redemption,
 				},
 			}),
@@ -60,6 +61,6 @@ export async function redeemCouponAtomic(
 			}),
 		]);
 
-		return updatedUser.currentCredits;
+		return { credits: coupon.credits, newBalance: updatedUser.currentCredits };
 	});
 }

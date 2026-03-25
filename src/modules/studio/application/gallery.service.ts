@@ -60,31 +60,30 @@ export async function deleteHeadshot(headshotId: string, userId: string) {
 }
 
 export async function toggleFavorite(userId: string, headshotId: string) {
-	// Verify user owns this headshot
-	const headshot = await prisma.generatedHeadshot.findFirst({
-		where: { id: headshotId, generationJob: { userId } },
-		select: { id: true },
-	});
+	return prisma.$transaction(async (tx) => {
+		const headshot = await tx.generatedHeadshot.findFirst({
+			where: { id: headshotId, generationJob: { userId } },
+			select: { id: true },
+		});
 
-	if (!headshot) {
-		throw new Error("Not found or unauthorized");
-	}
+		if (!headshot) {
+			throw new Error("Not found or unauthorized");
+		}
 
-	const existing = await prisma.favoriteHeadshot.findUnique({
-		where: { userId_headshotId: { userId, headshotId } },
-	});
-
-	if (existing) {
-		await prisma.favoriteHeadshot.delete({
+		const existing = await tx.favoriteHeadshot.findUnique({
 			where: { userId_headshotId: { userId, headshotId } },
 		});
-		return { favorited: false };
-	}
 
-	await prisma.favoriteHeadshot.create({
-		data: { userId, headshotId },
+		if (existing) {
+			await tx.favoriteHeadshot.delete({
+				where: { userId_headshotId: { userId, headshotId } },
+			});
+			return { favorited: false };
+		}
+
+		await tx.favoriteHeadshot.create({ data: { userId, headshotId } });
+		return { favorited: true };
 	});
-	return { favorited: true };
 }
 
 export async function getFavorites(userId: string) {

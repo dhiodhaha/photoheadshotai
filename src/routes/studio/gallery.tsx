@@ -43,6 +43,7 @@ function GalleryPage() {
 			if (!res.ok) throw new Error("Failed to load categories");
 			return res.json();
 		},
+		staleTime: 1000 * 60 * 5,
 	});
 
 	const styleId =
