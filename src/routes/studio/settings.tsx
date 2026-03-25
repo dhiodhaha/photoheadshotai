@@ -1,4 +1,5 @@
-import { createFileRoute, useRouteContext } from "@tanstack/react-router";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { createFileRoute } from "@tanstack/react-router";
 import {
 	Bell,
 	Camera,
@@ -6,12 +7,14 @@ import {
 	Mail,
 	Settings,
 	Shield,
+	Tag,
 	Trash2,
 	User,
 } from "lucide-react";
 import { motion } from "motion/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { authClient } from "#/lib/auth-client";
 import { ReferralCard } from "#/modules/referral/components/referral-card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -28,17 +31,96 @@ const SETTINGS_TABS = [
 	{ id: "preferences", label: "Preferences", icon: Bell },
 ];
 
+interface UserProfile {
+	id: string;
+	name: string;
+	email: string;
+	image: string | null;
+	currentCredits: number;
+	referralCode: string;
+	createdAt: string;
+}
+
 function SettingsPage() {
-	const { session } = useRouteContext({ from: "/studio" });
+	const queryClient = useQueryClient();
+	const { refetch: refetchSession } = authClient.useSession();
 	const [activeTab, setActiveTab] = useState("profile");
-	const [isSaving, setIsSaving] = useState(false);
+	const [name, setName] = useState("");
+	const [couponCode, setCouponCode] = useState("");
+
+	const { data: profileData, isLoading } = useQuery<{ user: UserProfile }>({
+		queryKey: ["user-profile"],
+		queryFn: async () => {
+			const res = await fetch("/api/user/profile");
+			if (!res.ok) throw new Error("Failed to load profile");
+			return res.json();
+		},
+	});
+
+	const user = profileData?.user;
+
+	// Sync name from fetched data
+	useEffect(() => {
+		if (user?.name) {
+			setName(user.name);
+		}
+	}, [user?.name]);
+
+	const updateMutation = useMutation({
+		mutationFn: async (newName: string) => {
+			const res = await fetch("/api/user/profile", {
+				method: "PUT",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({ name: newName }),
+			});
+			if (!res.ok) {
+				const err = await res.json();
+				throw new Error(err.error || "Failed to update profile");
+			}
+			return res.json();
+		},
+		onSuccess: () => {
+			toast.success("Your settings have been updated.");
+			queryClient.invalidateQueries({ queryKey: ["user-profile"] });
+		},
+		onError: (error: unknown) => {
+			toast.error(error instanceof Error ? error.message : "Update failed.");
+		},
+	});
+
+	const redeemCouponMutation = useMutation({
+		mutationFn: async (code: string) => {
+			const res = await fetch("/api/credits/redeem-coupon", {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({ code }),
+			});
+			if (!res.ok) {
+				const err = await res.json();
+				throw new Error(err.error || "Failed to redeem coupon");
+			}
+			return res.json();
+		},
+		onSuccess: (data: { newBalance: number }) => {
+			toast.success(`Coupon redeemed! New balance: ${data.newBalance} credits`);
+			setCouponCode("");
+			queryClient.invalidateQueries({ queryKey: ["user-profile"] });
+			refetchSession();
+		},
+		onError: (error: unknown) => {
+			toast.error(
+				error instanceof Error ? error.message : "Redemption failed.",
+			);
+		},
+	});
 
 	const handleSave = () => {
-		setIsSaving(true);
-		setTimeout(() => {
-			setIsSaving(false);
-			toast.success("Your settings have been updated.");
-		}, 1200);
+		updateMutation.mutate(name);
+	};
+
+	const handleRedeemCoupon = () => {
+		if (couponCode.trim())
+			redeemCouponMutation.mutate(couponCode.trim().toUpperCase());
 	};
 
 	return (
@@ -156,7 +238,10 @@ function SettingsPage() {
 											<div className="relative">
 												<User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
 												<Input
-													defaultValue="Valued Member"
+													value={isLoading ? "" : name}
+													onChange={(e) => setName(e.target.value)}
+													placeholder={isLoading ? "Loading..." : "Your name"}
+													disabled={isLoading}
 													className="pl-10 h-12 bg-white/5 border-white/10 rounded-xl focus-visible:ring-primary/50"
 												/>
 											</div>
@@ -168,9 +253,11 @@ function SettingsPage() {
 											<div className="relative">
 												<Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
 												<Input
-													defaultValue="user@example.com"
+													value={user?.email ?? ""}
 													type="email"
-													className="pl-10 h-12 bg-white/5 border-white/10 rounded-xl focus-visible:ring-primary/50"
+													disabled
+													readOnly
+													className="pl-10 h-12 bg-white/5 border-white/10 rounded-xl focus-visible:ring-primary/50 opacity-60"
 												/>
 											</div>
 										</div>
@@ -178,17 +265,57 @@ function SettingsPage() {
 
 									<Button
 										onClick={handleSave}
-										disabled={isSaving}
+										disabled={updateMutation.isPending || isLoading}
 										className="h-12 px-8 rounded-xl font-bold uppercase tracking-widest text-xs shadow-lg shadow-primary/20 transition-all active:scale-95"
 									>
-										{isSaving ? "Saving..." : "Save Changes"}
+										{updateMutation.isPending ? "Saving..." : "Save Changes"}
 									</Button>
 
-									{session?.user?.referralCode && (
+									{user?.referralCode && (
 										<div className="pt-4">
-											<ReferralCard referralCode={session.user.referralCode} />
+											<ReferralCard referralCode={user.referralCode} />
 										</div>
 									)}
+
+									<div className="pt-4">
+										<div className="p-6 rounded-2xl glass border border-white/10 space-y-4">
+											<div className="flex items-center gap-2">
+												<Tag className="w-4 h-4 text-primary" />
+												<h4 className="text-sm font-bold uppercase tracking-widest">
+													Redeem Coupon
+												</h4>
+											</div>
+											<p className="text-xs text-muted-foreground">
+												Enter a coupon code to add credits to your account.
+											</p>
+											<div className="flex gap-3">
+												<div className="relative flex-1">
+													<Input
+														value={couponCode}
+														onChange={(e) =>
+															setCouponCode(e.target.value.toUpperCase())
+														}
+														onKeyDown={(e) =>
+															e.key === "Enter" && handleRedeemCoupon()
+														}
+														placeholder="COUPON-CODE"
+														className="h-12 bg-white/5 border-white/10 rounded-xl focus-visible:ring-primary/50 font-mono tracking-widest uppercase"
+													/>
+												</div>
+												<Button
+													onClick={handleRedeemCoupon}
+													disabled={
+														!couponCode.trim() || redeemCouponMutation.isPending
+													}
+													className="h-12 px-6 rounded-xl font-bold uppercase tracking-widest text-xs shadow-lg shadow-primary/20 shrink-0"
+												>
+													{redeemCouponMutation.isPending
+														? "Redeeming..."
+														: "Redeem"}
+												</Button>
+											</div>
+										</div>
+									</div>
 								</div>
 							)}
 

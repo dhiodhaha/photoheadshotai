@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as StudioRouteImport } from './routes/studio'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as StudioIndexRouteImport } from './routes/studio/index'
+import { Route as StudioTrashRouteImport } from './routes/studio/trash'
 import { Route as StudioSettingsRouteImport } from './routes/studio/settings'
 import { Route as StudioGalleryRouteImport } from './routes/studio/gallery'
 import { Route as StudioBillingRouteImport } from './routes/studio/billing'
@@ -23,10 +24,15 @@ import { Route as ApiUserProfileRouteImport } from './routes/api/user/profile'
 import { Route as ApiStudioUploadRouteImport } from './routes/api/studio/upload'
 import { Route as ApiStudioGenerateRouteImport } from './routes/api/studio/generate'
 import { Route as ApiStudioGalleryRouteImport } from './routes/api/studio/gallery'
+import { Route as ApiCreditsRedeemCouponRouteImport } from './routes/api/credits/redeem-coupon'
 import { Route as ApiCreditsPurchaseRouteImport } from './routes/api/credits/purchase'
 import { Route as ApiCreditsDeductRouteImport } from './routes/api/credits/deduct'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
+import { Route as ApiStudioTrashIndexRouteImport } from './routes/api/studio/trash/index'
+import { Route as ApiStudioTrashRestoreRouteImport } from './routes/api/studio/trash/restore'
+import { Route as ApiStudioTrashIdRouteImport } from './routes/api/studio/trash/$id'
 import { Route as ApiStudioStatusTaskIdRouteImport } from './routes/api/studio/status/$taskId'
+import { Route as ApiStudioGalleryCategoriesRouteImport } from './routes/api/studio/gallery/categories'
 
 const StudioRoute = StudioRouteImport.update({
   id: '/studio',
@@ -41,6 +47,11 @@ const IndexRoute = IndexRouteImport.update({
 const StudioIndexRoute = StudioIndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => StudioRoute,
+} as any)
+const StudioTrashRoute = StudioTrashRouteImport.update({
+  id: '/trash',
+  path: '/trash',
   getParentRoute: () => StudioRoute,
 } as any)
 const StudioSettingsRoute = StudioSettingsRouteImport.update({
@@ -98,6 +109,11 @@ const ApiStudioGalleryRoute = ApiStudioGalleryRouteImport.update({
   path: '/api/studio/gallery',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiCreditsRedeemCouponRoute = ApiCreditsRedeemCouponRouteImport.update({
+  id: '/api/credits/redeem-coupon',
+  path: '/api/credits/redeem-coupon',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiCreditsPurchaseRoute = ApiCreditsPurchaseRouteImport.update({
   id: '/api/credits/purchase',
   path: '/api/credits/purchase',
@@ -113,11 +129,32 @@ const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
   path: '/api/auth/$',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiStudioTrashIndexRoute = ApiStudioTrashIndexRouteImport.update({
+  id: '/api/studio/trash/',
+  path: '/api/studio/trash/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiStudioTrashRestoreRoute = ApiStudioTrashRestoreRouteImport.update({
+  id: '/api/studio/trash/restore',
+  path: '/api/studio/trash/restore',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiStudioTrashIdRoute = ApiStudioTrashIdRouteImport.update({
+  id: '/api/studio/trash/$id',
+  path: '/api/studio/trash/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiStudioStatusTaskIdRoute = ApiStudioStatusTaskIdRouteImport.update({
   id: '/api/studio/status/$taskId',
   path: '/api/studio/status/$taskId',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiStudioGalleryCategoriesRoute =
+  ApiStudioGalleryCategoriesRouteImport.update({
+    id: '/categories',
+    path: '/categories',
+    getParentRoute: () => ApiStudioGalleryRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -129,15 +166,21 @@ export interface FileRoutesByFullPath {
   '/studio/billing': typeof StudioBillingRoute
   '/studio/gallery': typeof StudioGalleryRoute
   '/studio/settings': typeof StudioSettingsRoute
+  '/studio/trash': typeof StudioTrashRoute
   '/studio/': typeof StudioIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/credits/deduct': typeof ApiCreditsDeductRoute
   '/api/credits/purchase': typeof ApiCreditsPurchaseRoute
-  '/api/studio/gallery': typeof ApiStudioGalleryRoute
+  '/api/credits/redeem-coupon': typeof ApiCreditsRedeemCouponRoute
+  '/api/studio/gallery': typeof ApiStudioGalleryRouteWithChildren
   '/api/studio/generate': typeof ApiStudioGenerateRoute
   '/api/studio/upload': typeof ApiStudioUploadRoute
   '/api/user/profile': typeof ApiUserProfileRoute
+  '/api/studio/gallery/categories': typeof ApiStudioGalleryCategoriesRoute
   '/api/studio/status/$taskId': typeof ApiStudioStatusTaskIdRoute
+  '/api/studio/trash/$id': typeof ApiStudioTrashIdRoute
+  '/api/studio/trash/restore': typeof ApiStudioTrashRestoreRoute
+  '/api/studio/trash/': typeof ApiStudioTrashIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -148,15 +191,21 @@ export interface FileRoutesByTo {
   '/studio/billing': typeof StudioBillingRoute
   '/studio/gallery': typeof StudioGalleryRoute
   '/studio/settings': typeof StudioSettingsRoute
+  '/studio/trash': typeof StudioTrashRoute
   '/studio': typeof StudioIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/credits/deduct': typeof ApiCreditsDeductRoute
   '/api/credits/purchase': typeof ApiCreditsPurchaseRoute
-  '/api/studio/gallery': typeof ApiStudioGalleryRoute
+  '/api/credits/redeem-coupon': typeof ApiCreditsRedeemCouponRoute
+  '/api/studio/gallery': typeof ApiStudioGalleryRouteWithChildren
   '/api/studio/generate': typeof ApiStudioGenerateRoute
   '/api/studio/upload': typeof ApiStudioUploadRoute
   '/api/user/profile': typeof ApiUserProfileRoute
+  '/api/studio/gallery/categories': typeof ApiStudioGalleryCategoriesRoute
   '/api/studio/status/$taskId': typeof ApiStudioStatusTaskIdRoute
+  '/api/studio/trash/$id': typeof ApiStudioTrashIdRoute
+  '/api/studio/trash/restore': typeof ApiStudioTrashRestoreRoute
+  '/api/studio/trash': typeof ApiStudioTrashIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -169,15 +218,21 @@ export interface FileRoutesById {
   '/studio/billing': typeof StudioBillingRoute
   '/studio/gallery': typeof StudioGalleryRoute
   '/studio/settings': typeof StudioSettingsRoute
+  '/studio/trash': typeof StudioTrashRoute
   '/studio/': typeof StudioIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/credits/deduct': typeof ApiCreditsDeductRoute
   '/api/credits/purchase': typeof ApiCreditsPurchaseRoute
-  '/api/studio/gallery': typeof ApiStudioGalleryRoute
+  '/api/credits/redeem-coupon': typeof ApiCreditsRedeemCouponRoute
+  '/api/studio/gallery': typeof ApiStudioGalleryRouteWithChildren
   '/api/studio/generate': typeof ApiStudioGenerateRoute
   '/api/studio/upload': typeof ApiStudioUploadRoute
   '/api/user/profile': typeof ApiUserProfileRoute
+  '/api/studio/gallery/categories': typeof ApiStudioGalleryCategoriesRoute
   '/api/studio/status/$taskId': typeof ApiStudioStatusTaskIdRoute
+  '/api/studio/trash/$id': typeof ApiStudioTrashIdRoute
+  '/api/studio/trash/restore': typeof ApiStudioTrashRestoreRoute
+  '/api/studio/trash/': typeof ApiStudioTrashIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -191,15 +246,21 @@ export interface FileRouteTypes {
     | '/studio/billing'
     | '/studio/gallery'
     | '/studio/settings'
+    | '/studio/trash'
     | '/studio/'
     | '/api/auth/$'
     | '/api/credits/deduct'
     | '/api/credits/purchase'
+    | '/api/credits/redeem-coupon'
     | '/api/studio/gallery'
     | '/api/studio/generate'
     | '/api/studio/upload'
     | '/api/user/profile'
+    | '/api/studio/gallery/categories'
     | '/api/studio/status/$taskId'
+    | '/api/studio/trash/$id'
+    | '/api/studio/trash/restore'
+    | '/api/studio/trash/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -210,15 +271,21 @@ export interface FileRouteTypes {
     | '/studio/billing'
     | '/studio/gallery'
     | '/studio/settings'
+    | '/studio/trash'
     | '/studio'
     | '/api/auth/$'
     | '/api/credits/deduct'
     | '/api/credits/purchase'
+    | '/api/credits/redeem-coupon'
     | '/api/studio/gallery'
     | '/api/studio/generate'
     | '/api/studio/upload'
     | '/api/user/profile'
+    | '/api/studio/gallery/categories'
     | '/api/studio/status/$taskId'
+    | '/api/studio/trash/$id'
+    | '/api/studio/trash/restore'
+    | '/api/studio/trash'
   id:
     | '__root__'
     | '/'
@@ -230,15 +297,21 @@ export interface FileRouteTypes {
     | '/studio/billing'
     | '/studio/gallery'
     | '/studio/settings'
+    | '/studio/trash'
     | '/studio/'
     | '/api/auth/$'
     | '/api/credits/deduct'
     | '/api/credits/purchase'
+    | '/api/credits/redeem-coupon'
     | '/api/studio/gallery'
     | '/api/studio/generate'
     | '/api/studio/upload'
     | '/api/user/profile'
+    | '/api/studio/gallery/categories'
     | '/api/studio/status/$taskId'
+    | '/api/studio/trash/$id'
+    | '/api/studio/trash/restore'
+    | '/api/studio/trash/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -251,11 +324,15 @@ export interface RootRouteChildren {
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
   ApiCreditsDeductRoute: typeof ApiCreditsDeductRoute
   ApiCreditsPurchaseRoute: typeof ApiCreditsPurchaseRoute
-  ApiStudioGalleryRoute: typeof ApiStudioGalleryRoute
+  ApiCreditsRedeemCouponRoute: typeof ApiCreditsRedeemCouponRoute
+  ApiStudioGalleryRoute: typeof ApiStudioGalleryRouteWithChildren
   ApiStudioGenerateRoute: typeof ApiStudioGenerateRoute
   ApiStudioUploadRoute: typeof ApiStudioUploadRoute
   ApiUserProfileRoute: typeof ApiUserProfileRoute
   ApiStudioStatusTaskIdRoute: typeof ApiStudioStatusTaskIdRoute
+  ApiStudioTrashIdRoute: typeof ApiStudioTrashIdRoute
+  ApiStudioTrashRestoreRoute: typeof ApiStudioTrashRestoreRoute
+  ApiStudioTrashIndexRoute: typeof ApiStudioTrashIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -279,6 +356,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/studio/'
       preLoaderRoute: typeof StudioIndexRouteImport
+      parentRoute: typeof StudioRoute
+    }
+    '/studio/trash': {
+      id: '/studio/trash'
+      path: '/trash'
+      fullPath: '/studio/trash'
+      preLoaderRoute: typeof StudioTrashRouteImport
       parentRoute: typeof StudioRoute
     }
     '/studio/settings': {
@@ -358,6 +442,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiStudioGalleryRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/credits/redeem-coupon': {
+      id: '/api/credits/redeem-coupon'
+      path: '/api/credits/redeem-coupon'
+      fullPath: '/api/credits/redeem-coupon'
+      preLoaderRoute: typeof ApiCreditsRedeemCouponRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/credits/purchase': {
       id: '/api/credits/purchase'
       path: '/api/credits/purchase'
@@ -379,12 +470,40 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAuthSplatRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/studio/trash/': {
+      id: '/api/studio/trash/'
+      path: '/api/studio/trash'
+      fullPath: '/api/studio/trash/'
+      preLoaderRoute: typeof ApiStudioTrashIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/studio/trash/restore': {
+      id: '/api/studio/trash/restore'
+      path: '/api/studio/trash/restore'
+      fullPath: '/api/studio/trash/restore'
+      preLoaderRoute: typeof ApiStudioTrashRestoreRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/studio/trash/$id': {
+      id: '/api/studio/trash/$id'
+      path: '/api/studio/trash/$id'
+      fullPath: '/api/studio/trash/$id'
+      preLoaderRoute: typeof ApiStudioTrashIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/studio/status/$taskId': {
       id: '/api/studio/status/$taskId'
       path: '/api/studio/status/$taskId'
       fullPath: '/api/studio/status/$taskId'
       preLoaderRoute: typeof ApiStudioStatusTaskIdRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/api/studio/gallery/categories': {
+      id: '/api/studio/gallery/categories'
+      path: '/categories'
+      fullPath: '/api/studio/gallery/categories'
+      preLoaderRoute: typeof ApiStudioGalleryCategoriesRouteImport
+      parentRoute: typeof ApiStudioGalleryRoute
     }
   }
 }
@@ -393,6 +512,7 @@ interface StudioRouteChildren {
   StudioBillingRoute: typeof StudioBillingRoute
   StudioGalleryRoute: typeof StudioGalleryRoute
   StudioSettingsRoute: typeof StudioSettingsRoute
+  StudioTrashRoute: typeof StudioTrashRoute
   StudioIndexRoute: typeof StudioIndexRoute
 }
 
@@ -400,11 +520,23 @@ const StudioRouteChildren: StudioRouteChildren = {
   StudioBillingRoute: StudioBillingRoute,
   StudioGalleryRoute: StudioGalleryRoute,
   StudioSettingsRoute: StudioSettingsRoute,
+  StudioTrashRoute: StudioTrashRoute,
   StudioIndexRoute: StudioIndexRoute,
 }
 
 const StudioRouteWithChildren =
   StudioRoute._addFileChildren(StudioRouteChildren)
+
+interface ApiStudioGalleryRouteChildren {
+  ApiStudioGalleryCategoriesRoute: typeof ApiStudioGalleryCategoriesRoute
+}
+
+const ApiStudioGalleryRouteChildren: ApiStudioGalleryRouteChildren = {
+  ApiStudioGalleryCategoriesRoute: ApiStudioGalleryCategoriesRoute,
+}
+
+const ApiStudioGalleryRouteWithChildren =
+  ApiStudioGalleryRoute._addFileChildren(ApiStudioGalleryRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
@@ -416,11 +548,15 @@ const rootRouteChildren: RootRouteChildren = {
   ApiAuthSplatRoute: ApiAuthSplatRoute,
   ApiCreditsDeductRoute: ApiCreditsDeductRoute,
   ApiCreditsPurchaseRoute: ApiCreditsPurchaseRoute,
-  ApiStudioGalleryRoute: ApiStudioGalleryRoute,
+  ApiCreditsRedeemCouponRoute: ApiCreditsRedeemCouponRoute,
+  ApiStudioGalleryRoute: ApiStudioGalleryRouteWithChildren,
   ApiStudioGenerateRoute: ApiStudioGenerateRoute,
   ApiStudioUploadRoute: ApiStudioUploadRoute,
   ApiUserProfileRoute: ApiUserProfileRoute,
   ApiStudioStatusTaskIdRoute: ApiStudioStatusTaskIdRoute,
+  ApiStudioTrashIdRoute: ApiStudioTrashIdRoute,
+  ApiStudioTrashRestoreRoute: ApiStudioTrashRestoreRoute,
+  ApiStudioTrashIndexRoute: ApiStudioTrashIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

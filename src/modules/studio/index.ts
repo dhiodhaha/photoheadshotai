@@ -2,7 +2,13 @@
 
 export {
 	deleteHeadshot,
+	getFavorites,
+	getGalleryCategories,
 	getHeadshotGallery,
+	getTrash,
+	permanentlyDeleteHeadshot,
+	restoreHeadshot,
+	toggleFavorite,
 } from "./application/gallery.service";
 export { generationService } from "./application/generation.service";
 export { getGenerationHistory } from "./application/history.service";

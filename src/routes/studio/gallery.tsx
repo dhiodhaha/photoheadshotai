@@ -1,3 +1,4 @@
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import {
 	Download,
@@ -8,7 +9,7 @@ import {
 	Trash2,
 } from "lucide-react";
 import { motion } from "motion/react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -17,26 +18,125 @@ export const Route = createFileRoute("/studio/gallery")({
 	component: GalleryPage,
 });
 
-const STYLE_DISPLAY_NAMES: Record<string, string> = {
-	executive: "Executive Classic",
-	fashion: "High Fashion Editor",
-	cinematic: "Cinematic Moody",
-};
+interface GalleryItem {
+	id: string;
+	src: string;
+	style: string;
+	styleLabel: string;
+	createdAt: string;
+	isFavorited: boolean;
+}
 
-const FILTERS = [
-	"All",
-	"Favorites",
-	"Executive Classic",
-	"High Fashion Editor",
-	"Cinematic Moody",
-];
+interface Category {
+	styleId: string;
+	label: string;
+}
 
 function GalleryPage() {
-	const [activeFilter, setActiveFilter] = useState("All");
-	const [gallery, setGallery] = useState<
-		{ id: string; resultUrl: string; createdAt: string }[]
-	>([]);
-	const [isLoading, setIsLoading] = useState(true);
+	const queryClient = useQueryClient();
+	const [activeFilter, setActiveFilter] = useState<string>("All");
+
+	const { data: categoriesData } = useQuery<{ categories: Category[] }>({
+		queryKey: ["gallery-categories"],
+		queryFn: async () => {
+			const res = await fetch("/api/studio/gallery/categories");
+			if (!res.ok) throw new Error("Failed to load categories");
+			return res.json();
+		},
+		staleTime: 1000 * 60 * 5,
+	});
+
+	const styleId =
+		activeFilter !== "All" && activeFilter !== "Favorites"
+			? activeFilter
+			: undefined;
+
+	const { data: galleryData, isLoading } = useQuery<{
+		headshots: GalleryItem[];
+	}>({
+		queryKey: ["gallery", styleId],
+		queryFn: async () => {
+			const url = styleId
+				? `/api/studio/gallery?style=${styleId}`
+				: "/api/studio/gallery";
+			const res = await fetch(url);
+			if (!res.ok) throw new Error("Failed to load gallery");
+			return res.json();
+		},
+	});
+
+	const allHeadshots = galleryData?.headshots ?? [];
+	const categories = categoriesData?.categories ?? [];
+
+	const displayedHeadshots =
+		activeFilter === "Favorites"
+			? allHeadshots.filter((item) => item.isFavorited)
+			: allHeadshots;
+
+	const favoriteMutation = useMutation({
+		mutationFn: async (headshotId: string) => {
+			const res = await fetch("/api/studio/gallery", {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({ action: "favorite", headshotId }),
+			});
+			if (!res.ok) throw new Error("Failed to toggle favorite");
+			return res.json();
+		},
+		onMutate: async (headshotId) => {
+			await queryClient.cancelQueries({ queryKey: ["gallery"] });
+			const previousData = queryClient.getQueryData<{
+				headshots: GalleryItem[];
+			}>(["gallery", styleId]);
+			queryClient.setQueryData<{ headshots: GalleryItem[] }>(
+				["gallery", styleId],
+				(old) => {
+					if (!old) return old;
+					return {
+						headshots: old.headshots.map((h) =>
+							h.id === headshotId ? { ...h, isFavorited: !h.isFavorited } : h,
+						),
+					};
+				},
+			);
+			return { previousData };
+		},
+		onError: (_err, _vars, context) => {
+			queryClient.setQueryData(["gallery", styleId], context?.previousData);
+			toast.error("Failed to update favorite.");
+		},
+	});
+
+	const deleteMutation = useMutation({
+		mutationFn: async (id: string) => {
+			const res = await fetch("/api/studio/gallery", {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({ id }),
+			});
+			if (!res.ok) throw new Error("Delete failed");
+			return res.json();
+		},
+		onMutate: async (id) => {
+			await queryClient.cancelQueries({ queryKey: ["gallery"] });
+			const previousData = queryClient.getQueryData<{
+				headshots: GalleryItem[];
+			}>(["gallery", styleId]);
+			queryClient.setQueryData<{ headshots: GalleryItem[] }>(
+				["gallery", styleId],
+				(old) => {
+					if (!old) return old;
+					return { headshots: old.headshots.filter((h) => h.id !== id) };
+				},
+			);
+			return { previousData };
+		},
+		onSuccess: () => toast.success("Image moved to trash."),
+		onError: (_err, _vars, context) => {
+			queryClient.setQueryData(["gallery", styleId], context?.previousData);
+			toast.error("Failed to delete image.");
+		},
+	});
 
 	const handleDownload = async (url: string) => {
 		try {
@@ -55,53 +155,12 @@ function GalleryPage() {
 		}
 	};
 
-	const handleDelete = async (id: string) => {
-		try {
-			// Optimistic update
-			setGallery((prev) => prev.filter((item) => item.id !== id));
+	const filters = ["All", "Favorites", ...categories.map((c) => c.styleId)];
 
-			const res = await fetch("/api/studio/gallery", {
-				method: "POST",
-				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify({ id }),
-			});
-
-			if (!res.ok) throw new Error("Delete failed");
-
-			toast.success("Image deleted from gallery.");
-		} catch (_e) {
-			toast.error("Failed to delete image.");
-			// Re-fetch to restore state on error
-			window.location.reload();
-		}
+	const getCategoryLabel = (styleId: string) => {
+		const cat = categories.find((c) => c.styleId === styleId);
+		return cat?.label ?? styleId;
 	};
-
-	useEffect(() => {
-		const fetchGallery = async () => {
-			try {
-				setIsLoading(true);
-				const res = await fetch("/api/studio/gallery");
-				const data = await res.json();
-				if (data.headshots) {
-					setGallery(data.headshots);
-				}
-			} catch (e) {
-				console.error("Gallery fetch failed", e);
-			} finally {
-				setIsLoading(false);
-			}
-		};
-		fetchGallery();
-	}, []);
-
-	const filteredGallery = gallery.filter((item) => {
-		if (activeFilter === "All") return true;
-		if (activeFilter === "Favorites") return item.isFavorite || false;
-
-		// Match by display name
-		const displayName = STYLE_DISPLAY_NAMES[item.style] || item.style;
-		return displayName === activeFilter;
-	});
 
 	return (
 		<div className="relative min-h-[calc(100vh-5rem)] p-6 md:p-12 overflow-y-auto">
@@ -155,7 +214,7 @@ function GalleryPage() {
 					transition={{ delay: 0.2, duration: 0.8 }}
 					className="flex flex-wrap items-center gap-2 border-b border-white/5 pb-6"
 				>
-					{FILTERS.map((filter) => (
+					{filters.map((filter) => (
 						<button
 							type="button"
 							key={filter}
@@ -167,7 +226,9 @@ function GalleryPage() {
 									: "text-muted-foreground hover:text-white hover:bg-white/5",
 							)}
 						>
-							{filter}
+							{filter === "All" || filter === "Favorites"
+								? filter
+								: getCategoryLabel(filter)}
 						</button>
 					))}
 				</motion.div>
@@ -181,7 +242,7 @@ function GalleryPage() {
 							className="w-10 h-10 border-2 border-primary border-t-transparent rounded-full"
 						/>
 					</div>
-				) : filteredGallery.length === 0 ? (
+				) : displayedHeadshots.length === 0 ? (
 					<motion.div
 						initial={{ opacity: 0 }}
 						animate={{ opacity: 1 }}
@@ -200,7 +261,7 @@ function GalleryPage() {
 						layout
 						className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6"
 					>
-						{filteredGallery.map((item, i) => (
+						{displayedHeadshots.map((item, i) => (
 							<motion.div
 								layout
 								initial={{ opacity: 0, scale: 0.9 }}
@@ -222,31 +283,32 @@ function GalleryPage() {
 								<div className="absolute inset-0 p-4 flex flex-col justify-between opacity-0 group-hover:opacity-100 transition-opacity duration-300 translate-y-2 group-hover:translate-y-0">
 									<div className="flex justify-between items-start">
 										<div className="px-2.5 py-1 rounded-full bg-black/50 backdrop-blur-md border border-white/10 text-[9px] font-bold uppercase tracking-widest text-white/80">
-											{STYLE_DISPLAY_NAMES[item.style] || item.style}
+											{item.styleLabel || item.style}
 										</div>
 										<div className="flex gap-2">
 											<button
 												type="button"
+												onClick={() => favoriteMutation.mutate(item.id)}
 												className={cn(
 													"w-8 h-8 rounded-full flex items-center justify-center backdrop-blur-md border border-white/10 transition-colors",
-													item.isFavorite
+													item.isFavorited
 														? "bg-red-500/20 text-red-500 hover:bg-red-500/40"
 														: "bg-black/50 text-white hover:bg-white/20 hover:text-white",
 												)}
 												aria-label={
-													item.isFavorite
+													item.isFavorited
 														? "Remove from favorites"
 														: "Add to favorites"
 												}
 											>
 												<Heart
 													className="w-4 h-4 text-inherit"
-													fill={item.isFavorite ? "currentColor" : "none"}
+													fill={item.isFavorited ? "currentColor" : "none"}
 												/>
 											</button>
 											<button
 												type="button"
-												onClick={() => handleDelete(item.id)}
+												onClick={() => deleteMutation.mutate(item.id)}
 												className="w-8 h-8 rounded-full flex items-center justify-center backdrop-blur-md border border-white/10 bg-black/50 text-white hover:bg-red-500 transition-colors"
 												aria-label="Delete image"
 											>

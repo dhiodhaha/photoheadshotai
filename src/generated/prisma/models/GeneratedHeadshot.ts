@@ -183,6 +183,7 @@ export type GeneratedHeadshotWhereInput = {
   isDeleted?: Prisma.BoolFilter<"GeneratedHeadshot"> | boolean
   createdAt?: Prisma.DateTimeFilter<"GeneratedHeadshot"> | Date | string
   generationJob?: Prisma.XOR<Prisma.GenerationJobScalarRelationFilter, Prisma.GenerationJobWhereInput>
+  favorites?: Prisma.FavoriteHeadshotListRelationFilter
 }
 
 export type GeneratedHeadshotOrderByWithRelationInput = {
@@ -192,6 +193,7 @@ export type GeneratedHeadshotOrderByWithRelationInput = {
   isDeleted?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   generationJob?: Prisma.GenerationJobOrderByWithRelationInput
+  favorites?: Prisma.FavoriteHeadshotOrderByRelationAggregateInput
 }
 
 export type GeneratedHeadshotWhereUniqueInput = Prisma.AtLeast<{
@@ -204,6 +206,7 @@ export type GeneratedHeadshotWhereUniqueInput = Prisma.AtLeast<{
   isDeleted?: Prisma.BoolFilter<"GeneratedHeadshot"> | boolean
   createdAt?: Prisma.DateTimeFilter<"GeneratedHeadshot"> | Date | string
   generationJob?: Prisma.XOR<Prisma.GenerationJobScalarRelationFilter, Prisma.GenerationJobWhereInput>
+  favorites?: Prisma.FavoriteHeadshotListRelationFilter
 }, "id">
 
 export type GeneratedHeadshotOrderByWithAggregationInput = {
@@ -234,6 +237,7 @@ export type GeneratedHeadshotCreateInput = {
   isDeleted?: boolean
   createdAt?: Date | string
   generationJob: Prisma.GenerationJobCreateNestedOneWithoutGeneratedHeadshotsInput
+  favorites?: Prisma.FavoriteHeadshotCreateNestedManyWithoutHeadshotInput
 }
 
 export type GeneratedHeadshotUncheckedCreateInput = {
@@ -242,6 +246,7 @@ export type GeneratedHeadshotUncheckedCreateInput = {
   resultUrl: string
   isDeleted?: boolean
   createdAt?: Date | string
+  favorites?: Prisma.FavoriteHeadshotUncheckedCreateNestedManyWithoutHeadshotInput
 }
 
 export type GeneratedHeadshotUpdateInput = {
@@ -250,6 +255,7 @@ export type GeneratedHeadshotUpdateInput = {
   isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   generationJob?: Prisma.GenerationJobUpdateOneRequiredWithoutGeneratedHeadshotsNestedInput
+  favorites?: Prisma.FavoriteHeadshotUpdateManyWithoutHeadshotNestedInput
 }
 
 export type GeneratedHeadshotUncheckedUpdateInput = {
@@ -258,6 +264,7 @@ export type GeneratedHeadshotUncheckedUpdateInput = {
   resultUrl?: Prisma.StringFieldUpdateOperationsInput | string
   isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  favorites?: Prisma.FavoriteHeadshotUncheckedUpdateManyWithoutHeadshotNestedInput
 }
 
 export type GeneratedHeadshotCreateManyInput = {
@@ -317,6 +324,11 @@ export type GeneratedHeadshotMinOrderByAggregateInput = {
   createdAt?: Prisma.SortOrder
 }
 
+export type GeneratedHeadshotScalarRelationFilter = {
+  is?: Prisma.GeneratedHeadshotWhereInput
+  isNot?: Prisma.GeneratedHeadshotWhereInput
+}
+
 export type GeneratedHeadshotCreateNestedManyWithoutGenerationJobInput = {
   create?: Prisma.XOR<Prisma.GeneratedHeadshotCreateWithoutGenerationJobInput, Prisma.GeneratedHeadshotUncheckedCreateWithoutGenerationJobInput> | Prisma.GeneratedHeadshotCreateWithoutGenerationJobInput[] | Prisma.GeneratedHeadshotUncheckedCreateWithoutGenerationJobInput[]
   connectOrCreate?: Prisma.GeneratedHeadshotCreateOrConnectWithoutGenerationJobInput | Prisma.GeneratedHeadshotCreateOrConnectWithoutGenerationJobInput[]
@@ -359,11 +371,26 @@ export type GeneratedHeadshotUncheckedUpdateManyWithoutGenerationJobNestedInput 
   deleteMany?: Prisma.GeneratedHeadshotScalarWhereInput | Prisma.GeneratedHeadshotScalarWhereInput[]
 }
 
+export type GeneratedHeadshotCreateNestedOneWithoutFavoritesInput = {
+  create?: Prisma.XOR<Prisma.GeneratedHeadshotCreateWithoutFavoritesInput, Prisma.GeneratedHeadshotUncheckedCreateWithoutFavoritesInput>
+  connectOrCreate?: Prisma.GeneratedHeadshotCreateOrConnectWithoutFavoritesInput
+  connect?: Prisma.GeneratedHeadshotWhereUniqueInput
+}
+
+export type GeneratedHeadshotUpdateOneRequiredWithoutFavoritesNestedInput = {
+  create?: Prisma.XOR<Prisma.GeneratedHeadshotCreateWithoutFavoritesInput, Prisma.GeneratedHeadshotUncheckedCreateWithoutFavoritesInput>
+  connectOrCreate?: Prisma.GeneratedHeadshotCreateOrConnectWithoutFavoritesInput
+  upsert?: Prisma.GeneratedHeadshotUpsertWithoutFavoritesInput
+  connect?: Prisma.GeneratedHeadshotWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.GeneratedHeadshotUpdateToOneWithWhereWithoutFavoritesInput, Prisma.GeneratedHeadshotUpdateWithoutFavoritesInput>, Prisma.GeneratedHeadshotUncheckedUpdateWithoutFavoritesInput>
+}
+
 export type GeneratedHeadshotCreateWithoutGenerationJobInput = {
   id?: string
   resultUrl: string
   isDeleted?: boolean
   createdAt?: Date | string
+  favorites?: Prisma.FavoriteHeadshotCreateNestedManyWithoutHeadshotInput
 }
 
 export type GeneratedHeadshotUncheckedCreateWithoutGenerationJobInput = {
@@ -371,6 +398,7 @@ export type GeneratedHeadshotUncheckedCreateWithoutGenerationJobInput = {
   resultUrl: string
   isDeleted?: boolean
   createdAt?: Date | string
+  favorites?: Prisma.FavoriteHeadshotUncheckedCreateNestedManyWithoutHeadshotInput
 }
 
 export type GeneratedHeadshotCreateOrConnectWithoutGenerationJobInput = {
@@ -410,6 +438,54 @@ export type GeneratedHeadshotScalarWhereInput = {
   createdAt?: Prisma.DateTimeFilter<"GeneratedHeadshot"> | Date | string
 }
 
+export type GeneratedHeadshotCreateWithoutFavoritesInput = {
+  id?: string
+  resultUrl: string
+  isDeleted?: boolean
+  createdAt?: Date | string
+  generationJob: Prisma.GenerationJobCreateNestedOneWithoutGeneratedHeadshotsInput
+}
+
+export type GeneratedHeadshotUncheckedCreateWithoutFavoritesInput = {
+  id?: string
+  generationJobId: string
+  resultUrl: string
+  isDeleted?: boolean
+  createdAt?: Date | string
+}
+
+export type GeneratedHeadshotCreateOrConnectWithoutFavoritesInput = {
+  where: Prisma.GeneratedHeadshotWhereUniqueInput
+  create: Prisma.XOR<Prisma.GeneratedHeadshotCreateWithoutFavoritesInput, Prisma.GeneratedHeadshotUncheckedCreateWithoutFavoritesInput>
+}
+
+export type GeneratedHeadshotUpsertWithoutFavoritesInput = {
+  update: Prisma.XOR<Prisma.GeneratedHeadshotUpdateWithoutFavoritesInput, Prisma.GeneratedHeadshotUncheckedUpdateWithoutFavoritesInput>
+  create: Prisma.XOR<Prisma.GeneratedHeadshotCreateWithoutFavoritesInput, Prisma.GeneratedHeadshotUncheckedCreateWithoutFavoritesInput>
+  where?: Prisma.GeneratedHeadshotWhereInput
+}
+
+export type GeneratedHeadshotUpdateToOneWithWhereWithoutFavoritesInput = {
+  where?: Prisma.GeneratedHeadshotWhereInput
+  data: Prisma.XOR<Prisma.GeneratedHeadshotUpdateWithoutFavoritesInput, Prisma.GeneratedHeadshotUncheckedUpdateWithoutFavoritesInput>
+}
+
+export type GeneratedHeadshotUpdateWithoutFavoritesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  resultUrl?: Prisma.StringFieldUpdateOperationsInput | string
+  isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  generationJob?: Prisma.GenerationJobUpdateOneRequiredWithoutGeneratedHeadshotsNestedInput
+}
+
+export type GeneratedHeadshotUncheckedUpdateWithoutFavoritesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  generationJobId?: Prisma.StringFieldUpdateOperationsInput | string
+  resultUrl?: Prisma.StringFieldUpdateOperationsInput | string
+  isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
 export type GeneratedHeadshotCreateManyGenerationJobInput = {
   id?: string
   resultUrl: string
@@ -422,6 +498,7 @@ export type GeneratedHeadshotUpdateWithoutGenerationJobInput = {
   resultUrl?: Prisma.StringFieldUpdateOperationsInput | string
   isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  favorites?: Prisma.FavoriteHeadshotUpdateManyWithoutHeadshotNestedInput
 }
 
 export type GeneratedHeadshotUncheckedUpdateWithoutGenerationJobInput = {
@@ -429,6 +506,7 @@ export type GeneratedHeadshotUncheckedUpdateWithoutGenerationJobInput = {
   resultUrl?: Prisma.StringFieldUpdateOperationsInput | string
   isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  favorites?: Prisma.FavoriteHeadshotUncheckedUpdateManyWithoutHeadshotNestedInput
 }
 
 export type GeneratedHeadshotUncheckedUpdateManyWithoutGenerationJobInput = {
@@ -439,6 +517,35 @@ export type GeneratedHeadshotUncheckedUpdateManyWithoutGenerationJobInput = {
 }
 
 
+/**
+ * Count Type GeneratedHeadshotCountOutputType
+ */
+
+export type GeneratedHeadshotCountOutputType = {
+  favorites: number
+}
+
+export type GeneratedHeadshotCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  favorites?: boolean | GeneratedHeadshotCountOutputTypeCountFavoritesArgs
+}
+
+/**
+ * GeneratedHeadshotCountOutputType without action
+ */
+export type GeneratedHeadshotCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the GeneratedHeadshotCountOutputType
+   */
+  select?: Prisma.GeneratedHeadshotCountOutputTypeSelect<ExtArgs> | null
+}
+
+/**
+ * GeneratedHeadshotCountOutputType without action
+ */
+export type GeneratedHeadshotCountOutputTypeCountFavoritesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.FavoriteHeadshotWhereInput
+}
+
 
 export type GeneratedHeadshotSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -447,6 +554,8 @@ export type GeneratedHeadshotSelect<ExtArgs extends runtime.Types.Extensions.Int
   isDeleted?: boolean
   createdAt?: boolean
   generationJob?: boolean | Prisma.GenerationJobDefaultArgs<ExtArgs>
+  favorites?: boolean | Prisma.GeneratedHeadshot$favoritesArgs<ExtArgs>
+  _count?: boolean | Prisma.GeneratedHeadshotCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["generatedHeadshot"]>
 
 export type GeneratedHeadshotSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -478,6 +587,8 @@ export type GeneratedHeadshotSelectScalar = {
 export type GeneratedHeadshotOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "generationJobId" | "resultUrl" | "isDeleted" | "createdAt", ExtArgs["result"]["generatedHeadshot"]>
 export type GeneratedHeadshotInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   generationJob?: boolean | Prisma.GenerationJobDefaultArgs<ExtArgs>
+  favorites?: boolean | Prisma.GeneratedHeadshot$favoritesArgs<ExtArgs>
+  _count?: boolean | Prisma.GeneratedHeadshotCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type GeneratedHeadshotIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   generationJob?: boolean | Prisma.GenerationJobDefaultArgs<ExtArgs>
@@ -490,6 +601,7 @@ export type $GeneratedHeadshotPayload<ExtArgs extends runtime.Types.Extensions.I
   name: "GeneratedHeadshot"
   objects: {
     generationJob: Prisma.$GenerationJobPayload<ExtArgs>
+    favorites: Prisma.$FavoriteHeadshotPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -892,6 +1004,7 @@ readonly fields: GeneratedHeadshotFieldRefs;
 export interface Prisma__GeneratedHeadshotClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   generationJob<T extends Prisma.GenerationJobDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.GenerationJobDefaultArgs<ExtArgs>>): Prisma.Prisma__GenerationJobClient<runtime.Types.Result.GetResult<Prisma.$GenerationJobPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  favorites<T extends Prisma.GeneratedHeadshot$favoritesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.GeneratedHeadshot$favoritesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$FavoriteHeadshotPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1324,6 +1437,30 @@ export type GeneratedHeadshotDeleteManyArgs<ExtArgs extends runtime.Types.Extens
    * Limit how many GeneratedHeadshots to delete.
    */
   limit?: number
+}
+
+/**
+ * GeneratedHeadshot.favorites
+ */
+export type GeneratedHeadshot$favoritesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the FavoriteHeadshot
+   */
+  select?: Prisma.FavoriteHeadshotSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the FavoriteHeadshot
+   */
+  omit?: Prisma.FavoriteHeadshotOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.FavoriteHeadshotInclude<ExtArgs> | null
+  where?: Prisma.FavoriteHeadshotWhereInput
+  orderBy?: Prisma.FavoriteHeadshotOrderByWithRelationInput | Prisma.FavoriteHeadshotOrderByWithRelationInput[]
+  cursor?: Prisma.FavoriteHeadshotWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.FavoriteHeadshotScalarFieldEnum | Prisma.FavoriteHeadshotScalarFieldEnum[]
 }
 
 /**

@@ -1,4 +1,7 @@
-import { REFERRAL_CREDIT_REWARD } from "../domain/referral.entity";
+import {
+	REFERRAL_CREDIT_REWARD,
+	REFERRAL_NEW_USER_CREDIT_REWARD,
+} from "../domain/referral.entity";
 import {
 	awardReferralCredits,
 	findBootstrapCode,
@@ -55,5 +58,10 @@ export async function rewardReferrerOnVerification(
 	const existing = await hasReferralReward(newUserId);
 	if (existing) return; // Prevent double rewards
 
-	await awardReferralCredits(referrerId, newUserId, REFERRAL_CREDIT_REWARD);
+	await awardReferralCredits(
+		referrerId,
+		newUserId,
+		REFERRAL_CREDIT_REWARD,
+		REFERRAL_NEW_USER_CREDIT_REWARD,
+	);
 }

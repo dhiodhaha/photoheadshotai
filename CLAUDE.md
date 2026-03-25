@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Product
 
-**Professional AI Headshot Studio** — Users upload casual photos, the AI transforms them into professional studio headshots. Key features: OAuth auth, credit system, studio upload + generation, before/after comparison, history vault.
+**Professional AI Headshot Studio** — Users upload casual photos, the AI transforms them into professional studio headshots. Key features: OAuth auth, credit system, referral system, studio upload + generation, before/after comparison, history vault.
 
 ## Commands
 
@@ -30,13 +30,13 @@ pnpm dlx shadcn@latest add <component>
 
 ## Architecture
 
-**TanStack Start** — SSR React framework with file-based routing. Routes live in `src/routes/`, the generated route tree is at `src/routeTree.gen.ts` (never edit manually).
+**TanStack Start** — SSR React framework with file-based routing. Uses Nitro (`nitro/vite` plugin) as the server runtime — this is intentional and recommended by TanStack. Routes live in `src/routes/`, the generated route tree is at `src/routeTree.gen.ts` (never edit manually).
 
-**Routing**: File-based via TanStack Router. `__root.tsx` is the root layout. API routes use `src/routes/api/` — named files for specific endpoints (e.g. `upload.ts`), `$` catch-all for delegated handlers (e.g. auth).
+**Routing**: File-based via TanStack Router. `__root.tsx` is the root layout. API routes use `src/routes/api/` — named files for specific endpoints (e.g. `upload.ts`), `$` catch-all for delegated handlers (e.g. auth). `defaultNotFoundComponent` is set at the router level in `src/router.tsx` — do not add `notFoundComponent` per-route.
 
 **Data fetching**: TanStack Query for server state. QueryClient in `src/integrations/tanstack-query/root-provider.tsx`.
 
-**Database**: PostgreSQL via Prisma + `@prisma/adapter-pg`. Client singleton at `src/lib/prisma.ts`. Schema at `prisma/schema.prisma`, generated to `src/generated/prisma/`.
+**Database**: PostgreSQL via Prisma + `@prisma/adapter-pg`. Client singleton at `src/lib/prisma.ts`. Schema at `prisma/schema.prisma`, generated to `src/generated/prisma/`. Pool `max: 5` (tuned for 2vCPU VPS).
 
 **Auth**: Better Auth with Prisma adapter. Server config: `src/lib/auth.ts`, client: `src/lib/auth-client.ts`. API at `/api/auth/*`.
 
@@ -118,6 +118,22 @@ credits/
 └── index.ts
 ```
 
+### Referral Module (`src/modules/referral/`)
+
+Handles bootstrap codes, user referral codes, and credit rewards.
+
+```
+referral/
+├── domain/
+│   └── referral.entity.ts     # BootstrapCode, ReferralReward types
+├── application/
+│   ├── referral.schema.ts     # referralCodeSchema (Zod)
+│   └── referral.service.ts    # validateReferralCode, processSignupCode, rewardReferrerOnVerification
+├── infrastructure/
+│   └── referral.repository.ts # Prisma CRUD — atomic redeemBootstrapCode, awardReferralCredits
+└── index.ts
+```
+
 ## API Endpoints
 
 | Method | Endpoint | Auth | Description |
@@ -161,16 +177,53 @@ credits/
 - Use `React.SubmitEvent<HTMLFormElement>` for form submit handlers — `React.FormEvent` is deprecated since React 19.
 
 ### Prisma
-- Schema uses enums (`PhotoStatus`, `GenerationJobStatus`, `TransactionType`) — not raw strings.
+- Schema uses enums (`PhotoStatus`, `GenerationJobStatus`, `TransactionType`) — not raw strings. Import from `#/generated/prisma/enums.js`.
 - All fields use `@map("snake_case")`, tables use `@@map("plural_snake")`.
-- Every foreign key has `@@index`.
+- Every foreign key has `@@index`. Never add `@@index` on a field that is already `@unique`.
 - Use atomic operations (`{ increment }`, `{ decrement }`) — never read-then-write for counters.
 - Use `$transaction` for related writes that must succeed together.
+- Credit deduction is atomic (check + deduct inside single transaction) — prevents TOCTOU race.
 - Use `Promise.all` for independent reads.
+
+### Auth (Better Auth)
+- `referralCode` additionalField: the `before` hook replaces the entered value with a generated unique code. The entered code is bridged to `after` via `_pendingRedemptions` Map in `src/lib/auth.ts`.
+- Never set `defaultValue: ""` on a field with `@unique` in the schema — Better Auth will explicitly send the empty string, violating the constraint for the 2nd user.
+- Studio routes use `beforeLoad: getSessionFn()` for auth guard. Child components should use `useRouteContext({ from: '/studio' })` for session — not `authClient.useSession()` (except when `refetch` is needed after mutations).
+- Hooks must be called at the top of the component function — never inline in JSX.
 
 ### Error Handling
 - Catch blocks: `catch (error: unknown)` with `error instanceof Error ? error.message : "fallback"`.
 - Services throw typed errors; routes catch and return appropriate HTTP status codes.
+
+## Infrastructure
+
+### VPS (Jetorbit)
+- **Specs:** 2vCPU, 4GB RAM, 80GB SSD
+- **Stack:** Docker Compose + Nginx reverse proxy + Cloudflare proxy
+- **Domain:** standoutheadshot.com
+- **Nginx config:** `nginx/photoheadshot.conf` — deployed via CI/CD on every push to `main`
+- **SSL:** Cloudflare Origin Certificate at `/etc/ssl/cloudflare/origin.pem`
+- **Cloudflare SSL mode:** Full (not Flexible, not Full Strict)
+- **Cache:** Nginx proxy cache at `/var/cache/nginx` — check with `X-Cache-Status` response header
+
+### Docker
+- Production compose: `docker-compose.prod.yml`
+- App resource limits: 1.5 CPU, 1536MB memory
+- `UV_THREADPOOL_SIZE=4` set in container env
+- Migrations run automatically on container start via `docker-entrypoint.sh` using `node_modules/.bin/prisma migrate deploy`
+- `node_modules` copied from `deps` stage into runner so `prisma/config` resolves correctly
+
+### CI/CD (GitHub Actions)
+- Deploy workflow: `.github/workflows/deploy.yml`
+- Triggers on push to `main` only
+- Steps: build + push to GHCR → copy nginx config via scp → deploy on VPS via Tailscale SSH
+- `pnpm` is NOT available in the production container — never add `docker exec ... pnpm` to deploy scripts
+
+### Nginx
+- Config lives at `nginx/photoheadshot.conf` in repo — CI/CD copies to `/etc/nginx/sites-enabled/standoutheadshot.conf`
+- Static assets served directly by Nginx (bypasses Node)
+- `/studio`, `/api`, `/auth` routes: `Cache-Control: private, no-store`
+- `/` and public routes: Nginx proxy cache, 10 min TTL
 
 ## Environment
 
@@ -191,72 +244,27 @@ credits/
 ```typescript
 const result = await fal.subscribe(SEEDREAM_MODEL, {
   input: {
-    prompt: string,                              // E.g., "Transform the person in Figure 1..."
-    image_urls: string[],                        // Array of input image URLs
+    prompt: string,
+    image_urls: string[],
     image_size: { width: number, height: number }, // 1024x1024
     num_images: 1,
     enable_safety_checker: true,
   },
 });
 
-// Response structure
 result.data?.images?.[0]?.url  // Generated image URL
 ```
 
-**Prompts:** Stored in `src/modules/studio/domain/styles.ts` as `HEADSHOT_STYLES` array. Each style has:
-- `id`: Unique identifier (e.g., "executive")
-- `label`: Display name (e.g., "Executive Classic")
-- `prompt`: Seedream-specific instructions
+**Prompts:** Stored in `src/modules/studio/domain/styles.ts` as `HEADSHOT_STYLES` array. Each style has `id`, `label`, `prompt`. Single source of truth — frontend imports directly from domain.
 
-**History:** Generation history shows `style.label` instead of raw prompts. StyleID is tracked in `GenerationJob.styleId` for future lookups.
+## Status
 
-## Status & Next Steps
+**Current state:** Production deployed at standoutheadshot.com
+**Infrastructure:** Live on Jetorbit VPS behind Cloudflare
 
-**Current Branch:** `feat/frontend-studio`
-**Status:** ✅ Ready for merge (code review in `CODE_REVIEW.md`)
-**Target:** Merge to `main`
-
-**Before Merge:**
-- [ ] Run `pnpm lint` (should be 0 errors)
-- [ ] Run `pnpm build` (should succeed with no TS errors)
-- [ ] Share `CODE_REVIEW.md` with team
-- [ ] Review and approve code changes
-
-**Before Production Deployment:**
-- [ ] Set up Cloudflare R2 bucket and configure env vars
-- [ ] Test full flow (upload → generate → download) with real credentials
-- [ ] Run database migrations: `pnpm db:migrate`
-- [ ] Set up error tracking for fal.ai calls
-- [ ] Configure environment for production (MOCK_AI_GENERATION=false)
-
-**Future Improvements (Post-MVP):**
+**Post-MVP improvements:**
 - Async job queue (Bull) for long-running generations
 - Webhook support for fal.ai completion notifications
 - Generation retry logic with exponential backoff
-- Image caching for identical inputs
-- A/B testing different AI models
-
-## Recent Refactoring (2026-03-22)
-
-**Commits:** 6 major refactoring commits on `feat/frontend-studio`
-**Focus:** DDD structure, SRP components, Prisma enums, Biome compliance, AI model migration
-
-**Key Changes:**
-1. **DDD Module Structure:** Proper separation into domain/application/infrastructure layers
-2. **SRP Components:** Extracted 6 reusable components (AuthLeftPanel, SignInForm, SignUpForm, StudioSidebar, StudioHeader, UserDropdownMenu)
-3. **Prisma Enums:** Added `PhotoStatus`, `GenerationJobStatus`, `TransactionType` for type safety
-4. **Biome Compliance:** Fixed all 9 lint violations (noNonNullAssertion, noExplicitAny, useButtonType, useSemanticElements, noArrayIndexKey, noStaticElementInteractions)
-5. **React 19:** Updated all form handlers to `React.SubmitEvent<HTMLFormElement>`
-6. **AI Migration:** Switched from flux-pulid to seedream v4.5 (better results, lower cost)
-7. **Style Tracking:** Added styleId column to GenerationJob; history shows readable style labels
-8. **Bundle Fix:** Fixed server-module leakage (Buffer error in browser)
-9. **Style Sync:** Unified style definitions in domain layer (single source of truth)
-10. **Documentation:** Updated CLAUDE.md, added `.env.example`, created CODE_REVIEW.md
-
-**Code Quality Metrics:**
-- ✅ Linting: 0 Biome violations
-- ✅ Types: 99% type coverage (1 justified `as any`)
-- ✅ Strict Mode: All TypeScript strict flags enabled
-- ✅ DDD: All modules follow domain/app/infra pattern
-- ✅ SRP: Components have single responsibility
-- ✅ Pre-commit Hooks: Biome lint-staged validation enabled
+- Preview deployments per branch
+- Error tracking (Sentry)

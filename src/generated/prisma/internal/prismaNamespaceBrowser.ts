@@ -61,7 +61,10 @@ export const ModelName = {
   Photo: 'Photo',
   GenerationJob: 'GenerationJob',
   GeneratedHeadshot: 'GeneratedHeadshot',
-  CreditTransaction: 'CreditTransaction'
+  CreditTransaction: 'CreditTransaction',
+  FavoriteHeadshot: 'FavoriteHeadshot',
+  Coupon: 'Coupon',
+  CouponRedemption: 'CouponRedemption'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -223,6 +226,39 @@ export const CreditTransactionScalarFieldEnum = {
 } as const
 
 export type CreditTransactionScalarFieldEnum = (typeof CreditTransactionScalarFieldEnum)[keyof typeof CreditTransactionScalarFieldEnum]
+
+
+export const FavoriteHeadshotScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  headshotId: 'headshotId',
+  createdAt: 'createdAt'
+} as const
+
+export type FavoriteHeadshotScalarFieldEnum = (typeof FavoriteHeadshotScalarFieldEnum)[keyof typeof FavoriteHeadshotScalarFieldEnum]
+
+
+export const CouponScalarFieldEnum = {
+  id: 'id',
+  code: 'code',
+  credits: 'credits',
+  maxRedeems: 'maxRedeems',
+  redeemCount: 'redeemCount',
+  expiresAt: 'expiresAt',
+  createdAt: 'createdAt'
+} as const
+
+export type CouponScalarFieldEnum = (typeof CouponScalarFieldEnum)[keyof typeof CouponScalarFieldEnum]
+
+
+export const CouponRedemptionScalarFieldEnum = {
+  id: 'id',
+  couponId: 'couponId',
+  userId: 'userId',
+  redeemedAt: 'redeemedAt'
+} as const
+
+export type CouponRedemptionScalarFieldEnum = (typeof CouponRedemptionScalarFieldEnum)[keyof typeof CouponRedemptionScalarFieldEnum]
 
 
 export const SortOrder = {

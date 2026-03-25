@@ -72,3 +72,18 @@ export type GeneratedHeadshot = Prisma.GeneratedHeadshotModel
  * 
  */
 export type CreditTransaction = Prisma.CreditTransactionModel
+/**
+ * Model FavoriteHeadshot
+ * 
+ */
+export type FavoriteHeadshot = Prisma.FavoriteHeadshotModel
+/**
+ * Model Coupon
+ * 
+ */
+export type Coupon = Prisma.CouponModel
+/**
+ * Model CouponRedemption
+ * 
+ */
+export type CouponRedemption = Prisma.CouponRedemptionModel

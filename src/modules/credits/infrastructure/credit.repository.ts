@@ -35,22 +35,24 @@ export async function deductCredits(
 	// without this, two concurrent requests can both pass the balance check
 	// and together deduct more than the user has.
 	return prisma.$transaction(async (tx) => {
-		const user = await tx.user.findUnique({
-			where: { id: userId },
-			select: { currentCredits: true },
-		});
-		if (!user || user.currentCredits < amount) {
+		// Single atomic UPDATE — only succeeds if balance >= amount.
+		// Prevents TOCTOU: two concurrent reads at READ COMMITTED can both
+		// pass a separate check, but only one UPDATE can win the row lock.
+		const result = await tx.$queryRaw<{ current_credits: number }[]>`
+			UPDATE users
+			SET current_credits = current_credits - ${amount}
+			WHERE id = ${userId} AND current_credits >= ${amount}
+			RETURNING current_credits
+		`;
+
+		if (result.length === 0) {
 			throw new Error("Insufficient credits");
 		}
-		const [updated] = await Promise.all([
-			tx.user.update({
-				where: { id: userId },
-				data: { currentCredits: { decrement: amount } },
-			}),
-			tx.creditTransaction.create({
-				data: { userId, amount: -amount, transactionType },
-			}),
-		]);
-		return updated.currentCredits;
+
+		await tx.creditTransaction.create({
+			data: { userId, amount: -amount, transactionType },
+		});
+
+		return result[0].current_credits;
 	});
 }
