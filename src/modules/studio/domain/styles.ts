@@ -58,7 +58,7 @@ export const HEADSHOT_STYLES: HeadshotStyle[] = [
 ];
 
 export function getStyleById(id: string): HeadshotStyle | undefined {
-	return HEADSHOT_STYLES.find((s) => s.id === id);
+	return HEADSHOT_STYLES.find((s) => s.id === id && !s.disabled);
 }
 
 export function buildPrompt(stylePrompt: string): string {
