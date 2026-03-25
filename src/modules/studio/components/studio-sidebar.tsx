@@ -5,6 +5,7 @@ import {
 	Image as ImageIcon,
 	Settings,
 	Sparkles,
+	Trash2,
 	X,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -13,6 +14,7 @@ const navItems = [
 	{ icon: Home, label: "Home", to: "/" },
 	{ icon: Sparkles, label: "Studio AI", to: "/studio" },
 	{ icon: ImageIcon, label: "Gallery", to: "/studio/gallery" },
+	{ icon: Trash2, label: "Trash", to: "/studio/trash" },
 	{ icon: CreditCard, label: "Billing", to: "/studio/billing" },
 	{ icon: Settings, label: "Settings", to: "/studio/settings" },
 ];

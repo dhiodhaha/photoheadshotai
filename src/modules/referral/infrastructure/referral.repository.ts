@@ -44,22 +44,34 @@ export async function findUserByReferralCode(referralCode: string) {
 export async function awardReferralCredits(
 	referrerId: string,
 	newUserId: string,
-	amount: number,
+	referrerAmount: number,
+	newUserAmount: number,
 ) {
 	return prisma.$transaction([
 		prisma.user.update({
 			where: { id: referrerId },
-			data: { currentCredits: { increment: amount } },
+			data: { currentCredits: { increment: referrerAmount } },
 		}),
 		prisma.creditTransaction.create({
 			data: {
 				userId: referrerId,
-				amount,
-				transactionType: TransactionType.purchase,
+				amount: referrerAmount,
+				transactionType: TransactionType.referral_reward,
+			},
+		}),
+		prisma.user.update({
+			where: { id: newUserId },
+			data: { currentCredits: { increment: newUserAmount } },
+		}),
+		prisma.creditTransaction.create({
+			data: {
+				userId: newUserId,
+				amount: newUserAmount,
+				transactionType: TransactionType.referral_reward,
 			},
 		}),
 		prisma.referralReward.create({
-			data: { referrerId, newUserId, amount },
+			data: { referrerId, newUserId, amount: referrerAmount },
 		}),
 	]);
 }

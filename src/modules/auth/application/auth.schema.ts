@@ -11,5 +11,10 @@ export const signInSchema = z.object({
 	password: z.string().min(1, "Password is required"),
 });
 
+export const updateProfileSchema = z.object({
+	name: z.string().min(1, "Name is required").max(100),
+});
+
 export type SignUpInput = z.infer<typeof signUpSchema>;
 export type SignInInput = z.infer<typeof signInSchema>;
+export type UpdateProfileInput = z.infer<typeof updateProfileSchema>;

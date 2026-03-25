@@ -1,8 +1,16 @@
 // Domain
 
 // Schemas
-export type { SignInInput, SignUpInput } from "./application/auth.schema";
-export { signInSchema, signUpSchema } from "./application/auth.schema";
+export type {
+	SignInInput,
+	SignUpInput,
+	UpdateProfileInput,
+} from "./application/auth.schema";
+export {
+	signInSchema,
+	signUpSchema,
+	updateProfileSchema,
+} from "./application/auth.schema";
 // Application
 export {
 	getSession,
@@ -10,6 +18,8 @@ export {
 	signOut,
 	signUp,
 } from "./application/auth.service";
+// Profile
+export { updateUserProfile } from "./application/profile.service";
 // Components
 export { AuthLeftPanel } from "./components/auth-left-panel";
 export { SignInForm } from "./components/sign-in-form";

@@ -26,6 +26,8 @@ enum TransactionType {
   purchase
   generation_deduction
   generation_refund
+  referral_reward
+  coupon_redemption
 }
 
 model User {
@@ -45,6 +47,8 @@ model User {
   photos             Photo[]
   generationJobs     GenerationJob[]
   creditTransactions CreditTransaction[]
+  favoriteHeadshots  FavoriteHeadshot[]
+  couponRedemptions  CouponRedemption[]
 
   @@map("users")
 }
@@ -180,7 +184,8 @@ model GeneratedHeadshot {
   isDeleted     Boolean  @default(false) @map("is_deleted")
   createdAt     DateTime @default(now()) @map("created_at")
 
-  generationJob GenerationJob @relation(fields: [generationJobId], references: [id], onDelete: Cascade)
+  generationJob GenerationJob      @relation(fields: [generationJobId], references: [id], onDelete: Cascade)
+  favorites     FavoriteHeadshot[]
 
   @@index([generationJobId])
   @@map("generated_headshots")
@@ -197,4 +202,48 @@ model CreditTransaction {
 
   @@index([userId])
   @@map("credit_transactions")
+}
+
+model FavoriteHeadshot {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId      String   @map("user_id")
+  headshotId  String   @map("headshot_id")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  user     User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  headshot GeneratedHeadshot @relation(fields: [headshotId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, headshotId])
+  @@index([userId])
+  @@index([headshotId])
+  @@map("favorite_headshots")
+}
+
+model Coupon {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  code        String   @unique
+  credits     Int
+  maxRedeems  Int      @default(1) @map("max_redeems")
+  redeemCount Int      @default(0) @map("redeem_count")
+  expiresAt   DateTime? @map("expires_at")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  redemptions CouponRedemption[]
+
+  @@map("coupons")
+}
+
+model CouponRedemption {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  couponId  String   @map("coupon_id") @db.Uuid
+  userId    String   @map("user_id")
+  redeemedAt DateTime @default(now()) @map("redeemed_at")
+
+  coupon Coupon @relation(fields: [couponId], references: [id], onDelete: Cascade)
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([couponId, userId])
+  @@index([couponId])
+  @@index([userId])
+  @@map("coupon_redemptions")
 }

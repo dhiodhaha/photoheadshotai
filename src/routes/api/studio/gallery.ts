@@ -3,6 +3,7 @@ import { getServerSession } from "#/modules/auth";
 import {
 	deleteHeadshot,
 	getHeadshotGallery,
+	toggleFavorite,
 } from "#/modules/studio/application/gallery.service";
 
 export const Route = createFileRoute("/api/studio/gallery")({
@@ -14,7 +15,10 @@ export const Route = createFileRoute("/api/studio/gallery")({
 					return Response.json({ error: "Unauthorized" }, { status: 401 });
 				}
 
-				const headshots = await getHeadshotGallery(session.user.id);
+				const url = new URL(request.url);
+				const styleId = url.searchParams.get("style") ?? undefined;
+
+				const headshots = await getHeadshotGallery(session.user.id, styleId);
 				return Response.json({ headshots });
 			},
 			POST: async ({ request }) => {
@@ -24,7 +28,19 @@ export const Route = createFileRoute("/api/studio/gallery")({
 				}
 
 				try {
-					const { id } = await request.json();
+					const body = await request.json();
+
+					// Handle favorite toggle
+					if (body.action === "favorite" && body.headshotId) {
+						const result = await toggleFavorite(
+							session.user.id,
+							body.headshotId,
+						);
+						return Response.json(result);
+					}
+
+					// Handle soft delete (legacy: body.id)
+					const id = body.id || body.headshotId;
 					if (!id) {
 						return Response.json({ error: "Missing ID" }, { status: 400 });
 					}

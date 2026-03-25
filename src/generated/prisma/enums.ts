@@ -33,7 +33,9 @@ export type GenerationJobStatus = (typeof GenerationJobStatus)[keyof typeof Gene
 export const TransactionType = {
   purchase: 'purchase',
   generation_deduction: 'generation_deduction',
-  generation_refund: 'generation_refund'
+  generation_refund: 'generation_refund',
+  referral_reward: 'referral_reward',
+  coupon_redemption: 'coupon_redemption'
 } as const
 
 export type TransactionType = (typeof TransactionType)[keyof typeof TransactionType]
