@@ -39,7 +39,11 @@ jobs:
 
       - name: Deploy to VPS via Tailscale
         run: |
+          # Deploy nginx config
+          scp -o StrictHostKeyChecking=no nginx/photoheadshot.conf deploy@${{ secrets.VPS_TAILSCALE_HOSTNAME }}:/tmp/photoheadshot.conf
           ssh -o StrictHostKeyChecking=no deploy@${{ secrets.VPS_TAILSCALE_HOSTNAME }} << 'EOF'
+            sudo cp /tmp/photoheadshot.conf /etc/nginx/sites-enabled/standoutheadshot.conf
+            sudo nginx -t && sudo systemctl reload nginx
             cd /opt/photoheadshot
             docker compose -f docker-compose.prod.yml pull app
             docker compose -f docker-compose.prod.yml up -d
