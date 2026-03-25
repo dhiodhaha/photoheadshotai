@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { getServerSession } from "#/modules/auth";
-import { getTrash } from "#/modules/studio/application/gallery.service";
+import { getTrash } from "#/modules/studio/application/trash.service";
 
 export const Route = createFileRoute("/api/studio/trash/")({
 	server: {

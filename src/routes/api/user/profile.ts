@@ -1,7 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { prisma } from "#/lib/prisma";
 import { getServerSession } from "#/modules/auth";
-import { updateUserProfile } from "#/modules/auth/application/profile.service";
+import {
+	getUserProfile,
+	updateUserProfile,
+} from "#/modules/auth/application/profile.service";
 
 export const Route = createFileRoute("/api/user/profile")({
 	server: {
@@ -12,18 +14,7 @@ export const Route = createFileRoute("/api/user/profile")({
 					return Response.json({ error: "Unauthorized" }, { status: 401 });
 				}
 
-				const user = await prisma.user.findUnique({
-					where: { id: session.user.id },
-					select: {
-						id: true,
-						email: true,
-						name: true,
-						image: true,
-						currentCredits: true,
-						referralCode: true,
-						createdAt: true,
-					},
-				});
+				const user = await getUserProfile(session.user.id);
 
 				if (!user) {
 					return Response.json({ error: "User not found" }, { status: 404 });

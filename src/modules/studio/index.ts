@@ -1,15 +1,19 @@
 // Domain
 
 export {
-	deleteHeadshot,
 	getFavorites,
+	toggleFavorite,
+} from "./application/favorite.service";
+export {
+	deleteHeadshot,
 	getGalleryCategories,
 	getHeadshotGallery,
+} from "./application/gallery.service";
+export {
 	getTrash,
 	permanentlyDeleteHeadshot,
 	restoreHeadshot,
-	toggleFavorite,
-} from "./application/gallery.service";
+} from "./application/trash.service";
 export { generationService } from "./application/generation.service";
 export { getGenerationHistory } from "./application/history.service";
 export type { UploadFileInput } from "./application/upload.schema";

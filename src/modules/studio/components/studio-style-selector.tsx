@@ -58,12 +58,15 @@ export function StudioStyleSelector({
 							<button
 								type="button"
 								key={style.id}
-								onClick={() => onStyleSelect(style.id)}
+								disabled={style.disabled}
+								onClick={() => !style.disabled && onStyleSelect(style.id)}
 								className={cn(
 									"relative text-left rounded-2xl overflow-hidden border transition-all duration-300 group h-32",
-									selectedStyle === style.id
-										? "border-primary ring-1 ring-primary/50 shadow-lg shadow-primary/20"
-										: "border-white/10 hover:border-white/30 brightness-75 hover:brightness-100",
+									style.disabled
+										? "border-white/5 opacity-40 cursor-not-allowed"
+										: selectedStyle === style.id
+											? "border-primary ring-1 ring-primary/50 shadow-lg shadow-primary/20"
+											: "border-white/10 hover:border-white/30 brightness-75 hover:brightness-100",
 								)}
 							>
 								<img
@@ -78,11 +81,11 @@ export function StudioStyleSelector({
 										{style.label}
 									</h4>
 									<p className="text-[10px] text-white/70 leading-tight line-clamp-2">
-										{style.description}
+										{style.disabled ? "Coming soon" : style.description}
 									</p>
 								</div>
 
-								{selectedStyle === style.id && (
+								{selectedStyle === style.id && !style.disabled && (
 									<div className="absolute top-3 right-3 w-5 h-5 bg-primary rounded-full flex items-center justify-center shadow-lg">
 										<CheckCircle2 className="w-3 h-3 text-primary-foreground" />
 									</div>

@@ -2,12 +2,11 @@ import { createFileRoute } from "@tanstack/react-router";
 import { Camera, CheckCircle2, Info, Zap } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import { useState } from "react";
-import { toast } from "sonner";
 import { authClient } from "#/lib/auth-client";
 import { StudioGenerationResult } from "#/modules/studio/components/studio-generation-result";
 import { StudioStyleSelector } from "#/modules/studio/components/studio-style-selector";
 import { StudioUploadZone } from "#/modules/studio/components/studio-upload-zone";
-import { useGenerationPolling } from "#/modules/studio/components/use-generation-polling";
+import { useGenerationFlow } from "#/modules/studio/components/use-generation-flow";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/studio/")({
@@ -15,7 +14,7 @@ export const Route = createFileRoute("/studio/")({
 });
 
 function StudioIndexPage() {
-	const { data: session, refetch } = authClient.useSession();
+	const { data: session } = authClient.useSession();
 	const [step, setStep] = useState<1 | 2 | 3>(1);
 	const [file, setFile] = useState<File | null>(null);
 	const [previewUrl, setPreviewUrl] = useState<string | null>(null);
@@ -23,25 +22,10 @@ function StudioIndexPage() {
 	const [isGenerating, setIsGenerating] = useState(false);
 	const [generatedImage, setGeneratedImage] = useState<string | null>(null);
 
-	const { startPolling } = useGenerationPolling({
-		onCompleted: async (resultUrl) => {
-			setGeneratedImage(resultUrl);
-			setIsGenerating(false);
-			await refetch();
-			toast.success("Generation Complete!");
-		},
-		onFailed: async () => {
-			setIsGenerating(false);
-			await refetch();
-			toast.error("Generation failed. Credits have been refunded.");
-			setStep(2);
-		},
-		onTimeout: () => {
-			setIsGenerating(false);
-			toast.info(
-				"Generation is taking longer than expected. Check your gallery later.",
-			);
-		},
+	const { generate } = useGenerationFlow({
+		onGenerating: setIsGenerating,
+		onGeneratedImage: setGeneratedImage,
+		onStep: setStep,
 	});
 
 	const handleFileSelected = (selectedFile: File) => {
@@ -59,59 +43,8 @@ function StudioIndexPage() {
 
 	const handleGenerate = async () => {
 		if (!file || !selectedStyle) return;
-
 		const currentCredits = session?.user?.currentCredits ?? 0;
-		if (currentCredits < 10) {
-			toast.error(
-				"Insufficient credits. Please top up in the Billing section.",
-			);
-			return;
-		}
-
-		setStep(3);
-		setIsGenerating(true);
-
-		try {
-			const formData = new FormData();
-			formData.append("file", file);
-
-			const res = await fetch("/api/studio/upload", {
-				method: "POST",
-				body: formData,
-			});
-
-			if (!res.ok) {
-				const err = await res.json();
-				throw new Error(err.error || "Failed to upload image.");
-			}
-
-			const uploadData = await res.json();
-			const { image_id } = uploadData;
-			toast.info("Image secured. Prompting AI Generator...");
-
-			const generateRes = await fetch("/api/studio/generate", {
-				method: "POST",
-				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify({
-					image_id: image_id,
-					style: selectedStyle,
-				}),
-			});
-
-			if (!generateRes.ok) {
-				const err = await generateRes.json();
-				throw new Error(err.error || "Failed to start generation.");
-			}
-
-			const { job_id } = await generateRes.json();
-			await refetch();
-			toast.info("Generation started! This may take a moment...");
-			startPolling(job_id);
-		} catch (e: unknown) {
-			toast.error(e instanceof Error ? e.message : "Something went wrong.");
-			setIsGenerating(false);
-			setStep(2);
-		}
+		await generate(file, selectedStyle, currentCredits);
 	};
 
 	return (

@@ -25,6 +25,7 @@ interface GalleryItem {
 	styleLabel: string;
 	createdAt: string;
 	isFavorited: boolean;
+	isPending?: boolean;
 }
 
 interface Category {
@@ -62,6 +63,10 @@ function GalleryPage() {
 			const res = await fetch(url);
 			if (!res.ok) throw new Error("Failed to load gallery");
 			return res.json();
+		},
+		refetchInterval: (query) => {
+			const hasPending = query.state.data?.headshots.some((h) => h.isPending);
+			return hasPending ? 3000 : false;
 		},
 	});
 
@@ -261,72 +266,98 @@ function GalleryPage() {
 						layout
 						className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6"
 					>
-						{displayedHeadshots.map((item, i) => (
-							<motion.div
-								layout
-								initial={{ opacity: 0, scale: 0.9 }}
-								animate={{ opacity: 1, scale: 1 }}
-								exit={{ opacity: 0, scale: 0.9 }}
-								transition={{ duration: 0.4, delay: i * 0.05 }}
-								key={item.id}
-								className="group relative aspect-3/4 rounded-2xl overflow-hidden glass border border-white/10 shadow-xl"
-							>
-								<img
-									src={item.src}
-									alt={`Generated Portrait ${item.id}`}
-									className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-								/>
-
-								<div className="absolute inset-0 bg-linear-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
-
-								{/* Interactive Overlay */}
-								<div className="absolute inset-0 p-4 flex flex-col justify-between opacity-0 group-hover:opacity-100 transition-opacity duration-300 translate-y-2 group-hover:translate-y-0">
-									<div className="flex justify-between items-start">
-										<div className="px-2.5 py-1 rounded-full bg-black/50 backdrop-blur-md border border-white/10 text-[9px] font-bold uppercase tracking-widest text-white/80">
-											{item.styleLabel || item.style}
-										</div>
-										<div className="flex gap-2">
-											<button
-												type="button"
-												onClick={() => favoriteMutation.mutate(item.id)}
-												className={cn(
-													"w-8 h-8 rounded-full flex items-center justify-center backdrop-blur-md border border-white/10 transition-colors",
-													item.isFavorited
-														? "bg-red-500/20 text-red-500 hover:bg-red-500/40"
-														: "bg-black/50 text-white hover:bg-white/20 hover:text-white",
-												)}
-												aria-label={
-													item.isFavorited
-														? "Remove from favorites"
-														: "Add to favorites"
-												}
-											>
-												<Heart
-													className="w-4 h-4 text-inherit"
-													fill={item.isFavorited ? "currentColor" : "none"}
-												/>
-											</button>
-											<button
-												type="button"
-												onClick={() => deleteMutation.mutate(item.id)}
-												className="w-8 h-8 rounded-full flex items-center justify-center backdrop-blur-md border border-white/10 bg-black/50 text-white hover:bg-red-500 transition-colors"
-												aria-label="Delete image"
-											>
-												<Trash2 className="w-4 h-4" />
-											</button>
-										</div>
+						{displayedHeadshots.map((item, i) =>
+							item.isPending ? (
+								<motion.div
+									layout
+									initial={{ opacity: 0, scale: 0.9 }}
+									animate={{ opacity: 1, scale: 1 }}
+									key={item.id}
+									className="relative aspect-3/4 rounded-2xl overflow-hidden border border-primary/30 shadow-xl shadow-primary/10"
+								>
+									<div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-white/5 to-transparent animate-pulse" />
+									<div className="absolute inset-0 flex flex-col items-center justify-center gap-3 p-4">
+										<motion.div
+											animate={{ rotate: 360 }}
+											transition={{
+												repeat: Infinity,
+												duration: 2,
+												ease: "linear",
+											}}
+											className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full"
+										/>
+										<p className="text-[10px] font-bold uppercase tracking-widest text-primary/80 text-center">
+											Generating...
+										</p>
 									</div>
+								</motion.div>
+							) : (
+								<motion.div
+									layout
+									initial={{ opacity: 0, scale: 0.9 }}
+									animate={{ opacity: 1, scale: 1 }}
+									exit={{ opacity: 0, scale: 0.9 }}
+									transition={{ duration: 0.4, delay: i * 0.05 }}
+									key={item.id}
+									className="group relative aspect-3/4 rounded-2xl overflow-hidden glass border border-white/10 shadow-xl"
+								>
+									<img
+										src={item.src}
+										alt={`Generated Portrait ${item.id}`}
+										className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+									/>
 
-									<Button
-										className="w-full rounded-xl bg-white/20 hover:bg-white/30 backdrop-blur-md border border-white/20 text-white font-bold tracking-widest text-xs uppercase shadow-none ring-0"
-										onClick={() => handleDownload(item.src)}
-									>
-										<Download className="w-4 h-4 mr-2" />
-										Download
-									</Button>
-								</div>
-							</motion.div>
-						))}
+									<div className="absolute inset-0 bg-linear-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
+
+									{/* Interactive Overlay */}
+									<div className="absolute inset-0 p-4 flex flex-col justify-between opacity-0 group-hover:opacity-100 transition-opacity duration-300 translate-y-2 group-hover:translate-y-0">
+										<div className="flex justify-between items-start">
+											<div className="px-2.5 py-1 rounded-full bg-black/50 backdrop-blur-md border border-white/10 text-[9px] font-bold uppercase tracking-widest text-white/80">
+												{item.styleLabel || item.style}
+											</div>
+											<div className="flex gap-2">
+												<button
+													type="button"
+													onClick={() => favoriteMutation.mutate(item.id)}
+													className={cn(
+														"w-8 h-8 rounded-full flex items-center justify-center backdrop-blur-md border border-white/10 transition-colors",
+														item.isFavorited
+															? "bg-red-500/20 text-red-500 hover:bg-red-500/40"
+															: "bg-black/50 text-white hover:bg-white/20 hover:text-white",
+													)}
+													aria-label={
+														item.isFavorited
+															? "Remove from favorites"
+															: "Add to favorites"
+													}
+												>
+													<Heart
+														className="w-4 h-4 text-inherit"
+														fill={item.isFavorited ? "currentColor" : "none"}
+													/>
+												</button>
+												<button
+													type="button"
+													onClick={() => deleteMutation.mutate(item.id)}
+													className="w-8 h-8 rounded-full flex items-center justify-center backdrop-blur-md border border-white/10 bg-black/50 text-white hover:bg-red-500 transition-colors"
+													aria-label="Delete image"
+												>
+													<Trash2 className="w-4 h-4" />
+												</button>
+											</div>
+										</div>
+
+										<Button
+											className="w-full rounded-xl bg-white/20 hover:bg-white/30 backdrop-blur-md border border-white/20 text-white font-bold tracking-widest text-xs uppercase shadow-none ring-0"
+											onClick={() => handleDownload(item.src)}
+										>
+											<Download className="w-4 h-4 mr-2" />
+											Download
+										</Button>
+									</div>
+								</motion.div>
+							),
+						)}
 					</motion.div>
 				)}
 			</div>
