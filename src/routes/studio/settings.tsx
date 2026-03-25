@@ -7,6 +7,7 @@ import {
 	Mail,
 	Settings,
 	Shield,
+	Tag,
 	Trash2,
 	User,
 } from "lucide-react";
@@ -43,6 +44,7 @@ function SettingsPage() {
 	const queryClient = useQueryClient();
 	const [activeTab, setActiveTab] = useState("profile");
 	const [name, setName] = useState("");
+	const [couponCode, setCouponCode] = useState("");
 
 	const { data: profileData, isLoading } = useQuery<{ user: UserProfile }>({
 		queryKey: ["user-profile"],
@@ -84,8 +86,38 @@ function SettingsPage() {
 		},
 	});
 
+	const redeemCouponMutation = useMutation({
+		mutationFn: async (code: string) => {
+			const res = await fetch("/api/credits/redeem-coupon", {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({ code }),
+			});
+			if (!res.ok) {
+				const err = await res.json();
+				throw new Error(err.error || "Failed to redeem coupon");
+			}
+			return res.json();
+		},
+		onSuccess: (data: { newBalance: number }) => {
+			toast.success(`Coupon redeemed! New balance: ${data.newBalance} credits`);
+			setCouponCode("");
+			queryClient.invalidateQueries({ queryKey: ["user-profile"] });
+		},
+		onError: (error: unknown) => {
+			toast.error(
+				error instanceof Error ? error.message : "Redemption failed.",
+			);
+		},
+	});
+
 	const handleSave = () => {
 		updateMutation.mutate(name);
+	};
+
+	const handleRedeemCoupon = () => {
+		if (couponCode.trim())
+			redeemCouponMutation.mutate(couponCode.trim().toUpperCase());
 	};
 
 	return (
@@ -241,6 +273,46 @@ function SettingsPage() {
 											<ReferralCard referralCode={user.referralCode} />
 										</div>
 									)}
+
+									<div className="pt-4">
+										<div className="p-6 rounded-2xl glass border border-white/10 space-y-4">
+											<div className="flex items-center gap-2">
+												<Tag className="w-4 h-4 text-primary" />
+												<h4 className="text-sm font-bold uppercase tracking-widest">
+													Redeem Coupon
+												</h4>
+											</div>
+											<p className="text-xs text-muted-foreground">
+												Enter a coupon code to add credits to your account.
+											</p>
+											<div className="flex gap-3">
+												<div className="relative flex-1">
+													<Input
+														value={couponCode}
+														onChange={(e) =>
+															setCouponCode(e.target.value.toUpperCase())
+														}
+														onKeyDown={(e) =>
+															e.key === "Enter" && handleRedeemCoupon()
+														}
+														placeholder="COUPON-CODE"
+														className="h-12 bg-white/5 border-white/10 rounded-xl focus-visible:ring-primary/50 font-mono tracking-widest uppercase"
+													/>
+												</div>
+												<Button
+													onClick={handleRedeemCoupon}
+													disabled={
+														!couponCode.trim() || redeemCouponMutation.isPending
+													}
+													className="h-12 px-6 rounded-xl font-bold uppercase tracking-widest text-xs shadow-lg shadow-primary/20 shrink-0"
+												>
+													{redeemCouponMutation.isPending
+														? "Redeeming..."
+														: "Redeem"}
+												</Button>
+											</div>
+										</div>
+									</div>
 								</div>
 							)}
 
