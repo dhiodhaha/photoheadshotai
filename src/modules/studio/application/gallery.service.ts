@@ -1,174 +1,61 @@
-import { requireEnv } from "#/lib/env";
-import { prisma } from "#/lib/prisma";
 import { HEADSHOT_STYLES } from "../domain/styles";
-import { deleteFromR2 } from "../infrastructure/photo.storage";
+import {
+	findActiveJobsByUser,
+	findDistinctStylesByUser,
+	findHeadshotOwned,
+	findHeadshotsByUser,
+	softDeleteHeadshot,
+} from "../infrastructure/gallery.repository";
+
+function resolveStyleLabel(styleId: string): string {
+	return HEADSHOT_STYLES.find((s) => s.id === styleId)?.label ?? styleId;
+}
 
 export async function getHeadshotGallery(userId: string, styleId?: string) {
-	const headshots = await prisma.generatedHeadshot.findMany({
-		where: {
-			resultUrl: { not: "" },
-			isDeleted: false,
-			generationJob: styleId ? { userId, styleId } : { userId },
-		},
-		include: {
-			generationJob: true,
-			favorites: { where: { userId }, select: { id: true } },
-		},
-		orderBy: { createdAt: "desc" },
-	});
+	// When filtering by style, pending jobs don't have a confirmed style yet — skip them
+	const [headshots, pendingJobs] = await Promise.all([
+		findHeadshotsByUser(userId, styleId),
+		styleId ? Promise.resolve([]) : findActiveJobsByUser(userId),
+	]);
 
-	return headshots.map((h) => ({
+	const pendingItems = pendingJobs.map((job) => ({
+		id: `pending_${job.id}`,
+		src: "",
+		style: "",
+		styleLabel: "",
+		createdAt: new Date(),
+		isFavorited: false,
+		isPending: true,
+	}));
+
+	const completedItems = headshots.map((h) => ({
 		id: h.id,
 		src: h.resultUrl,
 		style: h.generationJob.styleId,
-		styleLabel:
-			HEADSHOT_STYLES.find((s) => s.id === h.generationJob.styleId)?.label ??
-			h.generationJob.styleId,
+		styleLabel: resolveStyleLabel(h.generationJob.styleId),
 		createdAt: h.createdAt,
 		isFavorited: h.favorites.length > 0,
+		isPending: false,
 	}));
+
+	return [...pendingItems, ...completedItems];
 }
 
 export async function getGalleryCategories(userId: string) {
-	const jobs = await prisma.generationJob.findMany({
-		where: {
-			userId,
-			generatedHeadshots: {
-				some: { isDeleted: false, resultUrl: { not: "" } },
-			},
-		},
-		select: { styleId: true, stylePrompt: true },
-		distinct: ["styleId"],
-	});
+	const jobs = await findDistinctStylesByUser(userId);
 
 	return jobs.map((j) => ({
 		styleId: j.styleId,
-		label: HEADSHOT_STYLES.find((s) => s.id === j.styleId)?.label ?? j.styleId,
+		label: resolveStyleLabel(j.styleId),
 	}));
 }
 
 export async function deleteHeadshot(headshotId: string, userId: string) {
-	const headshot = await prisma.generatedHeadshot.findFirst({
-		where: {
-			id: headshotId,
-			generationJob: { userId },
-		},
-	});
+	const headshot = await findHeadshotOwned(headshotId, userId);
 
 	if (!headshot) {
 		throw new Error("Not found or unauthorized");
 	}
 
-	await prisma.generatedHeadshot.update({
-		where: { id: headshotId },
-		data: { isDeleted: true },
-	});
-}
-
-export async function toggleFavorite(userId: string, headshotId: string) {
-	return prisma.$transaction(async (tx) => {
-		const headshot = await tx.generatedHeadshot.findFirst({
-			where: { id: headshotId, generationJob: { userId } },
-			select: { id: true },
-		});
-
-		if (!headshot) {
-			throw new Error("Not found or unauthorized");
-		}
-
-		const existing = await tx.favoriteHeadshot.findUnique({
-			where: { userId_headshotId: { userId, headshotId } },
-		});
-
-		if (existing) {
-			await tx.favoriteHeadshot.delete({
-				where: { userId_headshotId: { userId, headshotId } },
-			});
-			return { favorited: false };
-		}
-
-		await tx.favoriteHeadshot.create({ data: { userId, headshotId } });
-		return { favorited: true };
-	});
-}
-
-export async function getFavorites(userId: string) {
-	const favorites = await prisma.favoriteHeadshot.findMany({
-		where: { userId },
-		include: {
-			headshot: { include: { generationJob: true } },
-		},
-		orderBy: { createdAt: "desc" },
-	});
-
-	return favorites.map((f) => ({
-		id: f.headshot.id,
-		src: f.headshot.resultUrl,
-		style: f.headshot.generationJob.styleId,
-		styleLabel:
-			HEADSHOT_STYLES.find((s) => s.id === f.headshot.generationJob.styleId)
-				?.label ?? f.headshot.generationJob.styleId,
-		createdAt: f.headshot.createdAt,
-		isFavorited: true,
-	}));
-}
-
-export async function getTrash(userId: string) {
-	const headshots = await prisma.generatedHeadshot.findMany({
-		where: {
-			isDeleted: true,
-			generationJob: { userId },
-		},
-		include: { generationJob: true },
-		orderBy: { createdAt: "desc" },
-	});
-
-	return headshots.map((h) => ({
-		id: h.id,
-		src: h.resultUrl,
-		style: h.generationJob.styleId,
-		styleLabel:
-			HEADSHOT_STYLES.find((s) => s.id === h.generationJob.styleId)?.label ??
-			h.generationJob.styleId,
-		createdAt: h.createdAt,
-	}));
-}
-
-export async function restoreHeadshot(headshotId: string, userId: string) {
-	const headshot = await prisma.generatedHeadshot.findFirst({
-		where: { id: headshotId, generationJob: { userId } },
-	});
-
-	if (!headshot) {
-		throw new Error("Not found or unauthorized");
-	}
-
-	await prisma.generatedHeadshot.update({
-		where: { id: headshotId },
-		data: { isDeleted: false },
-	});
-}
-
-export async function permanentlyDeleteHeadshot(
-	headshotId: string,
-	userId: string,
-) {
-	const headshot = await prisma.generatedHeadshot.findFirst({
-		where: { id: headshotId, isDeleted: true, generationJob: { userId } },
-	});
-
-	if (!headshot) {
-		throw new Error("Not found or unauthorized");
-	}
-
-	// Extract R2 key from public URL
-	try {
-		const publicUrl = requireEnv("R2_PUBLIC_URL");
-		const key = headshot.resultUrl.replace(`${publicUrl}/`, "");
-		await deleteFromR2(key);
-	} catch (_e) {
-		// If R2 delete fails, still remove from DB (best-effort)
-	}
-
-	await prisma.generatedHeadshot.delete({ where: { id: headshotId } });
+	await softDeleteHeadshot(headshotId);
 }

@@ -64,6 +64,10 @@ function GalleryPage() {
 			if (!res.ok) throw new Error("Failed to load gallery");
 			return res.json();
 		},
+		refetchInterval: (query) => {
+			const hasPending = query.state.data?.headshots.some((h) => h.isPending);
+			return hasPending ? 3000 : false;
+		},
 	});
 
 	const allHeadshots = galleryData?.headshots ?? [];

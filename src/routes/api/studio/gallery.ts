@@ -1,9 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { getServerSession } from "#/modules/auth";
+import { toggleFavorite } from "#/modules/studio/application/favorite.service";
 import {
 	deleteHeadshot,
 	getHeadshotGallery,
-	toggleFavorite,
 } from "#/modules/studio/application/gallery.service";
 
 export const Route = createFileRoute("/api/studio/gallery")({
