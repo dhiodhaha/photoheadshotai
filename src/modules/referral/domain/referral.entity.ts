@@ -15,4 +15,4 @@ export type ReferralReward = {
 };
 
 export const REFERRAL_CREDIT_REWARD = 10;
-export const REFERRAL_NEW_USER_CREDIT_REWARD = 5;
+export const REFERRAL_NEW_USER_CREDIT_REWARD = 10;

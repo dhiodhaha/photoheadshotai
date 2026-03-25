@@ -1,5 +1,6 @@
 import { requireEnv } from "#/lib/env";
 import { prisma } from "#/lib/prisma";
+import { HEADSHOT_STYLES } from "../domain/styles";
 import { deleteFromR2 } from "../infrastructure/photo.storage";
 
 export async function getHeadshotGallery(userId: string, styleId?: string) {
@@ -20,7 +21,9 @@ export async function getHeadshotGallery(userId: string, styleId?: string) {
 		id: h.id,
 		src: h.resultUrl,
 		style: h.generationJob.styleId,
-		styleLabel: h.generationJob.stylePrompt,
+		styleLabel:
+			HEADSHOT_STYLES.find((s) => s.id === h.generationJob.styleId)?.label ??
+			h.generationJob.styleId,
 		createdAt: h.createdAt,
 		isFavorited: h.favorites.length > 0,
 	}));
@@ -38,7 +41,10 @@ export async function getGalleryCategories(userId: string) {
 		distinct: ["styleId"],
 	});
 
-	return jobs.map((j) => ({ styleId: j.styleId, label: j.stylePrompt }));
+	return jobs.map((j) => ({
+		styleId: j.styleId,
+		label: HEADSHOT_STYLES.find((s) => s.id === j.styleId)?.label ?? j.styleId,
+	}));
 }
 
 export async function deleteHeadshot(headshotId: string, userId: string) {
@@ -99,7 +105,9 @@ export async function getFavorites(userId: string) {
 		id: f.headshot.id,
 		src: f.headshot.resultUrl,
 		style: f.headshot.generationJob.styleId,
-		styleLabel: f.headshot.generationJob.stylePrompt,
+		styleLabel:
+			HEADSHOT_STYLES.find((s) => s.id === f.headshot.generationJob.styleId)
+				?.label ?? f.headshot.generationJob.styleId,
 		createdAt: f.headshot.createdAt,
 		isFavorited: true,
 	}));
@@ -119,7 +127,9 @@ export async function getTrash(userId: string) {
 		id: h.id,
 		src: h.resultUrl,
 		style: h.generationJob.styleId,
-		styleLabel: h.generationJob.stylePrompt,
+		styleLabel:
+			HEADSHOT_STYLES.find((s) => s.id === h.generationJob.styleId)?.label ??
+			h.generationJob.styleId,
 		createdAt: h.createdAt,
 	}));
 }

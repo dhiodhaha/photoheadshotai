@@ -1,3 +1,4 @@
+import { useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { Camera, CheckCircle2, Info, Zap } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
@@ -14,8 +15,11 @@ export const Route = createFileRoute("/studio/")({
 	component: StudioIndexPage,
 });
 
+const PENDING_GALLERY_ID = "__pending_generation__";
+
 function StudioIndexPage() {
 	const { data: session, refetch } = authClient.useSession();
+	const queryClient = useQueryClient();
 	const [step, setStep] = useState<1 | 2 | 3>(1);
 	const [file, setFile] = useState<File | null>(null);
 	const [previewUrl, setPreviewUrl] = useState<string | null>(null);
@@ -23,21 +27,41 @@ function StudioIndexPage() {
 	const [isGenerating, setIsGenerating] = useState(false);
 	const [generatedImage, setGeneratedImage] = useState<string | null>(null);
 
+	const removePendingCard = () => {
+		queryClient.setQueryData<{ headshots: { id: string }[] }>(
+			["gallery", undefined],
+			(old) =>
+				old
+					? {
+							headshots: old.headshots.filter(
+								(h) => h.id !== PENDING_GALLERY_ID,
+							),
+						}
+					: old,
+		);
+	};
+
 	const { startPolling } = useGenerationPolling({
 		onCompleted: async (resultUrl) => {
 			setGeneratedImage(resultUrl);
 			setIsGenerating(false);
+			removePendingCard();
 			await refetch();
+			queryClient.invalidateQueries({ queryKey: ["gallery"] });
 			toast.success("Generation Complete!");
 		},
 		onFailed: async () => {
 			setIsGenerating(false);
+			removePendingCard();
 			await refetch();
+			queryClient.invalidateQueries({ queryKey: ["gallery"] });
 			toast.error("Generation failed. Credits have been refunded.");
 			setStep(2);
 		},
 		onTimeout: () => {
 			setIsGenerating(false);
+			removePendingCard();
+			queryClient.invalidateQueries({ queryKey: ["gallery"] });
 			toast.info(
 				"Generation is taking longer than expected. Check your gallery later.",
 			);
@@ -105,6 +129,19 @@ function StudioIndexPage() {
 
 			const { job_id } = await generateRes.json();
 			await refetch();
+			// Inject a skeleton placeholder into the gallery cache immediately
+			queryClient.setQueryData<{
+				headshots: { id: string; isPending?: boolean }[];
+			}>(["gallery", undefined], (old) =>
+				old
+					? {
+							headshots: [
+								{ id: PENDING_GALLERY_ID, isPending: true },
+								...old.headshots,
+							],
+						}
+					: { headshots: [{ id: PENDING_GALLERY_ID, isPending: true }] },
+			);
 			toast.info("Generation started! This may take a moment...");
 			startPolling(job_id);
 		} catch (e: unknown) {

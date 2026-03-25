@@ -4,6 +4,7 @@ export interface HeadshotStyle {
 	description: string;
 	prompt: string;
 	image: string;
+	disabled?: boolean;
 }
 
 export const HEADSHOT_STYLES: HeadshotStyle[] = [
@@ -33,6 +34,7 @@ export const HEADSHOT_STYLES: HeadshotStyle[] = [
 			"Transform the person in Figure 1 into a modern creative portrait. Use artistic dramatic lighting with vibrant but professional tones. Add editorial-style dramatic shadows and a colorful gradient background. Keep their face, features, and identity exactly the same. High fashion editorial quality.",
 		image:
 			"https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=400&q=80",
+		disabled: true,
 	},
 	{
 		id: "casual",
@@ -51,6 +53,7 @@ export const HEADSHOT_STYLES: HeadshotStyle[] = [
 			"Transform the person in Figure 1 into a minimalist headshot. Dress them in simple elegant attire. Place them against a clean pure white background with even flat lighting. Keep their face, features, and identity exactly the same. Modern, crisp, and clean aesthetic.",
 		image:
 			"https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=400&q=80",
+		disabled: true,
 	},
 ];
 
