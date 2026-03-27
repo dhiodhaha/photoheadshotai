@@ -401,33 +401,38 @@ function StudioIndexPage() {
 			>
 				<div
 					className={cn(
-						"max-w-4xl mx-auto w-full pointer-events-auto flex flex-col gap-4",
-						isDockCollapsed ? "items-center" : "items-end",
+						"max-w-4xl mx-auto w-full pointer-events-auto flex flex-col gap-4 items-center",
 					)}
 				>
 					<AnimatePresence mode="wait">
 						{!isDockCollapsed ? (
 							<motion.div
 								key="expanded-dock"
-								initial={{ y: 100, opacity: 0 }}
-								animate={{ y: 0, opacity: 1 }}
-								className="w-full relative group"
+								initial={{ opacity: 0, y: 40 }}
+								animate={{ opacity: 1, y: 0 }}
+								exit={{ opacity: 0, y: 40 }}
+								transition={{
+									type: "spring",
+									stiffness: 400,
+									damping: 30,
+								}}
+								className="w-full relative"
 							>
-								<div className="flex flex-col gap-5 px-4">
+								<div className="flex flex-col gap-4 px-4">
 									{/* Top Header Row: Ultra-Minimalist Progress & Close */}
-									<div className="flex items-center justify-between">
+									<div className="flex items-center justify-between h-8">
 										<div className="flex items-center gap-8">
 											{[
 												{ id: 1, label: "Upload" },
 												{ id: 2, label: "Choose Style" },
 												{ id: 3, label: "Generate" },
 											].map((s) => (
-												<div key={s.id} className="flex items-center gap-2">
+												<div key={s.id} className="flex items-center gap-2.5">
 													<div
 														className={cn(
-															"w-5 h-5 rounded-full flex items-center justify-center text-[8px] font-black transition-all",
+															"w-5 h-5 rounded-full flex items-center justify-center text-[8px] font-black transition-all duration-300",
 															step === s.id
-																? "bg-primary text-primary-foreground scale-110 shadow-[0_0_10px_rgba(var(--primary),0.5)]"
+																? "bg-primary text-primary-foreground scale-110 shadow-[0_0_15px_rgba(var(--primary),0.4)]"
 																: step > s.id
 																	? "bg-green-500 text-white"
 																	: "bg-white/10 text-muted-foreground/30",
@@ -441,7 +446,7 @@ function StudioIndexPage() {
 													</div>
 													<span
 														className={cn(
-															"text-[10px] font-black tracking-widest uppercase transition-colors",
+															"text-[10px] font-black tracking-[0.2em] uppercase transition-colors duration-300",
 															step === s.id
 																? "text-white"
 																: "text-muted-foreground/30",
@@ -453,14 +458,16 @@ function StudioIndexPage() {
 											))}
 										</div>
 
-										<button
+										<motion.button
 											type="button"
+											whileHover={{ scale: 1.1, rotate: 90 }}
+											whileTap={{ scale: 0.9 }}
 											onClick={() => setIsDockCollapsed(true)}
-											className="p-1 text-muted-foreground hover:text-white transition-all group/collapse"
+											className="p-1.5 text-muted-foreground hover:text-white transition-all rounded-full hover:bg-white/5"
 											title="Close"
 										>
-											<X className="w-5 h-5 group-hover/collapse:rotate-90 transition-transform" />
-										</button>
+											<X className="w-5 h-5" />
+										</motion.button>
 									</div>
 
 									{/* Content Area */}
@@ -527,13 +534,17 @@ function StudioIndexPage() {
 						) : (
 							<motion.button
 								key="collapsed-handle"
-								layoutId="dock"
-								initial={{ y: 40, opacity: 0 }}
-								animate={{ y: 8, opacity: 1 }} // Slight offset for 'shelf' look
-								whileHover={{ y: 4, scale: 1.02 }}
-								exit={{ y: 40, opacity: 0 }}
+								initial={{ opacity: 0, y: 40 }}
+								animate={{ opacity: 1, y: 0 }}
+								exit={{ opacity: 0, y: 40 }}
+								transition={{
+									type: "spring",
+									stiffness: 400,
+									damping: 30,
+								}}
+								whileHover={{ y: -4, scale: 1.02 }}
 								onClick={() => setIsDockCollapsed(false)}
-								className="glass w-64 h-12 rounded-t-3xl border-x border-t border-white/10 shadow-2xl flex items-center justify-center gap-3 group cursor-pointer relative"
+								className="glass w-64 h-12 rounded-t-2xl border-x border-t border-white/10 shadow-2xl flex items-center justify-center gap-3 group cursor-pointer relative"
 							>
 								{/* Subtle handle line */}
 								<div className="absolute top-1.5 left-1/2 -translate-x-1/2 w-8 h-1 rounded-full bg-white/10 group-hover:bg-primary/40 transition-colors" />

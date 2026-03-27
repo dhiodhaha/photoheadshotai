@@ -62,8 +62,8 @@ export function StudioUploadZone({ onFileSelected }: StudioUploadZoneProps) {
 					<div className="w-6 h-6 rounded-full bg-green-500/10 flex items-center justify-center">
 						<ShieldCheck className="w-4 h-4 text-green-500" />
 					</div>
-					<div className="flex flex-col">
-						<span className="text-[10px] font-black tracking-widest uppercase text-white leading-none">
+					<div className="flex flex-col gap-0.5">
+						<span className="text-[10px] font-black tracking-widest uppercase text-white">
 							Never Stored
 						</span>
 						<span className="text-[7px] font-bold text-green-500/80 uppercase tracking-tighter">
