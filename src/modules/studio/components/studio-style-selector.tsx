@@ -1,4 +1,4 @@
-import { Sparkles, X } from "lucide-react";
+import { Wand2, X } from "lucide-react";
 import { HEADSHOT_STYLES } from "#/modules/studio/domain/styles";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -91,23 +91,25 @@ export function StudioStyleSelector({
 				</div>
 			</div>
 
-			{/* Action Button: Styled to align with project guide (Pill Primary) */}
-			<Button
-				disabled={!selectedStyle}
-				onClick={onGenerate}
-				className="md:hidden rounded-full h-14 w-14 flex items-center justify-center p-0 shrink-0 shadow-lg shadow-primary/20"
-			>
-				<Sparkles className="w-6 h-6" />
-			</Button>
-			<Button
-				size="lg"
-				disabled={!selectedStyle}
-				onClick={onGenerate}
-				className="hidden md:flex rounded-full h-20 px-8 gap-3 shrink-0 uppercase tracking-widest text-[11px] font-black italic shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all"
-			>
-				<Sparkles className="w-5 h-5" />
-				Generate
-			</Button>
+			{/* Action Button: Skeuomorphic "Real" Button */}
+			<div className="flex items-center shrink-0">
+				<Button
+					disabled={!selectedStyle}
+					onClick={onGenerate}
+					className="md:hidden rounded-full h-12 w-12 flex items-center justify-center p-0 bg-gradient-to-b from-primary to-primary/80 text-primary-foreground shadow-lg border-b-2 border-black/40 ring-1 ring-inset ring-white/10 active:translate-y-0.5 active:border-b-0 transition-all"
+				>
+					<Wand2 className="w-6 h-6" />
+				</Button>
+				<Button
+					size="lg"
+					disabled={!selectedStyle}
+					onClick={onGenerate}
+					className="hidden md:flex rounded-full h-14 px-8 gap-3 bg-gradient-to-b from-primary via-primary to-primary/80 text-primary-foreground text-[13px] font-black uppercase tracking-widest shadow-xl border-b-4 border-black/40 ring-1 ring-inset ring-white/20 hover:brightness-110 active:translate-y-0.5 active:border-b-2 transition-all"
+				>
+					<Wand2 className="w-5 h-5" />
+					Generate
+				</Button>
+			</div>
 		</div>
 	);
 }
