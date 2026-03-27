@@ -416,7 +416,7 @@ function StudioIndexPage() {
 									stiffness: 400,
 									damping: 30,
 								}}
-								className="w-full glass rounded-[32px] border border-white/10 shadow-2xl backdrop-blur-xl p-4 mb-4"
+								className="w-full glass rounded-[24px] border border-white/10 shadow-2xl backdrop-blur-xl p-4 mb-4"
 							>
 								<div className="flex flex-col gap-4 max-w-4xl mx-auto">
 									{/* Top Header Row: Unified Island Header */}
@@ -470,8 +470,8 @@ function StudioIndexPage() {
 										</motion.button>
 									</div>
 
-									{/* Content Area */}
-									<div className="w-full min-h-[70px] flex items-center overflow-hidden">
+									{/* Content Area: Consistent height driven by components */}
+									<div className="w-full min-h-[80px] flex items-center overflow-hidden">
 										<AnimatePresence mode="wait">
 											{step === 1 && (
 												<motion.div
@@ -530,12 +530,16 @@ function StudioIndexPage() {
 										</AnimatePresence>
 									</div>
 
-									{/* Bottom Footer: Privacy Centered */}
-									<div className="flex items-center justify-center pt-2 mt-1 border-t border-white/5 opacity-50">
-										<div className="flex items-center gap-4 text-[9px] font-black uppercase tracking-[0.3em] text-white/40">
-											<span>Privacy First</span>
-											<div className="w-1 h-1 rounded-full bg-white/20" />
-											<span>Permanently Deleted After Use</span>
+									{/* Bottom Footer: Spaced Island Footer */}
+									<div className="flex items-center justify-between pt-1 mt-1">
+										<span className="text-[9.5px] font-black uppercase tracking-[0.2em] text-white/40">
+											Secure & Private
+										</span>
+										<div className="flex items-center gap-2">
+											<div className="w-1 h-1 rounded-full bg-green-500/60 animate-pulse" />
+											<span className="text-[9.5px] font-black uppercase tracking-[0.2em] text-white/40">
+												Photos Automatically Deleted
+											</span>
 										</div>
 									</div>
 								</div>
@@ -553,7 +557,7 @@ function StudioIndexPage() {
 								}}
 								whileHover={{ y: -4, scale: 1.02 }}
 								onClick={() => setIsDockCollapsed(false)}
-								className="glass min-w-[300px] h-12 rounded-[24px] border border-white/10 shadow-2xl flex items-center justify-center gap-6 px-8 group cursor-pointer relative mb-4"
+								className="glass min-w-[300px] h-12 rounded-[20px] border border-white/10 shadow-2xl flex items-center justify-center gap-6 px-8 group cursor-pointer relative mb-4"
 							>
 								<div className="flex items-center gap-3">
 									<Sparkles className="w-4 h-4 text-primary group-hover:scale-110 transition-transform" />

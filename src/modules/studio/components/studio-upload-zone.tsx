@@ -41,7 +41,7 @@ export function StudioUploadZone({ onFileSelected }: StudioUploadZoneProps) {
 					if (e.dataTransfer.files?.[0]) handleFile(e.dataTransfer.files[0]);
 				}}
 				className={cn(
-					"relative group flex items-center gap-3 sm:gap-6 p-3 sm:p-4 rounded-2xl border-2 border-dashed transition-all duration-500 bg-white/5 cursor-pointer w-full text-left",
+					"relative group flex items-center gap-3 sm:gap-6 px-6 h-28 rounded-2xl border-2 border-dashed transition-all duration-500 bg-white/5 cursor-pointer w-full text-left",
 					isDragging
 						? "border-primary bg-primary/10 scale-[1.01]"
 						: "border-white/10 hover:border-white/30",
