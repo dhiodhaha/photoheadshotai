@@ -30,6 +30,7 @@ export function useGenerationPolling(callbacks: PollingCallbacks) {
 	};
 
 	const startPolling = (jobId: string) => {
+		stopPolling();
 		pollInterval.current = setInterval(async () => {
 			pollCount.current++;
 

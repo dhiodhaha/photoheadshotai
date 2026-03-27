@@ -190,14 +190,11 @@ function StudioIndexPage() {
 
 	const handleGenerate = async () => {
 		if (!file || !selectedStyle) return;
-		const currentCredits = session?.user?.currentCredits ?? 0;
+		const currentCredits = (session?.user as any)?.currentCredits ?? 0;
 		await generate(file, selectedStyle, currentCredits);
 
 		// Auto-reset to Step 1 after a delay to allow the animation to finish
 		setTimeout(() => {
-			toast.info(
-				"Generation started! You can start another one while we work on this.",
-			);
 			handleClear();
 		}, 3000);
 	};

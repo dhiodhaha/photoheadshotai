@@ -23,7 +23,6 @@ export function useGenerationFlow({
 			onGenerating(false);
 			await refetchSession();
 			queryClient.invalidateQueries({ queryKey: ["gallery"] });
-			toast.success("Generation Complete!");
 		},
 		onFailed: async () => {
 			onGenerating(false);
@@ -35,9 +34,6 @@ export function useGenerationFlow({
 		onTimeout: () => {
 			onGenerating(false);
 			queryClient.invalidateQueries({ queryKey: ["gallery"] });
-			toast.info(
-				"Generation is taking longer than expected. Check your gallery later.",
-			);
 		},
 	});
 
@@ -71,7 +67,6 @@ export function useGenerationFlow({
 			}
 
 			const { image_id } = await uploadRes.json();
-			toast.info("Image secured. Prompting AI Generator...");
 
 			const generateRes = await fetch("/api/studio/generate", {
 				method: "POST",
@@ -89,10 +84,10 @@ export function useGenerationFlow({
 			// Invalidate so gallery re-fetches and shows the server-side pending skeleton
 			queryClient.invalidateQueries({ queryKey: ["gallery"] });
 
-			toast.info("Generation started! This may take a moment...");
 			startPolling(job_id);
 		} catch (e: unknown) {
-			toast.error(e instanceof Error ? e.message : "Something went wrong.");
+			const message = e instanceof Error ? e.message : "Something went wrong.";
+			toast.error(message);
 			onGenerating(false);
 			onStep(2);
 		}
