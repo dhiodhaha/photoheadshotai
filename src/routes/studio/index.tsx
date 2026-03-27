@@ -1,6 +1,14 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
-import { Download, Heart, RotateCcw, Sparkles, Trash2, X } from "lucide-react";
+import {
+	CheckCircle2,
+	Download,
+	Heart,
+	RotateCcw,
+	Sparkles,
+	Trash2,
+	X,
+} from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -403,51 +411,68 @@ function StudioIndexPage() {
 								key="expanded-dock"
 								initial={{ y: 100, opacity: 0 }}
 								animate={{ y: 0, opacity: 1 }}
-								exit={{ y: 100, opacity: 0 }}
-								className="glass rounded-3xl border border-white/10 shadow-[0_-20px_50px_-12px_rgba(0,0,0,0.5)] overflow-hidden w-full relative group"
+								className="w-full relative group"
 							>
-								{/* Collapse Toggle */}
-								<button
-									type="button"
-									onClick={() => setIsDockCollapsed(true)}
-									className="absolute top-2 right-2 p-1.5 rounded-full hover:bg-white/10 text-muted-foreground hover:text-white transition-colors z-10"
-								>
-									<X className="w-4 h-4" />
-								</button>
+								<div className="flex flex-col gap-5 px-4">
+									{/* Top Header Row: Ultra-Minimalist Progress & Close */}
+									<div className="flex items-center justify-between">
+										<div className="flex items-center gap-8">
+											{[
+												{ id: 1, label: "Upload" },
+												{ id: 2, label: "Choose Style" },
+												{ id: 3, label: "Generate" },
+											].map((s) => (
+												<div key={s.id} className="flex items-center gap-2">
+													<div
+														className={cn(
+															"w-5 h-5 rounded-full flex items-center justify-center text-[8px] font-black transition-all",
+															step === s.id
+																? "bg-primary text-primary-foreground scale-110 shadow-[0_0_10px_rgba(var(--primary),0.5)]"
+																: step > s.id
+																	? "bg-green-500 text-white"
+																	: "bg-white/10 text-muted-foreground/30",
+														)}
+													>
+														{step > s.id ? (
+															<CheckCircle2 className="w-3 h-3" />
+														) : (
+															s.id
+														)}
+													</div>
+													<span
+														className={cn(
+															"text-[10px] font-black tracking-widest uppercase transition-colors",
+															step === s.id
+																? "text-white"
+																: "text-muted-foreground/30",
+														)}
+													>
+														{s.label}
+													</span>
+												</div>
+											))}
+										</div>
 
-								<div className="p-4 md:p-6 flex items-center gap-4 sm:gap-6">
-									{/* Middle: Minimalist Step Indicator */}
-									<div className="hidden sm:flex flex-col gap-2 shrink-0">
-										<div
-											className={cn(
-												"w-1.5 h-1.5 rounded-full transition-colors duration-500",
-												step === 1 ? "bg-primary" : "bg-white/10",
-											)}
-										/>
-										<div
-											className={cn(
-												"w-1.5 h-1.5 rounded-full transition-colors duration-500",
-												step === 2 ? "bg-primary" : "bg-white/10",
-											)}
-										/>
-										<div
-											className={cn(
-												"w-1.5 h-1.5 rounded-full transition-colors duration-500",
-												step === 3 ? "bg-primary" : "bg-white/10",
-											)}
-										/>
+										<button
+											type="button"
+											onClick={() => setIsDockCollapsed(true)}
+											className="p-1 text-muted-foreground hover:text-white transition-all group/collapse"
+											title="Close"
+										>
+											<X className="w-5 h-5 group-hover/collapse:rotate-90 transition-transform" />
+										</button>
 									</div>
 
-									{/* Right: Content Area (Limited height for dock) */}
-									<div className="flex-1 w-full min-h-[70px] flex items-center overflow-hidden">
+									{/* Content Area */}
+									<div className="w-full min-h-[70px] flex items-center overflow-hidden">
 										<AnimatePresence mode="wait">
 											{step === 1 && (
 												<motion.div
 													key="step1"
 													className="w-full"
-													initial={{ opacity: 0, x: -10 }}
-													animate={{ opacity: 1, x: 0 }}
-													exit={{ opacity: 0, x: -10 }}
+													initial={{ opacity: 0, y: 10 }}
+													animate={{ opacity: 1, y: 0 }}
+													exit={{ opacity: 0, y: 10 }}
 												>
 													<StudioUploadZone
 														onFileSelected={handleFileSelected}
@@ -458,9 +483,9 @@ function StudioIndexPage() {
 												<motion.div
 													key="step2"
 													className="w-full"
-													initial={{ opacity: 0, x: 10 }}
-													animate={{ opacity: 1, x: 0 }}
-													exit={{ opacity: 0, x: 10 }}
+													initial={{ opacity: 0, y: 10 }}
+													animate={{ opacity: 1, y: 0 }}
+													exit={{ opacity: 0, y: 10 }}
 												>
 													<StudioStyleSelector
 														previewUrl={previewUrl}
@@ -479,7 +504,7 @@ function StudioIndexPage() {
 													animate={{ opacity: 1, scale: 1 }}
 													exit={{ opacity: 0, scale: 0.98 }}
 												>
-													<div className="flex items-center justify-center gap-4 py-4 text-primary">
+													<div className="flex items-center justify-center gap-4 py-4 text-primary w-full">
 														<motion.div
 															animate={{ rotate: 360 }}
 															transition={{
@@ -490,7 +515,7 @@ function StudioIndexPage() {
 															className="w-5 h-5 border-2 border-primary border-t-transparent rounded-full"
 														/>
 														<span className="text-xs font-bold uppercase tracking-widest animate-pulse">
-															Neural Submission in progress...
+															Neural Submission...
 														</span>
 													</div>
 												</motion.div>
