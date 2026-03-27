@@ -416,10 +416,10 @@ function StudioIndexPage() {
 									stiffness: 400,
 									damping: 30,
 								}}
-								className="w-full relative"
+								className="w-full glass rounded-[32px] border border-white/10 shadow-2xl backdrop-blur-xl p-4 mb-4"
 							>
-								<div className="flex flex-col gap-4 px-4">
-									{/* Top Header Row: Ultra-Minimalist Progress & Close */}
+								<div className="flex flex-col gap-4 max-w-4xl mx-auto">
+									{/* Top Header Row: Unified Island Header */}
 									<div className="flex items-center justify-between h-8">
 										<div className="flex items-center gap-8">
 											{[
@@ -460,13 +460,13 @@ function StudioIndexPage() {
 
 										<motion.button
 											type="button"
-											whileHover={{ scale: 1.1, rotate: 90 }}
-											whileTap={{ scale: 0.9 }}
+											whileHover={{ scale: 1.05 }}
+											whileTap={{ scale: 0.95 }}
 											onClick={() => setIsDockCollapsed(true)}
-											className="p-1.5 text-muted-foreground hover:text-white transition-all rounded-full hover:bg-white/5"
+											className="p-1.5 rounded-xl bg-white/5 border border-white/5 hover:bg-white/10 text-muted-foreground hover:text-white transition-all group/collapse"
 											title="Close"
 										>
-											<X className="w-5 h-5" />
+											<X className="w-4 h-4 group-hover/collapse:rotate-90 transition-transform" />
 										</motion.button>
 									</div>
 
@@ -529,6 +529,15 @@ function StudioIndexPage() {
 											)}
 										</AnimatePresence>
 									</div>
+
+									{/* Bottom Footer: Privacy Centered */}
+									<div className="flex items-center justify-center pt-2 mt-1 border-t border-white/5 opacity-50">
+										<div className="flex items-center gap-4 text-[9px] font-black uppercase tracking-[0.3em] text-white/40">
+											<span>Privacy First</span>
+											<div className="w-1 h-1 rounded-full bg-white/20" />
+											<span>Permanently Deleted After Use</span>
+										</div>
+									</div>
 								</div>
 							</motion.div>
 						) : (
@@ -544,14 +553,19 @@ function StudioIndexPage() {
 								}}
 								whileHover={{ y: -4, scale: 1.02 }}
 								onClick={() => setIsDockCollapsed(false)}
-								className="glass w-64 h-12 rounded-t-2xl border-x border-t border-white/10 shadow-2xl flex items-center justify-center gap-3 group cursor-pointer relative"
+								className="glass min-w-[300px] h-12 rounded-[24px] border border-white/10 shadow-2xl flex items-center justify-center gap-6 px-8 group cursor-pointer relative mb-4"
 							>
-								{/* Subtle handle line */}
-								<div className="absolute top-1.5 left-1/2 -translate-x-1/2 w-8 h-1 rounded-full bg-white/10 group-hover:bg-primary/40 transition-colors" />
+								<div className="flex items-center gap-3">
+									<Sparkles className="w-4 h-4 text-primary group-hover:scale-110 transition-transform" />
+									<span className="text-[10px] font-black uppercase tracking-[0.2em] text-white/90">
+										New Generation
+									</span>
+								</div>
 
-								<Sparkles className="w-3.5 h-3.5 text-primary group-hover:scale-110 transition-transform" />
-								<span className="text-[10px] font-bold uppercase tracking-[0.2em] text-white/70 group-hover:text-white transition-colors">
-									New Generation
+								<div className="w-px h-4 bg-white/10" />
+
+								<span className="text-[9px] font-bold uppercase tracking-widest text-white/30 group-hover:text-white/50 transition-colors">
+									Safe & Secure
 								</span>
 							</motion.button>
 						)}

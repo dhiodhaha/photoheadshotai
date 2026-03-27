@@ -1,4 +1,4 @@
-import { ShieldCheck, Upload } from "lucide-react";
+import { Upload } from "lucide-react";
 import { useRef, useState } from "react";
 import { cn } from "@/lib/utils";
 
@@ -57,19 +57,6 @@ export function StudioUploadZone({ onFileSelected }: StudioUploadZoneProps) {
 					<p className="text-[8px] sm:text-[10px] text-muted-foreground uppercase tracking-widest font-medium truncate">
 						Click or drag & drop
 					</p>
-				</div>
-				<div className="hidden sm:flex items-center gap-4 px-4 py-2 rounded-2xl glass border border-white/5 text-muted-foreground mr-2">
-					<div className="w-6 h-6 rounded-full bg-green-500/10 flex items-center justify-center">
-						<ShieldCheck className="w-4 h-4 text-green-500" />
-					</div>
-					<div className="flex flex-col gap-0.5">
-						<span className="text-[10px] font-black tracking-widest uppercase text-white">
-							Never Stored
-						</span>
-						<span className="text-[7px] font-bold text-green-500/80 uppercase tracking-tighter">
-							Permanently Deleted
-						</span>
-					</div>
 				</div>
 			</button>
 		</div>
