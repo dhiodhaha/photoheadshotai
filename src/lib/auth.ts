@@ -71,27 +71,25 @@ export const auth = betterAuth({
 						"#/modules/auth/infrastructure/admin-domain"
 					);
 					if (!isAdminDomain(user.email)) {
-						// Require referral code for everyone else
-						if (!enteredCode || enteredCode.trim() === "") {
-							throw new APIError("BAD_REQUEST", {
-								message: "A referral code is required to sign up.",
-							});
-						}
+						if (enteredCode && enteredCode.trim() !== "") {
+							// Validate referral code if provided
+							const { validateReferralCode } = await import(
+								"#/modules/referral"
+							);
+							const result = await validateReferralCode(enteredCode.trim());
+							if (!result.valid) {
+								throw new APIError("BAD_REQUEST", { message: result.reason });
+							}
 
-						// Validate referral code
-						const { validateReferralCode } = await import("#/modules/referral");
-						const result = await validateReferralCode(enteredCode.trim());
-						if (!result.valid) {
-							throw new APIError("BAD_REQUEST", { message: result.reason });
-						}
+							// Store referrerId on user if it's a user referral code
+							if (result.type === "referral") {
+								(user as Record<string, unknown>).referredBy =
+									result.referrerId;
+							}
 
-						// Store referrerId on user if it's a user referral code
-						if (result.type === "referral") {
-							(user as Record<string, unknown>).referredBy = result.referrerId;
+							// Save entered code for after() to process the redemption
+							_pendingRedemptions.set(user.email, enteredCode.trim());
 						}
-
-						// Save entered code for after() to process the redemption
-						_pendingRedemptions.set(user.email, enteredCode.trim());
 					}
 
 					// Replace the entered code with the user's own unique shareable referral code.
