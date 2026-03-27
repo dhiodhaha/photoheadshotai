@@ -1,18 +1,11 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import {
-	CreditCard,
-	Image as ImageIcon,
-	Sparkles,
-	Trash2,
-	X,
-} from "lucide-react";
+import { Image as ImageIcon, Sparkles, Trash2, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const navItems = [
 	{ icon: Sparkles, label: "Studio AI", to: "/studio" },
 	{ icon: ImageIcon, label: "Gallery", to: "/studio/gallery" },
 	{ icon: Trash2, label: "Trash", to: "/studio/trash" },
-	{ icon: CreditCard, label: "Billing", to: "/studio/billing" },
 ];
 
 interface StudioSidebarProps {
