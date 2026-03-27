@@ -4,6 +4,7 @@ import {
 	CheckCircle2,
 	Download,
 	Heart,
+	LayoutGrid,
 	RotateCcw,
 	Sparkles,
 	Trash2,
@@ -42,18 +43,12 @@ interface TrashItem {
 	createdAt: string;
 }
 
-interface Category {
-	styleId: string;
-	label: string;
-}
-
 function StudioIndexPage() {
 	const queryClient = useQueryClient();
 	const { data: session } = authClient.useSession();
 
 	// View State
 	const [activeView, setActiveView] = useState<"gallery" | "trash">("gallery");
-	const [activeFilter, setActiveFilter] = useState<string>("All");
 
 	// Generation State
 	const [step, setStep] = useState<1 | 2 | 3>(1);
@@ -68,32 +63,13 @@ function StudioIndexPage() {
 		onStep: setStep,
 	});
 
-	// Categories Query
-	const { data: categoriesData } = useQuery<{ categories: Category[] }>({
-		queryKey: ["gallery-categories"],
-		queryFn: async () => {
-			const res = await fetch("/api/studio/gallery/categories");
-			if (!res.ok) throw new Error("Failed to load categories");
-			return res.json();
-		},
-		staleTime: 1000 * 60 * 5,
-	});
-
-	const styleId =
-		activeFilter !== "All" && activeFilter !== "Favorites"
-			? activeFilter
-			: undefined;
-
 	// Gallery Query
-	const { data: galleryData, isLoading: isGalleryLoading } = useQuery<{
+	const { data: galleryData } = useQuery<{
 		headshots: GalleryItem[];
 	}>({
-		queryKey: ["gallery", styleId],
+		queryKey: ["gallery"],
 		queryFn: async () => {
-			const url = styleId
-				? `/api/studio/gallery?style=${styleId}`
-				: "/api/studio/gallery";
-			const res = await fetch(url);
+			const res = await fetch("/api/studio/gallery");
 			if (!res.ok) throw new Error("Failed to load gallery");
 			return res.json();
 		},
@@ -105,7 +81,7 @@ function StudioIndexPage() {
 	});
 
 	// Trash Query
-	const { data: trashData, isLoading: isTrashLoading } = useQuery<{
+	const { data: trashData } = useQuery<{
 		headshots: TrashItem[];
 	}>({
 		queryKey: ["trash"],
@@ -132,9 +108,9 @@ function StudioIndexPage() {
 			await queryClient.cancelQueries({ queryKey: ["gallery"] });
 			const previousData = queryClient.getQueryData<{
 				headshots: GalleryItem[];
-			}>(["gallery", styleId]);
+			}>(["gallery"]);
 			queryClient.setQueryData<{ headshots: GalleryItem[] }>(
-				["gallery", styleId],
+				["gallery"],
 				(old) => {
 					if (!old) return old;
 					return {
@@ -147,7 +123,7 @@ function StudioIndexPage() {
 			return { previousData };
 		},
 		onError: (_err, _vars, context) => {
-			queryClient.setQueryData(["gallery", styleId], context?.previousData);
+			queryClient.setQueryData(["gallery"], context?.previousData);
 			toast.error("Failed to update favorite.");
 		},
 	});
@@ -223,7 +199,7 @@ function StudioIndexPage() {
 				"Generation started! You can start another one while we work on this.",
 			);
 			handleClear();
-		}, 3000); // 3 second delay for animation glory
+		}, 3000);
 	};
 
 	const handleDownload = async (url: string) => {
@@ -243,17 +219,7 @@ function StudioIndexPage() {
 		}
 	};
 
-	const categories = categoriesData?.categories ?? [];
-	const filters = ["All", "Favorites", ...categories.map((c) => c.styleId)];
-	const getCategoryLabel = (id: string) =>
-		categories.find((c) => c.styleId === id)?.label ?? id;
-
-	const allHeadshots = galleryData?.headshots ?? [];
-	const displayedGallery =
-		activeFilter === "Favorites"
-			? allHeadshots.filter((item) => item.isFavorited)
-			: allHeadshots;
-
+	const displayedGallery = galleryData?.headshots ?? [];
 	const trashItems = trashData?.headshots ?? [];
 
 	return (
@@ -265,131 +231,79 @@ function StudioIndexPage() {
 				<div className="absolute inset-0 bg-background/40 backdrop-blur-[2px]" />
 			</div>
 
-			<div className="relative z-10 w-full max-w-7xl px-4 md:px-8 pt-8 space-y-12">
-				{/* Top Controls */}
-				<div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-					<div className="flex flex-col gap-1">
-						<h2 className="text-3xl md:text-4xl font-display font-bold tracking-tight">
-							Creative{" "}
-							<span className="italic font-light text-muted-foreground">
-								Space.
-							</span>
-						</h2>
-						<p className="text-muted-foreground text-sm font-light tracking-wide">
-							Generate, manage, and refine your AI headshots.
-						</p>
-					</div>
-
-					<div className="flex items-center gap-4">
-						<div className="glass p-1 rounded-full border border-white/5 flex items-center">
-							<button
-								type="button"
-								onClick={() => setActiveView("gallery")}
-								className={cn(
-									"px-6 py-2 rounded-full text-xs font-bold tracking-widest uppercase transition-all",
-									activeView === "gallery"
-										? "bg-white text-black shadow-lg"
-										: "text-muted-foreground hover:text-white",
-								)}
-							>
-								Gallery
-							</button>
-							<button
-								type="button"
-								onClick={() => setActiveView("trash")}
-								className={cn(
-									"px-6 py-2 rounded-full text-xs font-bold tracking-widest uppercase transition-all",
-									activeView === "trash"
-										? "bg-white text-black shadow-lg"
-										: "text-muted-foreground hover:text-white",
-								)}
-							>
-								Trash
-							</button>
-						</div>
+			<div className="relative z-10 w-full px-4 md:px-12 lg:px-24 pt-8">
+				{/* Floating Navigator Sidebar */}
+				<div className="fixed left-6 top-1/2 -translate-y-1/2 flex flex-col gap-4 z-40">
+					<div className="glass p-2 rounded-2xl border border-white/10 flex flex-col items-center gap-3 shadow-2xl">
+						<button
+							type="button"
+							onClick={() => setActiveView("gallery")}
+							className={cn(
+								"w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-300",
+								activeView === "gallery"
+									? "bg-white text-black shadow-[0_0_20px_rgba(255,255,255,0.2)]"
+									: "text-white/40 hover:text-white hover:bg-white/5",
+							)}
+							title="Gallery"
+						>
+							<LayoutGrid className="w-5 h-5" />
+						</button>
+						<button
+							type="button"
+							onClick={() => setActiveView("trash")}
+							className={cn(
+								"w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-300",
+								activeView === "trash"
+									? "bg-white text-black shadow-[0_0_20px_rgba(255,255,255,0.2)]"
+									: "text-white/40 hover:text-white hover:bg-white/5",
+							)}
+							title="Trash"
+						>
+							<Trash2 className="w-5 h-5" />
+						</button>
 					</div>
 				</div>
 
-				{/* Main Content Area */}
-				<div className="space-y-8">
-					{activeView === "gallery" && (
-						<motion.div
-							initial={{ opacity: 0 }}
-							animate={{ opacity: 1 }}
-							className="flex flex-wrap items-center gap-2 border-b border-white/5 pb-6"
-						>
-							{filters.map((filter) => (
-								<button
-									type="button"
-									key={filter}
-									onClick={() => setActiveFilter(filter)}
-									className={cn(
-										"px-5 py-2 rounded-full text-[10px] font-bold tracking-widest uppercase transition-all duration-300",
-										activeFilter === filter
-											? "bg-white text-black shadow-md shadow-white/10"
-											: "text-muted-foreground hover:text-white hover:bg-white/5",
-									)}
-								>
-									{filter === "All" || filter === "Favorites"
-										? filter
-										: getCategoryLabel(filter)}
-								</button>
-							))}
-						</motion.div>
-					)}
-
-					{/* Loading State */}
-					{isGalleryLoading || isTrashLoading ? (
-						<div className="py-32 flex justify-center w-full">
-							<motion.div
-								animate={{ rotate: 360 }}
-								transition={{ repeat: Infinity, duration: 2, ease: "linear" }}
-								className="w-10 h-10 border-2 border-primary border-t-transparent rounded-full"
+				<div className="w-full">
+					{activeView === "gallery" ? (
+						displayedGallery.length === 0 ? (
+							<EmptyState
+								title="Gallery is empty"
+								description="Generate some stunning headshots to start filling your archive."
 							/>
-						</div>
-					) : (
-						<div className="w-full">
-							{activeView === "gallery" ? (
-								displayedGallery.length === 0 ? (
-									<EmptyState
-										title="Gallery is empty"
-										description="Generate some stunning headshots to start filling your archive."
+						) : (
+							<div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 2xl:grid-cols-6 3xl:grid-cols-8 gap-4 md:gap-6">
+								{displayedGallery.map((item) => (
+									<GalleryCard
+										key={item.id}
+										item={item}
+										onFavorite={() => favoriteMutation.mutate(item.id)}
+										onDelete={() => moveTrashMutation.mutate(item.id)}
+										onDownload={() => handleDownload(item.src)}
 									/>
-								) : (
-									<div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-6">
-										{displayedGallery.map((item) => (
-											<GalleryCard
-												key={item.id}
-												item={item}
-												onFavorite={() => favoriteMutation.mutate(item.id)}
-												onDelete={() => moveTrashMutation.mutate(item.id)}
-												onDownload={() => handleDownload(item.src)}
-											/>
-										))}
-									</div>
-								)
-							) : trashItems.length === 0 ? (
-								<EmptyState
-									title="Trash is empty"
-									description="Deleted items will appear here for 30 days before removal."
-									icon={<Trash2 className="w-6 h-6" />}
+								))}
+							</div>
+						)
+					) : trashItems.length === 0 ? (
+						<EmptyState
+							title="Trash is empty"
+							description="Deleted items will appear here for 30 days before removal."
+							icon={<Trash2 className="w-6 h-6" />}
+						/>
+					) : (
+						<div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 2xl:grid-cols-6 3xl:grid-cols-8 gap-4 md:gap-6">
+							{trashItems.map((item) => (
+								<TrashCard
+									key={item.id}
+									item={item}
+									onRestore={() => restoreMutation.mutate(item.id)}
+									onDelete={() => {
+										if (confirm("Permanently delete this image?")) {
+											permanentDeleteMutation.mutate(item.id);
+										}
+									}}
 								/>
-							) : (
-								<div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-6">
-									{trashItems.map((item) => (
-										<TrashCard
-											key={item.id}
-											item={item}
-											onRestore={() => restoreMutation.mutate(item.id)}
-											onDelete={() => {
-												if (confirm("Permanently delete this image?")) {
-													permanentDeleteMutation.mutate(item.id);
-												}
-											}}
-										/>
-									))}
-								</div>
-							)}
+							))}
 						</div>
 					)}
 				</div>
@@ -613,9 +527,9 @@ function StudioIndexPage() {
 																opacity: 1,
 																scale: 1,
 																boxShadow: [
-																	"0 0 0px var(--primary)",
+																	"0 0 0px rgba(var(--primary),0)",
 																	"0 0 40px rgba(var(--primary),0.3)",
-																	"0 0 0px var(--primary)",
+																	"0 0 0px rgba(var(--primary),0)",
 																],
 															}}
 															transition={{
@@ -632,7 +546,7 @@ function StudioIndexPage() {
 															<img
 																src={
 																	HEADSHOT_STYLES.find(
-																		(s) => s.id === selectedStyle,
+																		(s) => s.id === (selectedStyle || ""),
 																	)?.image || ""
 																}
 																alt="Style"
@@ -673,15 +587,10 @@ function StudioIndexPage() {
 							</motion.div>
 						) : (
 							<motion.button
-								key="collapsed-handle"
-								initial={{ opacity: 0, y: 40 }}
-								animate={{ opacity: 1, y: 0 }}
-								exit={{ opacity: 0, y: 40 }}
-								transition={{
-									type: "spring",
-									stiffness: 400,
-									damping: 30,
-								}}
+								key="collapsed-dock"
+								initial={{ opacity: 0, y: 20, scale: 0.95 }}
+								animate={{ opacity: 1, y: 0, scale: 1 }}
+								exit={{ opacity: 0, y: 20, scale: 0.95 }}
 								whileHover={{ y: -4, scale: 1.02 }}
 								onClick={() => setIsDockCollapsed(false)}
 								className="glass min-w-[300px] h-12 rounded-[20px] border border-white/10 shadow-2xl flex items-center justify-center gap-6 px-8 group cursor-pointer relative mb-4"
