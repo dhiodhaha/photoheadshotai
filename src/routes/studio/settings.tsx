@@ -124,7 +124,7 @@ function SettingsPage() {
 	};
 
 	return (
-		<div className="relative min-h-[calc(100vh-5rem)] p-6 md:p-12 overflow-y-auto w-full">
+		<div className="relative min-h-[calc(100vh-5rem)] px-6 pt-12 pb-24 md:px-12 md:pt-16 md:pb-32 overflow-y-auto w-full">
 			{/* Ambient background glow */}
 			<div className="absolute top-0 right-0 w-[500px] h-[500px] bg-primary/10 rounded-full blur-[120px] pointer-events-none opacity-30" />
 			<div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-accent/10 rounded-full blur-[100px] pointer-events-none opacity-20" />

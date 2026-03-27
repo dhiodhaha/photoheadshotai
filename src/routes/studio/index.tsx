@@ -231,7 +231,7 @@ function StudioIndexPage() {
 				<div className="absolute inset-0 bg-background/40 backdrop-blur-[2px]" />
 			</div>
 
-			<div className="relative z-10 w-full px-4 md:px-12 lg:px-24 pt-8">
+			<div className="relative z-10 w-full px-4 md:px-12 lg:px-24 pt-8 md:pt-12">
 				{/* Floating Navigator Sidebar */}
 				<div className="fixed left-6 top-1/2 -translate-y-1/2 flex flex-col gap-4 z-40">
 					<div className="glass p-2 rounded-2xl border border-white/10 flex flex-col items-center gap-3 shadow-2xl">
