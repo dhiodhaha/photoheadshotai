@@ -1,6 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { z } from "zod";
 import { getServerSession } from "#/modules/auth";
 import { redeemCoupon } from "#/modules/coupon";
+
+const redeemCouponSchema = z.object({
+	code: z.string().trim().min(1, "Coupon code is required"),
+});
 
 export const Route = createFileRoute("/api/credits/redeem-coupon")({
 	server: {
@@ -13,7 +18,8 @@ export const Route = createFileRoute("/api/credits/redeem-coupon")({
 
 				try {
 					const body = await request.json();
-					const result = await redeemCoupon(session.user.id, body.code);
+					const { code } = redeemCouponSchema.parse(body);
+					const result = await redeemCoupon(session.user.id, code);
 					return Response.json(result);
 				} catch (error: unknown) {
 					const message =

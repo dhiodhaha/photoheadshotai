@@ -18,9 +18,40 @@ export const auth = betterAuth({
 	database: prismaAdapter(prisma, {
 		provider: "postgresql",
 	}),
+	trustedOrigins: [process.env.BETTER_AUTH_URL ?? "http://localhost:3000"],
+	advanced: {
+		useSecureCookies: process.env.NODE_ENV === "production",
+	},
+	rateLimit: {
+		enabled: true,
+		window: 60, // 60-second window
+		max: 10, // max 10 auth requests per window per IP
+		storage: "database",
+	},
+	session: {
+		expiresIn: 60 * 60 * 24 * 7, // 7 days
+		updateAge: 60 * 60 * 24, // refresh session token daily
+		cookieCache: {
+			enabled: true,
+			maxAge: 60 * 5, // 5-minute client-side cache to reduce DB reads
+		},
+	},
 	emailAndPassword: {
 		enabled: true,
 		requireEmailVerification: true,
+		sendResetPassword: async ({ user, url }) => {
+			const { sendEmail } = await import(
+				"#/modules/auth/infrastructure/email.server"
+			);
+			const { buildPasswordResetEmailHtml } = await import(
+				"#/modules/auth/infrastructure/email-templates"
+			);
+			await sendEmail(
+				user.email,
+				"Reset your password — Studio AI",
+				buildPasswordResetEmailHtml(user.name, url),
+			);
+		},
 	},
 	emailVerification: {
 		sendOnSignUp: true,
@@ -128,7 +159,8 @@ export const auth = betterAuth({
 			referredBy: {
 				type: "string",
 				required: false,
-				input: true,
+				// input: false (default) — never accept from client.
+				// Set programmatically in databaseHooks.user.create.before only.
 			},
 		},
 	},
