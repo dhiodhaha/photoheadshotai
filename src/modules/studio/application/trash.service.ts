@@ -5,7 +5,7 @@ import {
 	hardDeleteHeadshot,
 	restoreHeadshotById,
 } from "../infrastructure/gallery.repository";
-import { deletePersistedImage } from "../infrastructure/image-processing.server";
+import { deletePersistedImage } from "../infrastructure/photo.storage";
 
 function resolveStyleLabel(styleId: string): string {
 	return HEADSHOT_STYLES.find((s) => s.id === styleId)?.label ?? styleId;
