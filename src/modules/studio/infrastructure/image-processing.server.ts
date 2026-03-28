@@ -1,11 +1,7 @@
 import sharp from "sharp";
 import { deleteFromR2, uploadToR2 } from "./photo.storage";
-import { getBucketName, getPublicUrl } from "./r2.server";
+import { getPublicUrl } from "./r2.server";
 
-/**
- * Domain: Image persistence and processing
- * Persists fal.ai generated images to R2 and creates compressed thumbnails
- */
 export interface PersistedImage {
 	resultUrl: string;
 	thumbnailUrl: string;
@@ -14,34 +10,66 @@ export interface PersistedImage {
 }
 
 /**
+ * Fetch image from fal.ai with up to 3 retries.
+ * TLS "bad record mac" errors are transient — retrying resolves them.
+ */
+async function fetchImageWithRetry(
+	url: string,
+	maxAttempts = 3,
+): Promise<Buffer> {
+	let lastError: unknown;
+
+	for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+		try {
+			const res = await fetch(url);
+			if (!res.ok) {
+				throw new Error(`HTTP ${res.status} ${res.statusText}`);
+			}
+
+			const buffer = Buffer.from(await res.arrayBuffer());
+
+			if (buffer.length === 0) {
+				throw new Error("Received empty image body from fal.ai");
+			}
+
+			return buffer;
+		} catch (error: unknown) {
+			lastError = error;
+			const msg = error instanceof Error ? error.message : String(error);
+			console.warn(`Fetch attempt ${attempt}/${maxAttempts} failed: ${msg}`);
+
+			if (attempt < maxAttempts) {
+				// Exponential backoff: 500ms, 1000ms
+				await new Promise((r) => setTimeout(r, 500 * attempt));
+			}
+		}
+	}
+
+	throw new Error(
+		`Failed to fetch image from fal.ai after ${maxAttempts} attempts: ${lastError instanceof Error ? lastError.message : String(lastError)}`,
+	);
+}
+
+/**
  * Persist generated image from fal.ai to R2
- * 1. Fetch the full-res 2K PNG from fal.ai
- * 2. Upload original to R2 as headshots/{userId}/{headshotId}.png
- * 3. Compress to 400px WebP (15-30KB) for gallery thumbnail
- * 4. Upload thumbnail to R2 as headshots/{userId}/{headshotId}_thumb.webp
+ * 1. Fetch the full-res 2K PNG from fal.ai (with retry)
+ * 2. Validate buffer is non-empty
+ * 3. Upload original to R2 as headshots/{userId}/{headshotId}.png
+ * 4. Compress to 400px WebP (~15-30KB) for gallery thumbnail
+ * 5. Upload thumbnail to R2 as headshots/{userId}/{headshotId}_thumb.webp
  */
 export async function persistGeneratedImage(
 	falUrl: string,
 	userId: string,
 	headshotId: string,
 ): Promise<PersistedImage> {
-	// Fetch the generated image from fal.ai
-	const imageRes = await fetch(falUrl);
-	if (!imageRes.ok) {
-		throw new Error(
-			`Failed to fetch generated image from fal.ai: ${imageRes.statusText}`,
-		);
-	}
-	const imageBuffer = Buffer.from(await imageRes.arrayBuffer());
+	const imageBuffer = await fetchImageWithRetry(falUrl);
 
-	// Generate R2 keys using DDD-friendly naming
 	const originalKey = `headshots/${userId}/${headshotId}.png`;
 	const thumbnailKey = `headshots/${userId}/${headshotId}_thumb.webp`;
 
-	// Upload original to R2
 	await uploadToR2(originalKey, imageBuffer, "image/png");
 
-	// Create and upload thumbnail (400px wide, 80% WebP quality ~15-30KB)
 	let thumbnailBuffer: Buffer;
 	try {
 		thumbnailBuffer = await sharp(imageBuffer)
@@ -49,7 +77,6 @@ export async function persistGeneratedImage(
 			.webp({ quality: 80 })
 			.toBuffer();
 	} catch (error: unknown) {
-		// Cleanup original upload if thumbnail generation fails
 		await deleteFromR2(originalKey);
 		throw new Error(
 			`Failed to process thumbnail: ${error instanceof Error ? error.message : "unknown error"}`,
@@ -59,7 +86,6 @@ export async function persistGeneratedImage(
 	try {
 		await uploadToR2(thumbnailKey, thumbnailBuffer, "image/webp");
 	} catch (error: unknown) {
-		// Cleanup original upload if thumbnail upload fails
 		await deleteFromR2(originalKey);
 		throw new Error(
 			`Failed to upload thumbnail: ${error instanceof Error ? error.message : "unknown error"}`,
@@ -83,14 +109,9 @@ export async function deletePersistedImage(
 ) {
 	const promises: Promise<void>[] = [];
 
-	if (r2Key) {
-		promises.push(deleteFromR2(r2Key).catch(() => {})); // Ignore errors on deletion
-	}
-	if (r2ThumbnailKey) {
-		promises.push(deleteFromR2(r2ThumbnailKey).catch(() => {})); // Ignore errors on deletion
-	}
+	if (r2Key) promises.push(deleteFromR2(r2Key).catch(() => {}));
+	if (r2ThumbnailKey)
+		promises.push(deleteFromR2(r2ThumbnailKey).catch(() => {}));
 
-	if (promises.length > 0) {
-		await Promise.all(promises);
-	}
+	if (promises.length > 0) await Promise.all(promises);
 }
