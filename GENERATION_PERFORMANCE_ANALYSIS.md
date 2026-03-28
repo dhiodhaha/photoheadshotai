@@ -143,6 +143,115 @@ The frontend starts polling 3 seconds after `startGeneration()` returns, but the
 
 ---
 
+## Fix Options (Pick Per Issue)
+
+---
+
+### Issue 1 — `fal.config()` called on every generation
+
+**Option A — Move to module init (recommended)**
+Call `fal.config()` once at the top of `generation.service.ts`, outside the class.
+- ✅ 1-line move, zero risk, no new abstractions
+- ✅ Eliminates concurrent-user race condition completely
+- ✅ SDK HTTP client initialized once, reuses connections
+- ❌ None
+
+**Option B — Lazy singleton inside the class**
+Add a private `_falConfigured` flag; configure once on first job, skip on subsequent.
+- ✅ Slightly more defensive than A
+- ✅ Still fixes the race condition
+- ❌ Extra state to maintain, more code than needed
+- ❌ Still technically racy if two jobs start simultaneously before flag is set
+
+**Option C — Wrap fal in a dedicated infrastructure class**
+Create `src/modules/studio/infrastructure/fal.client.ts` that owns config + exposes a `subscribe()` method.
+- ✅ Cleanest DDD boundary — fal.ai is infrastructure, service shouldn't touch it directly
+- ✅ Easy to mock in tests
+- ❌ More files and indirection for a one-liner fix
+- ❌ Overkill until there are multiple callers
+
+---
+
+### Issue 2 — New `S3Client` on every R2 call
+
+**Option A — Module-level singleton (recommended)**
+Replace `getR2Client()` factory with a module-level `const r2Client = new S3Client(...)` initialized once.
+- ✅ 5-line change, same API surface — no callers need to change
+- ✅ SDK connection pool reused across all operations
+- ✅ ~400–800ms savings per generation
+- ❌ Client initializes at module load even in mock mode (fix: guard with `isMockR2()`)
+
+**Option B — Lazy singleton with closure**
+Keep `getR2Client()` but cache the result: `let _client: S3Client | null = null; return _client ??= new S3Client(...)`.
+- ✅ Client only created on first actual use
+- ✅ Mock mode still returns `null` on first call
+- ✅ Drop-in replacement, no callers change
+- ❌ Slightly more complex than Option A
+
+**Option C — Pass client as parameter**
+Remove `getR2Client()` entirely; instantiate once in `generation.service.ts` and pass to storage functions.
+- ✅ Makes dependency explicit and testable
+- ❌ Breaking change — all callers (`uploadToR2`, `deleteFromR2`, `persistImageToR2`) need new signature
+- ❌ Overkill — the module boundary already isolates this
+
+---
+
+### Issue 3 — VPS downloads PNG from fal.ai then re-uploads to R2
+
+**Option A — Stream instead of buffer (quick win)**
+Replace `Buffer.from(await res.arrayBuffer())` with piping `res.body` (ReadableStream) directly as `Body` in `PutObjectCommand`.
+- ✅ No full image in memory — starts uploading while still downloading
+- ✅ 5-line change, no architecture change
+- ✅ Reduces peak memory usage per job
+- ❌ Still routes through VPS — bandwidth cost remains
+- ❌ AWS SDK v3 requires the stream to be a Node.js `Readable`, needs a small conversion
+
+**Option B — fal.ai webhook + R2 presigned upload URL (best long-term)**
+On generation start, generate an R2 presigned `PutObject` URL. Pass it to fal.ai via `webhook` so fal.ai uploads the result directly to R2 without touching the VPS.
+- ✅ VPS never touches the image data — zero bandwidth cost
+- ✅ Eliminates the entire download+upload step (~2–6s saved)
+- ✅ Scales infinitely — more users don't stress VPS bandwidth
+- ❌ fal.ai webhook integration requires a new `/api/studio/webhook` endpoint
+- ❌ Needs signature verification on the webhook
+- ❌ Bigger implementation (~1–2 days)
+
+**Option C — Accept fal.ai URL, skip R2 (trade durability for speed)**
+Remove `persistImageToR2` entirely. Store the fal.ai URL directly as `resultUrl`, never copy to R2.
+- ✅ Removes 2–6s from every generation immediately
+- ✅ Zero code complexity
+- ❌ fal.ai URLs expire (typically 24h–7 days) — images disappear from gallery over time
+- ❌ Loses control over image storage — CDN, availability, and cost depend on fal.ai
+- ❌ Not viable for a production product with a history/gallery feature
+
+---
+
+### Issue 4 — Polling starts immediately before AI could possibly finish
+
+**Option A — Initial delay before first poll (recommended)**
+Add a 10–15s `setTimeout` before starting the `setInterval` in `useGenerationPolling`.
+- ✅ 3-line change
+- ✅ Eliminates ~4–5 wasted DB queries per generation
+- ✅ No UX change — user sees spinner regardless
+- ❌ If AI ever completes in <10s (e.g. future faster model), user waits unnecessarily
+
+**Option B — Exponential backoff polling**
+Start at 5s interval, double each miss up to 10s max: 5s → 10s → 10s → 10s...
+- ✅ Self-adapts — quick on fast jobs, light on DB for slow jobs
+- ✅ More resilient under load
+- ❌ ~20 extra lines of logic vs Option A
+- ❌ Small UX risk: result arrives slightly later than with fixed 3s polling
+
+**Option C — Server-Sent Events (SSE) instead of polling**
+Replace polling with a `GET /api/studio/stream/:jobId` endpoint that pushes a completion event.
+- ✅ Zero wasted DB queries — server pushes exactly once when done
+- ✅ Result appears instantly when ready, no poll lag
+- ✅ Cleanest architecture
+- ❌ Significant implementation (~half day): SSE route, Nitro streaming support, client hook rewrite
+- ❌ Nginx needs `proxy_buffering off` for SSE to work through the proxy
+- ❌ Overkill given the 20–40s AI model time (3s poll lag is negligible at that scale)
+
+---
+
 ## Recommended Fixes (Prioritized)
 
 ### Quick wins (1–2 hours)
