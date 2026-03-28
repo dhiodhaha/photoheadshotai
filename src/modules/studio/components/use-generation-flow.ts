@@ -4,8 +4,8 @@ import { authClient } from "#/lib/auth-client";
 import { useGenerationPolling } from "./use-generation-polling";
 
 interface UseGenerationFlowOptions {
-	onGenerating: (isGenerating: boolean) => void;
-	onGeneratedImage: (url: string | null) => void;
+	onGenerating?: (isGenerating: boolean) => void;
+	onGeneratedImage?: (url: string | null) => void;
 	onStep: (step: 1 | 2 | 3) => void;
 }
 
@@ -19,20 +19,20 @@ export function useGenerationFlow({
 
 	const { startPolling } = useGenerationPolling({
 		onCompleted: async (resultUrl) => {
-			onGeneratedImage(resultUrl);
-			onGenerating(false);
+			onGeneratedImage?.(resultUrl);
+			onGenerating?.(false);
 			await refetchSession();
 			queryClient.invalidateQueries({ queryKey: ["gallery"] });
 		},
 		onFailed: async () => {
-			onGenerating(false);
+			onGenerating?.(false);
 			await refetchSession();
 			queryClient.invalidateQueries({ queryKey: ["gallery"] });
 			toast.error("Generation failed. Credits have been refunded.");
 			onStep(2);
 		},
 		onTimeout: () => {
-			onGenerating(false);
+			onGenerating?.(false);
 			queryClient.invalidateQueries({ queryKey: ["gallery"] });
 		},
 	});
@@ -50,7 +50,7 @@ export function useGenerationFlow({
 		}
 
 		onStep(3);
-		onGenerating(true);
+		onGenerating?.(true);
 
 		try {
 			const formData = new FormData();
@@ -88,7 +88,7 @@ export function useGenerationFlow({
 		} catch (e: unknown) {
 			const message = e instanceof Error ? e.message : "Something went wrong.";
 			toast.error(message);
-			onGenerating(false);
+			onGenerating?.(false);
 			onStep(2);
 		}
 	};
