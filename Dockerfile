@@ -15,12 +15,14 @@ RUN pnpm install --frozen-lockfile
 # ─── Stage 2: build ───────────────────────────────────────────────────────────
 FROM node:24-alpine AS builder
 
+RUN corepack enable && corepack prepare pnpm@10.27.0 --activate
+
 WORKDIR /app
 
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
-RUN NODE_OPTIONS="--max-old-space-size=4096" node_modules/.bin/vite build
+RUN NODE_OPTIONS="--max-old-space-size=4096" pnpm build
 
 
 # ─── Stage 3: runner ──────────────────────────────────────────────────────────
