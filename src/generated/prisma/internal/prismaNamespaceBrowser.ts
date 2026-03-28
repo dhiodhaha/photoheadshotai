@@ -210,6 +210,9 @@ export const GeneratedHeadshotScalarFieldEnum = {
   id: 'id',
   generationJobId: 'generationJobId',
   resultUrl: 'resultUrl',
+  thumbnailUrl: 'thumbnailUrl',
+  r2Key: 'r2Key',
+  r2ThumbnailKey: 'r2ThumbnailKey',
   isDeleted: 'isDeleted',
   createdAt: 'createdAt'
 } as const

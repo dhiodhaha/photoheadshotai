@@ -1,7 +1,7 @@
 import { fal } from "@fal-ai/client";
 import { deductUserCredits, refundCredits } from "#/modules/credits";
 import { persistGeneratedImage } from "#/modules/studio/infrastructure/image-processing.server";
-import { getPublicUrl } from "#/modules/studio/infrastructure/r2.server";
+import { getPresignedUrl } from "#/modules/studio/infrastructure/r2.server";
 import { buildPrompt, getStyleById } from "../domain/styles";
 import {
 	completeGenerationJob,
@@ -64,7 +64,7 @@ export class GenerationService {
 		const photoUrl =
 			process.env.R2_ACCOUNT_ID === "placeholder_account_id"
 				? "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=1024&q=80"
-				: getPublicUrl(photoKey);
+				: await getPresignedUrl(photoKey);
 
 		const prompt = buildPrompt(style);
 
@@ -143,7 +143,14 @@ export class GenerationService {
 			throw new Error("AI Provider returned no image.");
 		} catch (error: unknown) {
 			const message = error instanceof Error ? error.message : String(error);
-			console.error(`Job ${jobId} failed: ${message}`);
+			if (error instanceof Error && "body" in error) {
+				console.error(
+					`Job ${jobId} failed: ${message}`,
+					JSON.stringify((error as Record<string, unknown>).body, null, 2),
+				);
+			} else {
+				console.error(`Job ${jobId} failed: ${message}`);
+			}
 			await failGenerationJob(jobId);
 			await refundCredits(userId, GENERATION_CREDIT_COST);
 			throw error;
