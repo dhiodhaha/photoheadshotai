@@ -9,8 +9,8 @@ import { getBucketName, getPublicUrl } from "./r2.server";
 export interface PersistedImage {
 	resultUrl: string;
 	thumbnailUrl: string;
-	r2Key: string;
-	r2ThumbnailKey: string;
+	r2Key: string | null;
+	r2ThumbnailKey: string | null;
 }
 
 /**

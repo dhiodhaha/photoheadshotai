@@ -30,8 +30,8 @@ export async function completeGenerationJob(
 	imageData: {
 		resultUrl: string;
 		thumbnailUrl: string;
-		r2Key: string;
-		r2ThumbnailKey: string;
+		r2Key: string | null;
+		r2ThumbnailKey: string | null;
 	},
 ) {
 	await prisma.$transaction([

@@ -112,13 +112,32 @@ export class GenerationService {
 
 			const imageUrl = result.data?.images?.[0]?.url;
 			if (imageUrl) {
-				// Persist to R2 and get public URLs + keys
-				const persistedImage = await persistGeneratedImage(
-					imageUrl,
-					userId,
-					jobId,
-				);
-				await completeGenerationJob(jobId, photoId, persistedImage);
+				// Attempt to persist to R2 — fall back to fal.ai URL if upload fails
+				// so generation always succeeds even with transient R2 issues
+				let imageData: {
+					resultUrl: string;
+					thumbnailUrl: string;
+					r2Key: string | null;
+					r2ThumbnailKey: string | null;
+				};
+
+				try {
+					imageData = await persistGeneratedImage(imageUrl, userId, jobId);
+				} catch (r2Error: unknown) {
+					const msg =
+						r2Error instanceof Error ? r2Error.message : String(r2Error);
+					console.warn(
+						`R2 upload failed for job ${jobId}, falling back to fal.ai URL: ${msg}`,
+					);
+					imageData = {
+						resultUrl: imageUrl,
+						thumbnailUrl: imageUrl,
+						r2Key: null,
+						r2ThumbnailKey: null,
+					};
+				}
+
+				await completeGenerationJob(jobId, photoId, imageData);
 				return;
 			}
 			throw new Error("AI Provider returned no image.");
