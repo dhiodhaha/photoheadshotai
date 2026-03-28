@@ -4,7 +4,7 @@ export interface GalleryItem {
 	thumbnail?: string;
 	style: string;
 	styleLabel: string;
-	createdAt: string;
+	createdAt: Date;
 	isFavorited: boolean;
 	isPending?: boolean;
 }
@@ -15,5 +15,5 @@ export interface TrashItem {
 	thumbnail?: string;
 	style: string;
 	styleLabel: string;
-	createdAt: string;
+	createdAt: Date;
 }
