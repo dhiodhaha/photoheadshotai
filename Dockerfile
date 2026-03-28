@@ -1,5 +1,5 @@
 # ─── Stage 1: deps ────────────────────────────────────────────────────────────
-FROM node:24-alpine AS deps
+FROM node:24-slim AS deps
 
 RUN corepack enable && corepack prepare pnpm@latest --activate
 

@@ -1,5 +1,6 @@
 import { fal } from "@fal-ai/client";
 import { deductUserCredits, refundCredits } from "#/modules/credits";
+import { persistGeneratedImage } from "#/modules/studio/infrastructure/image-processing.server";
 import { getPublicUrl } from "#/modules/studio/infrastructure/r2.server";
 import { buildPrompt, getStyleById } from "../domain/styles";
 import {
@@ -69,10 +70,25 @@ export class GenerationService {
 
 		if (process.env.MOCK_AI_GENERATION === "true") {
 			await new Promise((r) => setTimeout(r, 2000));
-			const mockImageUrl =
-				"https://images.unsplash.com/photo-1544168190-79c154273140?q=80&w=800";
-
-			await completeGenerationJob(jobId, photoId, mockImageUrl);
+			// In mock mode, skip R2 persistence and use fal.ai URL directly
+			const mockImageData = {
+				resultUrl:
+					"https://images.unsplash.com/photo-1544168190-79c154273140?q=80&w=800",
+				thumbnailUrl:
+					"https://images.unsplash.com/photo-1544168190-79c154273140?q=80&w=400",
+				r2Key: null,
+				r2ThumbnailKey: null,
+			};
+			await completeGenerationJob(
+				jobId,
+				photoId,
+				mockImageData as {
+					resultUrl: string;
+					thumbnailUrl: string;
+					r2Key: string;
+					r2ThumbnailKey: string;
+				},
+			);
 			return;
 		}
 
@@ -88,7 +104,7 @@ export class GenerationService {
 				input: {
 					prompt,
 					image_urls: [photoUrl],
-					image_size: { width: 1024, height: 1024 },
+					image_size: { width: 2048, height: 2048 },
 					num_images: 1,
 					enable_safety_checker: true,
 				},
@@ -96,7 +112,13 @@ export class GenerationService {
 
 			const imageUrl = result.data?.images?.[0]?.url;
 			if (imageUrl) {
-				await completeGenerationJob(jobId, photoId, imageUrl);
+				// Persist to R2 and get public URLs + keys
+				const persistedImage = await persistGeneratedImage(
+					imageUrl,
+					userId,
+					jobId,
+				);
+				await completeGenerationJob(jobId, photoId, persistedImage);
 				return;
 			}
 			throw new Error("AI Provider returned no image.");
