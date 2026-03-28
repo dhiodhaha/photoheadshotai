@@ -1,6 +1,5 @@
-import { ShieldCheck, Upload, Zap } from "lucide-react";
+import { Upload } from "lucide-react";
 import { useRef, useState } from "react";
-import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 interface StudioUploadZoneProps {
@@ -16,26 +15,8 @@ export function StudioUploadZone({ onFileSelected }: StudioUploadZoneProps) {
 		onFileSelected(file);
 	};
 
-	const onDragOver = (e: React.DragEvent) => {
-		e.preventDefault();
-		setIsDragging(true);
-	};
-
-	const onDragLeave = (e: React.DragEvent) => {
-		e.preventDefault();
-		setIsDragging(false);
-	};
-
-	const onDrop = (e: React.DragEvent) => {
-		e.preventDefault();
-		setIsDragging(false);
-		if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-			handleFile(e.dataTransfer.files[0]);
-		}
-	};
-
 	return (
-		<div>
+		<div className="flex-1">
 			<input
 				type="file"
 				className="hidden"
@@ -46,60 +27,38 @@ export function StudioUploadZone({ onFileSelected }: StudioUploadZoneProps) {
 			<button
 				type="button"
 				onClick={() => fileInputRef.current?.click()}
-				onDragOver={onDragOver}
-				onDragLeave={onDragLeave}
-				onDrop={onDrop}
+				onDragOver={(e) => {
+					e.preventDefault();
+					setIsDragging(true);
+				}}
+				onDragLeave={(e) => {
+					e.preventDefault();
+					setIsDragging(false);
+				}}
+				onDrop={(e) => {
+					e.preventDefault();
+					setIsDragging(false);
+					if (e.dataTransfer.files?.[0]) handleFile(e.dataTransfer.files[0]);
+				}}
 				className={cn(
-					"relative group rounded-3xl border-2 border-dashed transition-all duration-500 bg-white/5 overflow-hidden cursor-pointer w-full text-left",
+					"relative group flex items-center gap-3 sm:gap-6 px-6 h-28 rounded-2xl border-2 border-dashed transition-all duration-500 bg-white/5 cursor-pointer w-full text-left",
 					isDragging
-						? "border-primary bg-primary/10 scale-[1.02]"
-						: "border-white/20 hover:border-primary/50",
+						? "border-primary bg-primary/10 scale-[1.01]"
+						: "border-white/10 hover:border-white/30",
 				)}
 			>
-				<div className="absolute inset-0 bg-linear-to-t from-background/40 to-transparent pointer-events-none" />
-				<div
-					className="absolute inset-0 opacity-10 group-hover:opacity-20 transition-opacity bg-cover bg-center duration-1000 grayscale mix-blend-overlay blur-xs scale-110 group-hover:scale-100"
-					style={{
-						backgroundImage: "url('/auth_fashion_portrait_1.png')",
-					}}
-				/>
-				<div className="relative p-12 flex flex-col items-center justify-center text-center space-y-4">
-					<div
-						className={cn(
-							"w-16 h-16 rounded-full border border-white/10 flex items-center justify-center shadow-xl transition-all duration-500 relative",
-							isDragging
-								? "bg-primary text-primary-foreground scale-110"
-								: "bg-background text-white group-hover:scale-110 group-hover:-translate-y-1",
-						)}
-					>
-						<Upload className="w-6 h-6" />
-						<div className="absolute inset-0 rounded-full bg-primary/20 blur-xl scale-150 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-					</div>
-					<div>
-						<h3 className="text-xl font-bold mb-1">
-							Drag & drop your selfie here
-						</h3>
-						<p className="text-muted-foreground text-sm font-light uppercase tracking-widest">
-							JPG or PNG (Max 10MB)
-						</p>
-					</div>
+				<div className="shrink-0 w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary group-hover:scale-110 group-hover:bg-primary group-hover:text-primary-foreground transition-all duration-500">
+					<Upload className="w-4 h-4 sm:w-5 sm:h-5" />
+				</div>
+				<div className="flex-1 min-w-0">
+					<h3 className="text-xs sm:text-sm font-bold text-white group-hover:text-primary transition-colors truncate">
+						Upload Source
+					</h3>
+					<p className="text-[8px] sm:text-[10px] text-muted-foreground uppercase tracking-widest font-medium truncate">
+						Click or drag & drop
+					</p>
 				</div>
 			</button>
-
-			<div className="mt-6 pt-4 border-t border-white/5 flex flex-col sm:flex-row gap-4 justify-between items-center px-2">
-				<div className="flex items-center gap-2 text-xs text-muted-foreground">
-					<ShieldCheck className="w-4 h-4" />
-					<span>Your photos are encrypted and deleted after generation.</span>
-				</div>
-				<Button
-					size="lg"
-					className="w-full sm:w-auto rounded-full h-12 px-8 uppercase tracking-widest text-xs font-bold bg-white/5 text-muted-foreground hover:bg-white/10 hover:text-white border-none cursor-not-allowed group transition-all"
-					disabled
-				>
-					<Zap className="w-4 h-4 mr-2 opacity-50" />
-					Add an image to continue
-				</Button>
-			</div>
 		</div>
 	);
 }

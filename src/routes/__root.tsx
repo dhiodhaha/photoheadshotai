@@ -6,8 +6,8 @@ import {
 	Scripts,
 } from "@tanstack/react-router";
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
-import { Toaster } from "sonner";
 import { ThemeProvider } from "@/components/theme-provider";
+import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import TanStackQueryDevtools from "../integrations/tanstack-query/devtools";
 import TanStackQueryProvider from "../integrations/tanstack-query/root-provider";
@@ -70,7 +70,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 				<TanStackQueryProvider>
 					<ThemeProvider defaultTheme="dark">
 						<TooltipProvider>{children}</TooltipProvider>
-						<Toaster position="top-center" richColors />
+						<Toaster position="top-center" />
 					</ThemeProvider>
 					{process.env.NODE_ENV !== "production" && (
 						<TanStackDevtools

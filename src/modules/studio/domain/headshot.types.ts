@@ -1,0 +1,17 @@
+export interface GalleryItem {
+	id: string;
+	src: string;
+	style: string;
+	styleLabel: string;
+	createdAt: string;
+	isFavorited: boolean;
+	isPending?: boolean;
+}
+
+export interface TrashItem {
+	id: string;
+	src: string;
+	style: string;
+	styleLabel: string;
+	createdAt: string;
+}

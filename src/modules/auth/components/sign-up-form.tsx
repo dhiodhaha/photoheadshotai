@@ -138,16 +138,16 @@ export function SignUpForm({ initialCode = "" }: Props) {
 							</Label>
 							<Input
 								id="referralCode"
-								placeholder="Enter your referral code"
+								placeholder="Enter your referral code (optional)"
 								className="rounded-none border-0 border-b border-white/10 bg-transparent px-2 h-10 focus-visible:ring-0 focus-visible:border-primary transition-colors text-lg"
-								required
 								value={formData.referralCode}
 								onChange={(e) =>
 									setFormData({ ...formData, referralCode: e.target.value })
 								}
 							/>
 							<p className="text-[10px] text-muted-foreground/60 pt-1">
-								Ask the person who invited you for their referral code
+								Ask the person who invited you for their referral code.
+								Optional.
 							</p>
 						</div>
 					</div>

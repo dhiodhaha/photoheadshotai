@@ -24,7 +24,7 @@ export function SignInForm() {
 			const { error } = await authClient.signIn.email({
 				email: formData.email,
 				password: formData.password,
-				callbackURL: "/",
+				callbackURL: "/studio",
 			});
 
 			if (error) {

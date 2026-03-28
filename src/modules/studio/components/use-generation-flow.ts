@@ -4,8 +4,8 @@ import { authClient } from "#/lib/auth-client";
 import { useGenerationPolling } from "./use-generation-polling";
 
 interface UseGenerationFlowOptions {
-	onGenerating: (isGenerating: boolean) => void;
-	onGeneratedImage: (url: string | null) => void;
+	onGenerating?: (isGenerating: boolean) => void;
+	onGeneratedImage?: (url: string | null) => void;
 	onStep: (step: 1 | 2 | 3) => void;
 }
 
@@ -19,25 +19,21 @@ export function useGenerationFlow({
 
 	const { startPolling } = useGenerationPolling({
 		onCompleted: async (resultUrl) => {
-			onGeneratedImage(resultUrl);
-			onGenerating(false);
+			onGeneratedImage?.(resultUrl);
+			onGenerating?.(false);
 			await refetchSession();
 			queryClient.invalidateQueries({ queryKey: ["gallery"] });
-			toast.success("Generation Complete!");
 		},
 		onFailed: async () => {
-			onGenerating(false);
+			onGenerating?.(false);
 			await refetchSession();
 			queryClient.invalidateQueries({ queryKey: ["gallery"] });
 			toast.error("Generation failed. Credits have been refunded.");
 			onStep(2);
 		},
 		onTimeout: () => {
-			onGenerating(false);
+			onGenerating?.(false);
 			queryClient.invalidateQueries({ queryKey: ["gallery"] });
-			toast.info(
-				"Generation is taking longer than expected. Check your gallery later.",
-			);
 		},
 	});
 
@@ -54,7 +50,7 @@ export function useGenerationFlow({
 		}
 
 		onStep(3);
-		onGenerating(true);
+		onGenerating?.(true);
 
 		try {
 			const formData = new FormData();
@@ -71,7 +67,6 @@ export function useGenerationFlow({
 			}
 
 			const { image_id } = await uploadRes.json();
-			toast.info("Image secured. Prompting AI Generator...");
 
 			const generateRes = await fetch("/api/studio/generate", {
 				method: "POST",
@@ -89,11 +84,11 @@ export function useGenerationFlow({
 			// Invalidate so gallery re-fetches and shows the server-side pending skeleton
 			queryClient.invalidateQueries({ queryKey: ["gallery"] });
 
-			toast.info("Generation started! This may take a moment...");
 			startPolling(job_id);
 		} catch (e: unknown) {
-			toast.error(e instanceof Error ? e.message : "Something went wrong.");
-			onGenerating(false);
+			const message = e instanceof Error ? e.message : "Something went wrong.";
+			toast.error(message);
+			onGenerating?.(false);
 			onStep(2);
 		}
 	};

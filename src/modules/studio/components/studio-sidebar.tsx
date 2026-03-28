@@ -1,22 +1,11 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import {
-	CreditCard,
-	Home,
-	Image as ImageIcon,
-	Settings,
-	Sparkles,
-	Trash2,
-	X,
-} from "lucide-react";
+import { Image as ImageIcon, Sparkles, Trash2, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const navItems = [
-	{ icon: Home, label: "Home", to: "/" },
 	{ icon: Sparkles, label: "Studio AI", to: "/studio" },
 	{ icon: ImageIcon, label: "Gallery", to: "/studio/gallery" },
 	{ icon: Trash2, label: "Trash", to: "/studio/trash" },
-	{ icon: CreditCard, label: "Billing", to: "/studio/billing" },
-	{ icon: Settings, label: "Settings", to: "/studio/settings" },
 ];
 
 interface StudioSidebarProps {
@@ -50,7 +39,7 @@ export function StudioSidebar({ isOpen, onClose }: StudioSidebarProps) {
 				<div className="space-y-12">
 					<div className="flex items-center justify-between">
 						<Link
-							to="/"
+							to="/studio"
 							onClick={onClose}
 							className="font-display text-2xl font-bold tracking-tight text-white inline-block"
 						>
