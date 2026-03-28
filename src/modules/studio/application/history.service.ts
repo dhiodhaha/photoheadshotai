@@ -1,5 +1,5 @@
-import { prisma } from "#/lib/prisma";
 import { getStyleById } from "../domain/styles";
+import { findHeadshotHistory } from "../infrastructure/history.repository";
 
 interface HistoryOptions {
 	userId: string;
@@ -12,23 +12,11 @@ export async function getGenerationHistory({
 	page,
 	limit,
 }: HistoryOptions) {
-	const skip = (page - 1) * limit;
-
-	const where = {
-		isDeleted: false,
-		generationJob: { userId },
-	};
-
-	const [headshots, total] = await prisma.$transaction([
-		prisma.generatedHeadshot.findMany({
-			where,
-			include: { generationJob: true },
-			orderBy: { createdAt: "desc" },
-			skip,
-			take: limit,
-		}),
-		prisma.generatedHeadshot.count({ where }),
-	]);
+	const { headshots, pagination } = await findHeadshotHistory({
+		userId,
+		page,
+		limit,
+	});
 
 	return {
 		headshots: headshots.map((h) => ({
@@ -37,11 +25,6 @@ export async function getGenerationHistory({
 			style: getStyleById(h.generationJob.styleId)?.label ?? "Custom",
 			createdAt: h.createdAt,
 		})),
-		pagination: {
-			page,
-			limit,
-			total,
-			totalPages: Math.ceil(total / limit),
-		},
+		pagination,
 	};
 }
