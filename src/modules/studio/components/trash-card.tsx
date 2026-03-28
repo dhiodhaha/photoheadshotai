@@ -20,7 +20,6 @@ export function TrashCard({ item, onRestore, onDelete }: TrashCardProps) {
 		>
 			<img
 				src={cfImg.thumbnail(item.src)}
-				src={cfImg.thumbnail(item.src)}
 				alt=""
 				loading="lazy"
 				className="w-full h-full object-cover opacity-50 grayscale transition-all group-hover:opacity-80 group-hover:grayscale-0"
