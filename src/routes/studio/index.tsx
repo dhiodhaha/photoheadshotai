@@ -3,6 +3,7 @@ import { CheckCircle2, LayoutGrid, Sparkles, Trash2, X } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import { useState } from "react";
 import { authClient } from "#/lib/auth-client";
+import { downloadHeadshot } from "#/modules/studio/application/download.util";
 import { GalleryCard } from "#/modules/studio/components/gallery-card";
 import { StudioEmptyState } from "#/modules/studio/components/studio-empty-state";
 import { StudioImageGuidelines } from "#/modules/studio/components/studio-image-guidelines";
@@ -122,11 +123,7 @@ function StudioIndexPage() {
 										item={item}
 										onFavorite={() => favoriteMutation.mutate(item.id)}
 										onDelete={() => moveTrashMutation.mutate(item.id)}
-										onDownload={() =>
-											import("#/modules/studio/application/download.util").then(
-												({ downloadHeadshot }) => downloadHeadshot(item.src),
-											)
-										}
+										onDownload={() => downloadHeadshot(item.src)}
 									/>
 								))}
 							</div>
