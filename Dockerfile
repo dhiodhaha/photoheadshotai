@@ -13,7 +13,7 @@ RUN pnpm install --frozen-lockfile
 
 
 # ─── Stage 2: build ───────────────────────────────────────────────────────────
-FROM node:24-alpine AS builder
+FROM node:24-slim AS builder
 
 RUN corepack enable && corepack prepare pnpm@latest --activate
 
@@ -26,7 +26,7 @@ RUN NODE_OPTIONS="--max-old-space-size=4096" pnpm build
 
 
 # ─── Stage 3: runner ──────────────────────────────────────────────────────────
-FROM node:24-alpine AS runner
+FROM node:24-slim AS runner
 
 WORKDIR /app
 
