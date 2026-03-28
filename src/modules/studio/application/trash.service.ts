@@ -17,6 +17,7 @@ export async function getTrash(userId: string) {
 	return headshots.map((h) => ({
 		id: h.id,
 		src: h.resultUrl,
+		thumbnail: h.thumbnailUrl ?? h.resultUrl,
 		style: h.generationJob.styleId,
 		styleLabel: resolveStyleLabel(h.generationJob.styleId),
 		createdAt: h.createdAt,

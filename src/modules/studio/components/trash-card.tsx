@@ -18,8 +18,9 @@ export function TrashCard({ item, onRestore, onDelete }: TrashCardProps) {
 			className="group relative aspect-3/4 rounded-2xl overflow-hidden glass border border-white/10"
 		>
 			<img
-				src={item.src}
+				src={item.thumbnail ?? item.src}
 				alt=""
+				loading="lazy"
 				className="w-full h-full object-cover opacity-50 grayscale transition-all group-hover:opacity-80 group-hover:grayscale-0"
 			/>
 			<div className="absolute inset-x-0 bottom-0 p-3 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">

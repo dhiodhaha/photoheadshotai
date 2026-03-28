@@ -12,6 +12,7 @@ export interface GalleryItem {
 export interface TrashItem {
 	id: string;
 	src: string;
+	thumbnail?: string;
 	style: string;
 	styleLabel: string;
 	createdAt: string;
