@@ -5,9 +5,6 @@ import {
 	getPhotoUrlForGeneration,
 	isMockAiGeneration,
 } from "#/modules/studio/infrastructure/generation-context.server";
-
-fal.config({ credentials: getFalKey() });
-
 import { persistImageToR2 } from "#/modules/studio/infrastructure/photo.storage";
 import { buildPrompt, getStyleById } from "../domain/styles";
 import {
@@ -17,6 +14,9 @@ import {
 	getJobWithResults,
 	getPhotoByIdAndUser,
 } from "../infrastructure/generation.repository";
+
+// Configure fal.ai SDK once at module init — not per-job (avoids re-init overhead + race conditions)
+fal.config({ credentials: getFalKey() });
 
 const GENERATION_CREDIT_COST = 10;
 const SEEDREAM_MODEL = "fal-ai/bytedance/seedream/v4.5/edit";
