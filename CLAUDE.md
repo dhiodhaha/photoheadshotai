@@ -40,7 +40,9 @@ pnpm dlx shadcn@latest add <component>
 
 **Auth**: Better Auth with Prisma adapter. Server config: `src/lib/auth.ts`, client: `src/lib/auth-client.ts`. API at `/api/auth/*`.
 
-**Storage**: Cloudflare R2 via AWS S3 SDK. Config in `src/modules/studio/infrastructure/r2.server.ts`.
+**Storage**: Cloudflare R2 via AWS S3 SDK. Config in `src/modules/studio/infrastructure/r2.server.ts`. Generated images are fetched from fal.ai and uploaded directly to R2 — no server-side image processing. Thumbnails/resizing handled by Cloudflare Image Resizing (`/cdn-cgi/image/...`) via `src/lib/cloudflare-image.ts`.
+
+**Image resizing**: Use `cfImg.thumbnail(url)` / `cfImg.gallery(url)` / `cfImg.full(url)` from `src/lib/cloudflare-image.ts` for all `<img>` tags displaying R2 images. Never do server-side resizing.
 
 **UI**: shadcn in `src/components/ui/` (excluded from Biome). Use `cn()` from `src/lib/utils.ts`. Tailwind CSS v4.
 
@@ -96,9 +98,12 @@ studio/
 │   ├── studio-header.tsx      # Top bar with credits badge
 │   └── user-dropdown-menu.tsx # User avatar dropdown (settings, sign out)
 ├── infrastructure/
-│   ├── r2.server.ts           # S3Client for Cloudflare R2
-│   ├── photo.storage.ts       # uploadToR2, deleteFromR2
-│   └── photo.repository.ts   # Prisma Photo CRUD
+│   ├── r2.server.ts           # S3Client, getPublicUrl, getPresignedUrl
+│   ├── photo.storage.ts       # uploadToR2, deleteFromR2, persistImageToR2, deletePersistedImage
+│   ├── gallery.repository.ts  # Prisma gallery queries
+│   ├── generation.repository.ts # Prisma generation job CRUD
+│   ├── history.repository.ts  # Prisma paginated history
+│   └── photo.repository.ts    # Prisma Photo CRUD
 └── index.ts
 ```
 
@@ -212,6 +217,9 @@ referral/
 - `UV_THREADPOOL_SIZE=4` set in container env
 - Migrations run automatically on container start via `docker-entrypoint.sh` using `node_modules/.bin/prisma migrate deploy`
 - `node_modules` copied from `deps` stage into runner so `prisma/config` resolves correctly
+- All Docker stages use `node:24-alpine` + `apk add openssl` (runner only) — do NOT use `node:24-slim`
+- pnpm version is pinned (`pnpm@10.27.0`) in the Dockerfile — never use `pnpm@latest`
+- `sharp` is NOT installed and must never be added — use Cloudflare Image Resizing instead
 
 ### CI/CD (GitHub Actions)
 - Deploy workflow: `.github/workflows/deploy.yml`
@@ -246,7 +254,7 @@ const result = await fal.subscribe(SEEDREAM_MODEL, {
   input: {
     prompt: string,
     image_urls: string[],
-    image_size: { width: number, height: number }, // 1024x1024
+    image_size: { width: number, height: number }, // 2048x2048 (default, supported by edit endpoint)
     num_images: 1,
     enable_safety_checker: true,
   },
@@ -261,6 +269,22 @@ result.data?.images?.[0]?.url  // Generated image URL
 
 **Current state:** Production deployed at standoutheadshot.com
 **Infrastructure:** Live on Jetorbit VPS behind Cloudflare
+
+## Cloudflare Setup Required
+
+Two things must be configured in Cloudflare dashboard for the app to work correctly:
+
+1. **Image Resizing** — Speed → Optimization → Image Resizing → On (requires Pro plan)
+2. **R2 Custom Domain** — R2 → bucket → Settings → Custom Domains → `cdn.standoutheadshot.com`
+   - After connecting, set `R2_PUBLIC_URL=https://cdn.standoutheadshot.com` in VPS env and `.env.local`
+
+Without the custom domain, R2 images serve from `pub-*.r2.dev` which may be unreachable.
+
+## Git Workflow
+
+- Use `gh` CLI for all GitHub operations (SSH key not configured)
+- Always create a new branch per fix, never commit directly to `main`
+- PRs: `gh pr create` then `gh pr merge --squash`
 
 **Post-MVP improvements:**
 - Async job queue (Bull) for long-running generations
