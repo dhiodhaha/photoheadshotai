@@ -32,6 +32,14 @@ async function fetchImageWithRetry(
 				throw new Error("Received empty image body from fal.ai");
 			}
 
+			// Validate the buffer is a real decodable image.
+			// TLS corruption produces non-empty garbage that sharp rejects
+			// here, rather than silently producing a white/blank output.
+			const meta = await sharp(buffer).metadata();
+			if (!meta.width || !meta.height) {
+				throw new Error("Image metadata missing — data is corrupt");
+			}
+
 			return buffer;
 		} catch (error: unknown) {
 			lastError = error;
