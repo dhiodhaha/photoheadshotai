@@ -1,5 +1,6 @@
 import { fal } from "@fal-ai/client";
 import { deductUserCredits, refundCredits } from "#/modules/credits";
+import { persistImageToR2 } from "#/modules/studio/infrastructure/photo.storage";
 import { getPresignedUrl } from "#/modules/studio/infrastructure/r2.server";
 import { buildPrompt, getStyleById } from "../domain/styles";
 import {
@@ -100,10 +101,25 @@ export class GenerationService {
 
 			const imageUrl = result.data?.images?.[0]?.url;
 			if (imageUrl) {
+				let resultUrl = imageUrl;
+				let r2Key: string | null = null;
+
+				try {
+					const persisted = await persistImageToR2(imageUrl, userId, jobId);
+					resultUrl = persisted.resultUrl;
+					r2Key = persisted.r2Key;
+				} catch (r2Error: unknown) {
+					const msg =
+						r2Error instanceof Error ? r2Error.message : String(r2Error);
+					console.warn(
+						`R2 upload failed for job ${jobId}, using fal.ai URL: ${msg}`,
+					);
+				}
+
 				await completeGenerationJob(jobId, photoId, {
-					resultUrl: imageUrl,
+					resultUrl,
 					thumbnailUrl: null,
-					r2Key: null,
+					r2Key,
 					r2ThumbnailKey: null,
 				});
 				return;
