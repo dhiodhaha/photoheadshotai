@@ -2,8 +2,8 @@ import { TransactionType } from "#/generated/prisma/enums.js";
 import { prisma } from "#/lib/prisma";
 
 export async function findCouponByCode(code: string) {
-	return prisma.coupon.findUnique({
-		where: { code },
+	return prisma.coupon.findFirst({
+		where: { code, isDeleted: false },
 	});
 }
 
@@ -17,11 +17,12 @@ export async function redeemCouponAtomic(couponId: string, userId: string) {
 				maxRedeems: true,
 				expiresAt: true,
 				credits: true,
+				isDeleted: true,
 			},
 		});
 
-		if (!coupon) {
-			throw new Error("Coupon not found");
+		if (!coupon || coupon.isDeleted) {
+			throw new Error("Coupon not found or has been revoked");
 		}
 
 		if (coupon.redeemCount >= coupon.maxRedeems) {

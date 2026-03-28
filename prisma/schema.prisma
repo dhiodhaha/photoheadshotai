@@ -229,6 +229,7 @@ model Coupon {
   maxRedeems  Int      @default(1) @map("max_redeems")
   redeemCount Int      @default(0) @map("redeem_count")
   expiresAt   DateTime? @map("expires_at")
+  isDeleted   Boolean  @default(false) @map("is_deleted")
   createdAt   DateTime @default(now()) @map("created_at")
 
   redemptions CouponRedemption[]
