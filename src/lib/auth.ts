@@ -26,7 +26,7 @@ export const auth = betterAuth({
 		enabled: true,
 		window: 60, // 60-second window
 		max: 10, // max 10 auth requests per window per IP
-		storage: "database",
+		storage: "memory", // in-process — no DB table needed, fine for single-instance VPS
 	},
 	session: {
 		expiresIn: 60 * 60 * 24 * 7, // 7 days
