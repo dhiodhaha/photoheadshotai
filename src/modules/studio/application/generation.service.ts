@@ -71,7 +71,12 @@ export class GenerationService {
 			await new Promise((r) => setTimeout(r, 2000));
 			const mockImageUrl =
 				"https://images.unsplash.com/photo-1544168190-79c154273140?q=80&w=800";
-			await completeGenerationJob(jobId, photoId, mockImageUrl);
+			await completeGenerationJob(jobId, photoId, {
+				resultUrl: mockImageUrl,
+				thumbnailUrl: null,
+				r2Key: null,
+				r2ThumbnailKey: null,
+			});
 			return;
 		}
 
@@ -95,7 +100,12 @@ export class GenerationService {
 
 			const imageUrl = result.data?.images?.[0]?.url;
 			if (imageUrl) {
-				await completeGenerationJob(jobId, photoId, imageUrl);
+				await completeGenerationJob(jobId, photoId, {
+					resultUrl: imageUrl,
+					thumbnailUrl: null,
+					r2Key: null,
+					r2ThumbnailKey: null,
+				});
 				return;
 			}
 			throw new Error("AI Provider returned no image.");
