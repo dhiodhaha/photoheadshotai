@@ -5,6 +5,9 @@ import {
 	getPhotoUrlForGeneration,
 	isMockAiGeneration,
 } from "#/modules/studio/infrastructure/generation-context.server";
+
+fal.config({ credentials: getFalKey() });
+
 import { persistImageToR2 } from "#/modules/studio/infrastructure/photo.storage";
 import { buildPrompt, getStyleById } from "../domain/styles";
 import {
@@ -78,8 +81,6 @@ export class GenerationService {
 		}
 
 		try {
-			fal.config({ credentials: getFalKey() });
-
 			const result = await fal.subscribe(SEEDREAM_MODEL, {
 				input: {
 					prompt,
