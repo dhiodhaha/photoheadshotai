@@ -1,6 +1,12 @@
+import { toast } from "sonner";
+
 export async function downloadHeadshot(url: string): Promise<void> {
 	try {
 		const response = await fetch(url);
+		if (!response.ok) {
+			toast.error("Download failed. The image may no longer be available.");
+			return;
+		}
 		const blob = await response.blob();
 		const blobUrl = window.URL.createObjectURL(blob);
 		const link = document.createElement("a");
@@ -11,6 +17,6 @@ export async function downloadHeadshot(url: string): Promise<void> {
 		document.body.removeChild(link);
 		window.URL.revokeObjectURL(blobUrl);
 	} catch (e: unknown) {
-		console.error("Download failed", e instanceof Error ? e.message : e);
+		toast.error("Download failed. Please try again.");
 	}
 }

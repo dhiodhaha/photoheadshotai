@@ -1,4 +1,3 @@
-import { requireEnv } from "#/lib/env";
 import { HEADSHOT_STYLES } from "../domain/styles";
 import {
 	findDeletedHeadshotOwned,
@@ -6,7 +5,7 @@ import {
 	hardDeleteHeadshot,
 	restoreHeadshotById,
 } from "../infrastructure/gallery.repository";
-import { deleteFromR2 } from "../infrastructure/photo.storage";
+import { deletePersistedImage } from "../infrastructure/image-processing.server";
 
 function resolveStyleLabel(styleId: string): string {
 	return HEADSHOT_STYLES.find((s) => s.id === styleId)?.label ?? styleId;
@@ -18,6 +17,7 @@ export async function getTrash(userId: string) {
 	return headshots.map((h) => ({
 		id: h.id,
 		src: h.resultUrl,
+		thumbnail: h.thumbnailUrl ?? h.resultUrl,
 		style: h.generationJob.styleId,
 		styleLabel: resolveStyleLabel(h.generationJob.styleId),
 		createdAt: h.createdAt,
@@ -44,10 +44,10 @@ export async function permanentlyDeleteHeadshot(
 		throw new Error("Not found or unauthorized");
 	}
 
+	// Delete R2 objects (original + thumbnail)
+	// Uses best-effort approach — ignores errors to ensure DB cleanup happens
 	try {
-		const publicUrl = requireEnv("R2_PUBLIC_URL");
-		const key = headshot.resultUrl.replace(`${publicUrl}/`, "");
-		await deleteFromR2(key);
+		await deletePersistedImage(headshot.r2Key, headshot.r2ThumbnailKey);
 	} catch (_e) {
 		// Best-effort R2 delete — still remove from DB
 	}

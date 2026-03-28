@@ -1619,6 +1619,9 @@ export const GeneratedHeadshotScalarFieldEnum = {
   id: 'id',
   generationJobId: 'generationJobId',
   resultUrl: 'resultUrl',
+  thumbnailUrl: 'thumbnailUrl',
+  r2Key: 'r2Key',
+  r2ThumbnailKey: 'r2ThumbnailKey',
   isDeleted: 'isDeleted',
   createdAt: 'createdAt'
 } as const
@@ -1654,6 +1657,7 @@ export const CouponScalarFieldEnum = {
   maxRedeems: 'maxRedeems',
   redeemCount: 'redeemCount',
   expiresAt: 'expiresAt',
+  isDeleted: 'isDeleted',
   createdAt: 'createdAt'
 } as const
 

@@ -27,7 +27,12 @@ export async function createGenerationJob(data: {
 export async function completeGenerationJob(
 	jobId: string,
 	photoId: string,
-	imageUrl: string,
+	imageData: {
+		resultUrl: string;
+		thumbnailUrl: string;
+		r2Key: string | null;
+		r2ThumbnailKey: string | null;
+	},
 ) {
 	await prisma.$transaction([
 		prisma.generationJob.update({
@@ -41,7 +46,10 @@ export async function completeGenerationJob(
 		prisma.generatedHeadshot.create({
 			data: {
 				generationJobId: jobId,
-				resultUrl: imageUrl,
+				resultUrl: imageData.resultUrl,
+				thumbnailUrl: imageData.thumbnailUrl,
+				r2Key: imageData.r2Key,
+				r2ThumbnailKey: imageData.r2ThumbnailKey,
 			},
 		}),
 	]);

@@ -18,6 +18,7 @@ export async function getFavorites(userId: string) {
 	return favorites.map((f) => ({
 		id: f.headshot.id,
 		src: f.headshot.resultUrl,
+		thumbnail: f.headshot.thumbnailUrl ?? f.headshot.resultUrl,
 		style: f.headshot.generationJob.styleId,
 		styleLabel: resolveStyleLabel(f.headshot.generationJob.styleId),
 		createdAt: f.headshot.createdAt,

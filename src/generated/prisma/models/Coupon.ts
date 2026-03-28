@@ -45,6 +45,7 @@ export type CouponMinAggregateOutputType = {
   maxRedeems: number | null
   redeemCount: number | null
   expiresAt: Date | null
+  isDeleted: boolean | null
   createdAt: Date | null
 }
 
@@ -55,6 +56,7 @@ export type CouponMaxAggregateOutputType = {
   maxRedeems: number | null
   redeemCount: number | null
   expiresAt: Date | null
+  isDeleted: boolean | null
   createdAt: Date | null
 }
 
@@ -65,6 +67,7 @@ export type CouponCountAggregateOutputType = {
   maxRedeems: number
   redeemCount: number
   expiresAt: number
+  isDeleted: number
   createdAt: number
   _all: number
 }
@@ -89,6 +92,7 @@ export type CouponMinAggregateInputType = {
   maxRedeems?: true
   redeemCount?: true
   expiresAt?: true
+  isDeleted?: true
   createdAt?: true
 }
 
@@ -99,6 +103,7 @@ export type CouponMaxAggregateInputType = {
   maxRedeems?: true
   redeemCount?: true
   expiresAt?: true
+  isDeleted?: true
   createdAt?: true
 }
 
@@ -109,6 +114,7 @@ export type CouponCountAggregateInputType = {
   maxRedeems?: true
   redeemCount?: true
   expiresAt?: true
+  isDeleted?: true
   createdAt?: true
   _all?: true
 }
@@ -206,6 +212,7 @@ export type CouponGroupByOutputType = {
   maxRedeems: number
   redeemCount: number
   expiresAt: Date | null
+  isDeleted: boolean
   createdAt: Date
   _count: CouponCountAggregateOutputType | null
   _avg: CouponAvgAggregateOutputType | null
@@ -239,6 +246,7 @@ export type CouponWhereInput = {
   maxRedeems?: Prisma.IntFilter<"Coupon"> | number
   redeemCount?: Prisma.IntFilter<"Coupon"> | number
   expiresAt?: Prisma.DateTimeNullableFilter<"Coupon"> | Date | string | null
+  isDeleted?: Prisma.BoolFilter<"Coupon"> | boolean
   createdAt?: Prisma.DateTimeFilter<"Coupon"> | Date | string
   redemptions?: Prisma.CouponRedemptionListRelationFilter
 }
@@ -250,6 +258,7 @@ export type CouponOrderByWithRelationInput = {
   maxRedeems?: Prisma.SortOrder
   redeemCount?: Prisma.SortOrder
   expiresAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  isDeleted?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   redemptions?: Prisma.CouponRedemptionOrderByRelationAggregateInput
 }
@@ -264,6 +273,7 @@ export type CouponWhereUniqueInput = Prisma.AtLeast<{
   maxRedeems?: Prisma.IntFilter<"Coupon"> | number
   redeemCount?: Prisma.IntFilter<"Coupon"> | number
   expiresAt?: Prisma.DateTimeNullableFilter<"Coupon"> | Date | string | null
+  isDeleted?: Prisma.BoolFilter<"Coupon"> | boolean
   createdAt?: Prisma.DateTimeFilter<"Coupon"> | Date | string
   redemptions?: Prisma.CouponRedemptionListRelationFilter
 }, "id" | "code">
@@ -275,6 +285,7 @@ export type CouponOrderByWithAggregationInput = {
   maxRedeems?: Prisma.SortOrder
   redeemCount?: Prisma.SortOrder
   expiresAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  isDeleted?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   _count?: Prisma.CouponCountOrderByAggregateInput
   _avg?: Prisma.CouponAvgOrderByAggregateInput
@@ -293,6 +304,7 @@ export type CouponScalarWhereWithAggregatesInput = {
   maxRedeems?: Prisma.IntWithAggregatesFilter<"Coupon"> | number
   redeemCount?: Prisma.IntWithAggregatesFilter<"Coupon"> | number
   expiresAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Coupon"> | Date | string | null
+  isDeleted?: Prisma.BoolWithAggregatesFilter<"Coupon"> | boolean
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Coupon"> | Date | string
 }
 
@@ -303,6 +315,7 @@ export type CouponCreateInput = {
   maxRedeems?: number
   redeemCount?: number
   expiresAt?: Date | string | null
+  isDeleted?: boolean
   createdAt?: Date | string
   redemptions?: Prisma.CouponRedemptionCreateNestedManyWithoutCouponInput
 }
@@ -314,6 +327,7 @@ export type CouponUncheckedCreateInput = {
   maxRedeems?: number
   redeemCount?: number
   expiresAt?: Date | string | null
+  isDeleted?: boolean
   createdAt?: Date | string
   redemptions?: Prisma.CouponRedemptionUncheckedCreateNestedManyWithoutCouponInput
 }
@@ -325,6 +339,7 @@ export type CouponUpdateInput = {
   maxRedeems?: Prisma.IntFieldUpdateOperationsInput | number
   redeemCount?: Prisma.IntFieldUpdateOperationsInput | number
   expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   redemptions?: Prisma.CouponRedemptionUpdateManyWithoutCouponNestedInput
 }
@@ -336,6 +351,7 @@ export type CouponUncheckedUpdateInput = {
   maxRedeems?: Prisma.IntFieldUpdateOperationsInput | number
   redeemCount?: Prisma.IntFieldUpdateOperationsInput | number
   expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   redemptions?: Prisma.CouponRedemptionUncheckedUpdateManyWithoutCouponNestedInput
 }
@@ -347,6 +363,7 @@ export type CouponCreateManyInput = {
   maxRedeems?: number
   redeemCount?: number
   expiresAt?: Date | string | null
+  isDeleted?: boolean
   createdAt?: Date | string
 }
 
@@ -357,6 +374,7 @@ export type CouponUpdateManyMutationInput = {
   maxRedeems?: Prisma.IntFieldUpdateOperationsInput | number
   redeemCount?: Prisma.IntFieldUpdateOperationsInput | number
   expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -367,6 +385,7 @@ export type CouponUncheckedUpdateManyInput = {
   maxRedeems?: Prisma.IntFieldUpdateOperationsInput | number
   redeemCount?: Prisma.IntFieldUpdateOperationsInput | number
   expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -377,6 +396,7 @@ export type CouponCountOrderByAggregateInput = {
   maxRedeems?: Prisma.SortOrder
   redeemCount?: Prisma.SortOrder
   expiresAt?: Prisma.SortOrder
+  isDeleted?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
@@ -393,6 +413,7 @@ export type CouponMaxOrderByAggregateInput = {
   maxRedeems?: Prisma.SortOrder
   redeemCount?: Prisma.SortOrder
   expiresAt?: Prisma.SortOrder
+  isDeleted?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
@@ -403,6 +424,7 @@ export type CouponMinOrderByAggregateInput = {
   maxRedeems?: Prisma.SortOrder
   redeemCount?: Prisma.SortOrder
   expiresAt?: Prisma.SortOrder
+  isDeleted?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
@@ -438,6 +460,7 @@ export type CouponCreateWithoutRedemptionsInput = {
   maxRedeems?: number
   redeemCount?: number
   expiresAt?: Date | string | null
+  isDeleted?: boolean
   createdAt?: Date | string
 }
 
@@ -448,6 +471,7 @@ export type CouponUncheckedCreateWithoutRedemptionsInput = {
   maxRedeems?: number
   redeemCount?: number
   expiresAt?: Date | string | null
+  isDeleted?: boolean
   createdAt?: Date | string
 }
 
@@ -474,6 +498,7 @@ export type CouponUpdateWithoutRedemptionsInput = {
   maxRedeems?: Prisma.IntFieldUpdateOperationsInput | number
   redeemCount?: Prisma.IntFieldUpdateOperationsInput | number
   expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -484,6 +509,7 @@ export type CouponUncheckedUpdateWithoutRedemptionsInput = {
   maxRedeems?: Prisma.IntFieldUpdateOperationsInput | number
   redeemCount?: Prisma.IntFieldUpdateOperationsInput | number
   expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -525,6 +551,7 @@ export type CouponSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   maxRedeems?: boolean
   redeemCount?: boolean
   expiresAt?: boolean
+  isDeleted?: boolean
   createdAt?: boolean
   redemptions?: boolean | Prisma.Coupon$redemptionsArgs<ExtArgs>
   _count?: boolean | Prisma.CouponCountOutputTypeDefaultArgs<ExtArgs>
@@ -537,6 +564,7 @@ export type CouponSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extens
   maxRedeems?: boolean
   redeemCount?: boolean
   expiresAt?: boolean
+  isDeleted?: boolean
   createdAt?: boolean
 }, ExtArgs["result"]["coupon"]>
 
@@ -547,6 +575,7 @@ export type CouponSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extens
   maxRedeems?: boolean
   redeemCount?: boolean
   expiresAt?: boolean
+  isDeleted?: boolean
   createdAt?: boolean
 }, ExtArgs["result"]["coupon"]>
 
@@ -557,10 +586,11 @@ export type CouponSelectScalar = {
   maxRedeems?: boolean
   redeemCount?: boolean
   expiresAt?: boolean
+  isDeleted?: boolean
   createdAt?: boolean
 }
 
-export type CouponOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "code" | "credits" | "maxRedeems" | "redeemCount" | "expiresAt" | "createdAt", ExtArgs["result"]["coupon"]>
+export type CouponOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "code" | "credits" | "maxRedeems" | "redeemCount" | "expiresAt" | "isDeleted" | "createdAt", ExtArgs["result"]["coupon"]>
 export type CouponInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   redemptions?: boolean | Prisma.Coupon$redemptionsArgs<ExtArgs>
   _count?: boolean | Prisma.CouponCountOutputTypeDefaultArgs<ExtArgs>
@@ -580,6 +610,7 @@ export type $CouponPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs
     maxRedeems: number
     redeemCount: number
     expiresAt: Date | null
+    isDeleted: boolean
     createdAt: Date
   }, ExtArgs["result"]["coupon"]>
   composites: {}
@@ -1011,6 +1042,7 @@ export interface CouponFieldRefs {
   readonly maxRedeems: Prisma.FieldRef<"Coupon", 'Int'>
   readonly redeemCount: Prisma.FieldRef<"Coupon", 'Int'>
   readonly expiresAt: Prisma.FieldRef<"Coupon", 'DateTime'>
+  readonly isDeleted: Prisma.FieldRef<"Coupon", 'Boolean'>
   readonly createdAt: Prisma.FieldRef<"Coupon", 'DateTime'>
 }
     

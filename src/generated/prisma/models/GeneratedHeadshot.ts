@@ -28,6 +28,9 @@ export type GeneratedHeadshotMinAggregateOutputType = {
   id: string | null
   generationJobId: string | null
   resultUrl: string | null
+  thumbnailUrl: string | null
+  r2Key: string | null
+  r2ThumbnailKey: string | null
   isDeleted: boolean | null
   createdAt: Date | null
 }
@@ -36,6 +39,9 @@ export type GeneratedHeadshotMaxAggregateOutputType = {
   id: string | null
   generationJobId: string | null
   resultUrl: string | null
+  thumbnailUrl: string | null
+  r2Key: string | null
+  r2ThumbnailKey: string | null
   isDeleted: boolean | null
   createdAt: Date | null
 }
@@ -44,6 +50,9 @@ export type GeneratedHeadshotCountAggregateOutputType = {
   id: number
   generationJobId: number
   resultUrl: number
+  thumbnailUrl: number
+  r2Key: number
+  r2ThumbnailKey: number
   isDeleted: number
   createdAt: number
   _all: number
@@ -54,6 +63,9 @@ export type GeneratedHeadshotMinAggregateInputType = {
   id?: true
   generationJobId?: true
   resultUrl?: true
+  thumbnailUrl?: true
+  r2Key?: true
+  r2ThumbnailKey?: true
   isDeleted?: true
   createdAt?: true
 }
@@ -62,6 +74,9 @@ export type GeneratedHeadshotMaxAggregateInputType = {
   id?: true
   generationJobId?: true
   resultUrl?: true
+  thumbnailUrl?: true
+  r2Key?: true
+  r2ThumbnailKey?: true
   isDeleted?: true
   createdAt?: true
 }
@@ -70,6 +85,9 @@ export type GeneratedHeadshotCountAggregateInputType = {
   id?: true
   generationJobId?: true
   resultUrl?: true
+  thumbnailUrl?: true
+  r2Key?: true
+  r2ThumbnailKey?: true
   isDeleted?: true
   createdAt?: true
   _all?: true
@@ -151,6 +169,9 @@ export type GeneratedHeadshotGroupByOutputType = {
   id: string
   generationJobId: string
   resultUrl: string
+  thumbnailUrl: string | null
+  r2Key: string | null
+  r2ThumbnailKey: string | null
   isDeleted: boolean
   createdAt: Date
   _count: GeneratedHeadshotCountAggregateOutputType | null
@@ -180,6 +201,9 @@ export type GeneratedHeadshotWhereInput = {
   id?: Prisma.StringFilter<"GeneratedHeadshot"> | string
   generationJobId?: Prisma.StringFilter<"GeneratedHeadshot"> | string
   resultUrl?: Prisma.StringFilter<"GeneratedHeadshot"> | string
+  thumbnailUrl?: Prisma.StringNullableFilter<"GeneratedHeadshot"> | string | null
+  r2Key?: Prisma.StringNullableFilter<"GeneratedHeadshot"> | string | null
+  r2ThumbnailKey?: Prisma.StringNullableFilter<"GeneratedHeadshot"> | string | null
   isDeleted?: Prisma.BoolFilter<"GeneratedHeadshot"> | boolean
   createdAt?: Prisma.DateTimeFilter<"GeneratedHeadshot"> | Date | string
   generationJob?: Prisma.XOR<Prisma.GenerationJobScalarRelationFilter, Prisma.GenerationJobWhereInput>
@@ -190,6 +214,9 @@ export type GeneratedHeadshotOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   generationJobId?: Prisma.SortOrder
   resultUrl?: Prisma.SortOrder
+  thumbnailUrl?: Prisma.SortOrderInput | Prisma.SortOrder
+  r2Key?: Prisma.SortOrderInput | Prisma.SortOrder
+  r2ThumbnailKey?: Prisma.SortOrderInput | Prisma.SortOrder
   isDeleted?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   generationJob?: Prisma.GenerationJobOrderByWithRelationInput
@@ -203,6 +230,9 @@ export type GeneratedHeadshotWhereUniqueInput = Prisma.AtLeast<{
   NOT?: Prisma.GeneratedHeadshotWhereInput | Prisma.GeneratedHeadshotWhereInput[]
   generationJobId?: Prisma.StringFilter<"GeneratedHeadshot"> | string
   resultUrl?: Prisma.StringFilter<"GeneratedHeadshot"> | string
+  thumbnailUrl?: Prisma.StringNullableFilter<"GeneratedHeadshot"> | string | null
+  r2Key?: Prisma.StringNullableFilter<"GeneratedHeadshot"> | string | null
+  r2ThumbnailKey?: Prisma.StringNullableFilter<"GeneratedHeadshot"> | string | null
   isDeleted?: Prisma.BoolFilter<"GeneratedHeadshot"> | boolean
   createdAt?: Prisma.DateTimeFilter<"GeneratedHeadshot"> | Date | string
   generationJob?: Prisma.XOR<Prisma.GenerationJobScalarRelationFilter, Prisma.GenerationJobWhereInput>
@@ -213,6 +243,9 @@ export type GeneratedHeadshotOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   generationJobId?: Prisma.SortOrder
   resultUrl?: Prisma.SortOrder
+  thumbnailUrl?: Prisma.SortOrderInput | Prisma.SortOrder
+  r2Key?: Prisma.SortOrderInput | Prisma.SortOrder
+  r2ThumbnailKey?: Prisma.SortOrderInput | Prisma.SortOrder
   isDeleted?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   _count?: Prisma.GeneratedHeadshotCountOrderByAggregateInput
@@ -227,6 +260,9 @@ export type GeneratedHeadshotScalarWhereWithAggregatesInput = {
   id?: Prisma.StringWithAggregatesFilter<"GeneratedHeadshot"> | string
   generationJobId?: Prisma.StringWithAggregatesFilter<"GeneratedHeadshot"> | string
   resultUrl?: Prisma.StringWithAggregatesFilter<"GeneratedHeadshot"> | string
+  thumbnailUrl?: Prisma.StringNullableWithAggregatesFilter<"GeneratedHeadshot"> | string | null
+  r2Key?: Prisma.StringNullableWithAggregatesFilter<"GeneratedHeadshot"> | string | null
+  r2ThumbnailKey?: Prisma.StringNullableWithAggregatesFilter<"GeneratedHeadshot"> | string | null
   isDeleted?: Prisma.BoolWithAggregatesFilter<"GeneratedHeadshot"> | boolean
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"GeneratedHeadshot"> | Date | string
 }
@@ -234,6 +270,9 @@ export type GeneratedHeadshotScalarWhereWithAggregatesInput = {
 export type GeneratedHeadshotCreateInput = {
   id?: string
   resultUrl: string
+  thumbnailUrl?: string | null
+  r2Key?: string | null
+  r2ThumbnailKey?: string | null
   isDeleted?: boolean
   createdAt?: Date | string
   generationJob: Prisma.GenerationJobCreateNestedOneWithoutGeneratedHeadshotsInput
@@ -244,6 +283,9 @@ export type GeneratedHeadshotUncheckedCreateInput = {
   id?: string
   generationJobId: string
   resultUrl: string
+  thumbnailUrl?: string | null
+  r2Key?: string | null
+  r2ThumbnailKey?: string | null
   isDeleted?: boolean
   createdAt?: Date | string
   favorites?: Prisma.FavoriteHeadshotUncheckedCreateNestedManyWithoutHeadshotInput
@@ -252,6 +294,9 @@ export type GeneratedHeadshotUncheckedCreateInput = {
 export type GeneratedHeadshotUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   resultUrl?: Prisma.StringFieldUpdateOperationsInput | string
+  thumbnailUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  r2Key?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  r2ThumbnailKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   generationJob?: Prisma.GenerationJobUpdateOneRequiredWithoutGeneratedHeadshotsNestedInput
@@ -262,6 +307,9 @@ export type GeneratedHeadshotUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   generationJobId?: Prisma.StringFieldUpdateOperationsInput | string
   resultUrl?: Prisma.StringFieldUpdateOperationsInput | string
+  thumbnailUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  r2Key?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  r2ThumbnailKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   favorites?: Prisma.FavoriteHeadshotUncheckedUpdateManyWithoutHeadshotNestedInput
@@ -271,6 +319,9 @@ export type GeneratedHeadshotCreateManyInput = {
   id?: string
   generationJobId: string
   resultUrl: string
+  thumbnailUrl?: string | null
+  r2Key?: string | null
+  r2ThumbnailKey?: string | null
   isDeleted?: boolean
   createdAt?: Date | string
 }
@@ -278,6 +329,9 @@ export type GeneratedHeadshotCreateManyInput = {
 export type GeneratedHeadshotUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   resultUrl?: Prisma.StringFieldUpdateOperationsInput | string
+  thumbnailUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  r2Key?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  r2ThumbnailKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -286,6 +340,9 @@ export type GeneratedHeadshotUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   generationJobId?: Prisma.StringFieldUpdateOperationsInput | string
   resultUrl?: Prisma.StringFieldUpdateOperationsInput | string
+  thumbnailUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  r2Key?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  r2ThumbnailKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -304,6 +361,9 @@ export type GeneratedHeadshotCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   generationJobId?: Prisma.SortOrder
   resultUrl?: Prisma.SortOrder
+  thumbnailUrl?: Prisma.SortOrder
+  r2Key?: Prisma.SortOrder
+  r2ThumbnailKey?: Prisma.SortOrder
   isDeleted?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
@@ -312,6 +372,9 @@ export type GeneratedHeadshotMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   generationJobId?: Prisma.SortOrder
   resultUrl?: Prisma.SortOrder
+  thumbnailUrl?: Prisma.SortOrder
+  r2Key?: Prisma.SortOrder
+  r2ThumbnailKey?: Prisma.SortOrder
   isDeleted?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
@@ -320,6 +383,9 @@ export type GeneratedHeadshotMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   generationJobId?: Prisma.SortOrder
   resultUrl?: Prisma.SortOrder
+  thumbnailUrl?: Prisma.SortOrder
+  r2Key?: Prisma.SortOrder
+  r2ThumbnailKey?: Prisma.SortOrder
   isDeleted?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
@@ -388,6 +454,9 @@ export type GeneratedHeadshotUpdateOneRequiredWithoutFavoritesNestedInput = {
 export type GeneratedHeadshotCreateWithoutGenerationJobInput = {
   id?: string
   resultUrl: string
+  thumbnailUrl?: string | null
+  r2Key?: string | null
+  r2ThumbnailKey?: string | null
   isDeleted?: boolean
   createdAt?: Date | string
   favorites?: Prisma.FavoriteHeadshotCreateNestedManyWithoutHeadshotInput
@@ -396,6 +465,9 @@ export type GeneratedHeadshotCreateWithoutGenerationJobInput = {
 export type GeneratedHeadshotUncheckedCreateWithoutGenerationJobInput = {
   id?: string
   resultUrl: string
+  thumbnailUrl?: string | null
+  r2Key?: string | null
+  r2ThumbnailKey?: string | null
   isDeleted?: boolean
   createdAt?: Date | string
   favorites?: Prisma.FavoriteHeadshotUncheckedCreateNestedManyWithoutHeadshotInput
@@ -434,6 +506,9 @@ export type GeneratedHeadshotScalarWhereInput = {
   id?: Prisma.StringFilter<"GeneratedHeadshot"> | string
   generationJobId?: Prisma.StringFilter<"GeneratedHeadshot"> | string
   resultUrl?: Prisma.StringFilter<"GeneratedHeadshot"> | string
+  thumbnailUrl?: Prisma.StringNullableFilter<"GeneratedHeadshot"> | string | null
+  r2Key?: Prisma.StringNullableFilter<"GeneratedHeadshot"> | string | null
+  r2ThumbnailKey?: Prisma.StringNullableFilter<"GeneratedHeadshot"> | string | null
   isDeleted?: Prisma.BoolFilter<"GeneratedHeadshot"> | boolean
   createdAt?: Prisma.DateTimeFilter<"GeneratedHeadshot"> | Date | string
 }
@@ -441,6 +516,9 @@ export type GeneratedHeadshotScalarWhereInput = {
 export type GeneratedHeadshotCreateWithoutFavoritesInput = {
   id?: string
   resultUrl: string
+  thumbnailUrl?: string | null
+  r2Key?: string | null
+  r2ThumbnailKey?: string | null
   isDeleted?: boolean
   createdAt?: Date | string
   generationJob: Prisma.GenerationJobCreateNestedOneWithoutGeneratedHeadshotsInput
@@ -450,6 +528,9 @@ export type GeneratedHeadshotUncheckedCreateWithoutFavoritesInput = {
   id?: string
   generationJobId: string
   resultUrl: string
+  thumbnailUrl?: string | null
+  r2Key?: string | null
+  r2ThumbnailKey?: string | null
   isDeleted?: boolean
   createdAt?: Date | string
 }
@@ -473,6 +554,9 @@ export type GeneratedHeadshotUpdateToOneWithWhereWithoutFavoritesInput = {
 export type GeneratedHeadshotUpdateWithoutFavoritesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   resultUrl?: Prisma.StringFieldUpdateOperationsInput | string
+  thumbnailUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  r2Key?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  r2ThumbnailKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   generationJob?: Prisma.GenerationJobUpdateOneRequiredWithoutGeneratedHeadshotsNestedInput
@@ -482,6 +566,9 @@ export type GeneratedHeadshotUncheckedUpdateWithoutFavoritesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   generationJobId?: Prisma.StringFieldUpdateOperationsInput | string
   resultUrl?: Prisma.StringFieldUpdateOperationsInput | string
+  thumbnailUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  r2Key?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  r2ThumbnailKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -489,6 +576,9 @@ export type GeneratedHeadshotUncheckedUpdateWithoutFavoritesInput = {
 export type GeneratedHeadshotCreateManyGenerationJobInput = {
   id?: string
   resultUrl: string
+  thumbnailUrl?: string | null
+  r2Key?: string | null
+  r2ThumbnailKey?: string | null
   isDeleted?: boolean
   createdAt?: Date | string
 }
@@ -496,6 +586,9 @@ export type GeneratedHeadshotCreateManyGenerationJobInput = {
 export type GeneratedHeadshotUpdateWithoutGenerationJobInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   resultUrl?: Prisma.StringFieldUpdateOperationsInput | string
+  thumbnailUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  r2Key?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  r2ThumbnailKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   favorites?: Prisma.FavoriteHeadshotUpdateManyWithoutHeadshotNestedInput
@@ -504,6 +597,9 @@ export type GeneratedHeadshotUpdateWithoutGenerationJobInput = {
 export type GeneratedHeadshotUncheckedUpdateWithoutGenerationJobInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   resultUrl?: Prisma.StringFieldUpdateOperationsInput | string
+  thumbnailUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  r2Key?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  r2ThumbnailKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   favorites?: Prisma.FavoriteHeadshotUncheckedUpdateManyWithoutHeadshotNestedInput
@@ -512,6 +608,9 @@ export type GeneratedHeadshotUncheckedUpdateWithoutGenerationJobInput = {
 export type GeneratedHeadshotUncheckedUpdateManyWithoutGenerationJobInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   resultUrl?: Prisma.StringFieldUpdateOperationsInput | string
+  thumbnailUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  r2Key?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  r2ThumbnailKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -551,6 +650,9 @@ export type GeneratedHeadshotSelect<ExtArgs extends runtime.Types.Extensions.Int
   id?: boolean
   generationJobId?: boolean
   resultUrl?: boolean
+  thumbnailUrl?: boolean
+  r2Key?: boolean
+  r2ThumbnailKey?: boolean
   isDeleted?: boolean
   createdAt?: boolean
   generationJob?: boolean | Prisma.GenerationJobDefaultArgs<ExtArgs>
@@ -562,6 +664,9 @@ export type GeneratedHeadshotSelectCreateManyAndReturn<ExtArgs extends runtime.T
   id?: boolean
   generationJobId?: boolean
   resultUrl?: boolean
+  thumbnailUrl?: boolean
+  r2Key?: boolean
+  r2ThumbnailKey?: boolean
   isDeleted?: boolean
   createdAt?: boolean
   generationJob?: boolean | Prisma.GenerationJobDefaultArgs<ExtArgs>
@@ -571,6 +676,9 @@ export type GeneratedHeadshotSelectUpdateManyAndReturn<ExtArgs extends runtime.T
   id?: boolean
   generationJobId?: boolean
   resultUrl?: boolean
+  thumbnailUrl?: boolean
+  r2Key?: boolean
+  r2ThumbnailKey?: boolean
   isDeleted?: boolean
   createdAt?: boolean
   generationJob?: boolean | Prisma.GenerationJobDefaultArgs<ExtArgs>
@@ -580,11 +688,14 @@ export type GeneratedHeadshotSelectScalar = {
   id?: boolean
   generationJobId?: boolean
   resultUrl?: boolean
+  thumbnailUrl?: boolean
+  r2Key?: boolean
+  r2ThumbnailKey?: boolean
   isDeleted?: boolean
   createdAt?: boolean
 }
 
-export type GeneratedHeadshotOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "generationJobId" | "resultUrl" | "isDeleted" | "createdAt", ExtArgs["result"]["generatedHeadshot"]>
+export type GeneratedHeadshotOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "generationJobId" | "resultUrl" | "thumbnailUrl" | "r2Key" | "r2ThumbnailKey" | "isDeleted" | "createdAt", ExtArgs["result"]["generatedHeadshot"]>
 export type GeneratedHeadshotInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   generationJob?: boolean | Prisma.GenerationJobDefaultArgs<ExtArgs>
   favorites?: boolean | Prisma.GeneratedHeadshot$favoritesArgs<ExtArgs>
@@ -607,6 +718,9 @@ export type $GeneratedHeadshotPayload<ExtArgs extends runtime.Types.Extensions.I
     id: string
     generationJobId: string
     resultUrl: string
+    thumbnailUrl: string | null
+    r2Key: string | null
+    r2ThumbnailKey: string | null
     isDeleted: boolean
     createdAt: Date
   }, ExtArgs["result"]["generatedHeadshot"]>
@@ -1037,6 +1151,9 @@ export interface GeneratedHeadshotFieldRefs {
   readonly id: Prisma.FieldRef<"GeneratedHeadshot", 'String'>
   readonly generationJobId: Prisma.FieldRef<"GeneratedHeadshot", 'String'>
   readonly resultUrl: Prisma.FieldRef<"GeneratedHeadshot", 'String'>
+  readonly thumbnailUrl: Prisma.FieldRef<"GeneratedHeadshot", 'String'>
+  readonly r2Key: Prisma.FieldRef<"GeneratedHeadshot", 'String'>
+  readonly r2ThumbnailKey: Prisma.FieldRef<"GeneratedHeadshot", 'String'>
   readonly isDeleted: Prisma.FieldRef<"GeneratedHeadshot", 'Boolean'>
   readonly createdAt: Prisma.FieldRef<"GeneratedHeadshot", 'DateTime'>
 }
