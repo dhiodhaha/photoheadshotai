@@ -4,8 +4,14 @@ import { getSessionFn } from "#/modules/auth/infrastructure/auth.functions";
 import { StudioHeader } from "#/modules/studio/components/studio-header";
 
 export const Route = createFileRoute("/studio")({
-	beforeLoad: async () => {
-		const session = await getSessionFn();
+	beforeLoad: async ({ context }) => {
+		// Re-use already-loaded session to avoid redundant server round-trip on
+		// every child route navigation (gallery → settings → trash etc.)
+		const existing = (context as Record<string, unknown>).session as
+			| Awaited<ReturnType<typeof getSessionFn>>
+			| undefined;
+		const session = existing ?? (await getSessionFn());
+
 		if (!session) {
 			throw redirect({
 				to: "/auth/signin",

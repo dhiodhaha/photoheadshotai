@@ -12,7 +12,15 @@ export function getContext() {
 		return context;
 	}
 
-	const queryClient = new QueryClient();
+	const queryClient = new QueryClient({
+		defaultOptions: {
+			queries: {
+				// Keep data fresh for 1 minute — switching tabs reuses cached data
+				// instead of triggering a new network request every time
+				staleTime: 60_000,
+			},
+		},
+	});
 
 	context = {
 		queryClient,
