@@ -1,6 +1,5 @@
 import { fal } from "@fal-ai/client";
 import { deductUserCredits, refundCredits } from "#/modules/credits";
-import { persistGeneratedImage } from "#/modules/studio/infrastructure/image-processing.server";
 import { getPresignedUrl } from "#/modules/studio/infrastructure/r2.server";
 import { buildPrompt, getStyleById } from "../domain/styles";
 import {
@@ -70,25 +69,9 @@ export class GenerationService {
 
 		if (process.env.MOCK_AI_GENERATION === "true") {
 			await new Promise((r) => setTimeout(r, 2000));
-			// In mock mode, skip R2 persistence and use fal.ai URL directly
-			const mockImageData = {
-				resultUrl:
-					"https://images.unsplash.com/photo-1544168190-79c154273140?q=80&w=800",
-				thumbnailUrl:
-					"https://images.unsplash.com/photo-1544168190-79c154273140?q=80&w=400",
-				r2Key: null,
-				r2ThumbnailKey: null,
-			};
-			await completeGenerationJob(
-				jobId,
-				photoId,
-				mockImageData as {
-					resultUrl: string;
-					thumbnailUrl: string;
-					r2Key: string;
-					r2ThumbnailKey: string;
-				},
-			);
+			const mockImageUrl =
+				"https://images.unsplash.com/photo-1544168190-79c154273140?q=80&w=800";
+			await completeGenerationJob(jobId, photoId, mockImageUrl);
 			return;
 		}
 
@@ -112,32 +95,7 @@ export class GenerationService {
 
 			const imageUrl = result.data?.images?.[0]?.url;
 			if (imageUrl) {
-				// Attempt to persist to R2 — fall back to fal.ai URL if upload fails
-				// so generation always succeeds even with transient R2 issues
-				let imageData: {
-					resultUrl: string;
-					thumbnailUrl: string;
-					r2Key: string | null;
-					r2ThumbnailKey: string | null;
-				};
-
-				try {
-					imageData = await persistGeneratedImage(imageUrl, userId, jobId);
-				} catch (r2Error: unknown) {
-					const msg =
-						r2Error instanceof Error ? r2Error.message : String(r2Error);
-					console.warn(
-						`R2 upload failed for job ${jobId}, falling back to fal.ai URL: ${msg}`,
-					);
-					imageData = {
-						resultUrl: imageUrl,
-						thumbnailUrl: imageUrl,
-						r2Key: null,
-						r2ThumbnailKey: null,
-					};
-				}
-
-				await completeGenerationJob(jobId, photoId, imageData);
+				await completeGenerationJob(jobId, photoId, imageUrl);
 				return;
 			}
 			throw new Error("AI Provider returned no image.");

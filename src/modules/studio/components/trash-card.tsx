@@ -1,6 +1,7 @@
 import { RotateCcw, Trash2 } from "lucide-react";
 import { motion } from "motion/react";
 import { Button } from "@/components/ui/button";
+import { cfImg } from "@/lib/cloudflare-image";
 import type { TrashItem } from "../domain/headshot.types";
 
 interface TrashCardProps {
@@ -18,7 +19,8 @@ export function TrashCard({ item, onRestore, onDelete }: TrashCardProps) {
 			className="group relative aspect-3/4 rounded-2xl overflow-hidden glass border border-white/10"
 		>
 			<img
-				src={item.thumbnail ?? item.src}
+				src={cfImg.thumbnail(item.src)}
+				src={cfImg.thumbnail(item.src)}
 				alt=""
 				loading="lazy"
 				className="w-full h-full object-cover opacity-50 grayscale transition-all group-hover:opacity-80 group-hover:grayscale-0"

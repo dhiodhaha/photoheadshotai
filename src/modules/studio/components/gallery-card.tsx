@@ -1,6 +1,7 @@
 import { Download, Heart, Trash2 } from "lucide-react";
 import { motion } from "motion/react";
 import { Button } from "@/components/ui/button";
+import { cfImg } from "@/lib/cloudflare-image";
 import { cn } from "@/lib/utils";
 import type { GalleryItem } from "../domain/headshot.types";
 
@@ -48,7 +49,8 @@ export function GalleryCard({
 			className="group relative aspect-3/4 rounded-2xl overflow-hidden glass border border-white/10"
 		>
 			<img
-				src={item.thumbnail ?? item.src}
+				src={cfImg.thumbnail(item.src)}
+				src={cfImg.thumbnail(item.src)}
 				alt=""
 				loading="lazy"
 				className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
