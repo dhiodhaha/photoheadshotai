@@ -26,3 +26,14 @@ export async function deleteFromR2(key: string): Promise<void> {
 		}),
 	);
 }
+
+export async function deletePersistedImage(
+	r2Key: string | null,
+	r2ThumbnailKey: string | null,
+) {
+	const promises: Promise<void>[] = [];
+	if (r2Key) promises.push(deleteFromR2(r2Key).catch(() => {}));
+	if (r2ThumbnailKey)
+		promises.push(deleteFromR2(r2ThumbnailKey).catch(() => {}));
+	if (promises.length > 0) await Promise.all(promises);
+}
