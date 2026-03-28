@@ -40,33 +40,19 @@ export const auth = betterAuth({
 		enabled: true,
 		requireEmailVerification: true,
 		sendResetPassword: async ({ user, url }) => {
-			const { sendEmail } = await import(
+			const { sendPasswordResetEmail } = await import(
 				"#/modules/auth/infrastructure/email.server"
 			);
-			const { buildPasswordResetEmailHtml } = await import(
-				"#/modules/auth/infrastructure/email-templates"
-			);
-			await sendEmail(
-				user.email,
-				"Reset your password — Studio AI",
-				buildPasswordResetEmailHtml(user.name, url),
-			);
+			await sendPasswordResetEmail(user.email, user.name, url);
 		},
 	},
 	emailVerification: {
 		sendOnSignUp: true,
 		sendVerificationEmail: async ({ user, url }) => {
-			const { sendEmail } = await import(
+			const { sendVerificationEmail } = await import(
 				"#/modules/auth/infrastructure/email.server"
 			);
-			const { buildVerificationEmailHtml } = await import(
-				"#/modules/auth/infrastructure/email-templates"
-			);
-			await sendEmail(
-				user.email,
-				"Verify your email — Studio AI",
-				buildVerificationEmailHtml(user.name, url),
-			);
+			await sendVerificationEmail(user.email, user.name, url);
 		},
 		afterEmailVerification: async (user) => {
 			// Award referrer credits when new user verifies email

@@ -1,11 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { z } from "zod";
 import { getServerSession } from "#/modules/auth";
-import { redeemCoupon } from "#/modules/coupon";
-
-const redeemCouponSchema = z.object({
-	code: z.string().trim().min(1, "Coupon code is required"),
-});
+import { redeemCoupon, redeemCouponSchema } from "#/modules/coupon";
 
 export const Route = createFileRoute("/api/credits/redeem-coupon")({
 	server: {
