@@ -1,5 +1,5 @@
 import { Link, useNavigate } from "@tanstack/react-router";
-import { LogOut, Settings, User } from "lucide-react";
+import { CreditCard, LogOut, Settings, User } from "lucide-react";
 import { authClient } from "#/lib/auth-client";
 import {
 	DropdownMenu,
@@ -51,6 +51,18 @@ export function UserDropdownMenu() {
 					>
 						<Settings className="mr-3 w-4 h-4 text-muted-foreground" />
 						<span>Settings</span>
+					</Link>
+				</DropdownMenuItem>
+				<DropdownMenuItem
+					className="focus:bg-white/10 focus:text-white cursor-pointer py-2.5 rounded-xl transition-colors"
+					asChild
+				>
+					<Link
+						to="/studio/billing"
+						className="w-full flex items-center font-medium"
+					>
+						<CreditCard className="mr-3 w-4 h-4 text-muted-foreground" />
+						<span>Billing</span>
 					</Link>
 				</DropdownMenuItem>
 				<DropdownMenuItem
