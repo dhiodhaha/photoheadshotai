@@ -11,7 +11,8 @@ export function getRouter() {
 
 		scrollRestoration: true,
 		defaultPreload: "intent",
-		defaultPreloadStaleTime: 0,
+		// Reuse preloaded data for 30s so hovering → clicking doesn't re-fetch
+		defaultPreloadStaleTime: 30_000,
 		defaultNotFoundComponent: NotFound,
 	});
 
