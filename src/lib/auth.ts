@@ -18,24 +18,41 @@ export const auth = betterAuth({
 	database: prismaAdapter(prisma, {
 		provider: "postgresql",
 	}),
+	trustedOrigins: [process.env.BETTER_AUTH_URL ?? "http://localhost:3000"],
+	advanced: {
+		useSecureCookies: process.env.NODE_ENV === "production",
+	},
+	rateLimit: {
+		enabled: true,
+		window: 60, // 60-second window
+		max: 10, // max 10 auth requests per window per IP
+		storage: "database",
+	},
+	session: {
+		expiresIn: 60 * 60 * 24 * 7, // 7 days
+		updateAge: 60 * 60 * 24, // refresh session token daily
+		cookieCache: {
+			enabled: true,
+			maxAge: 60 * 5, // 5-minute client-side cache to reduce DB reads
+		},
+	},
 	emailAndPassword: {
 		enabled: true,
 		requireEmailVerification: true,
+		sendResetPassword: async ({ user, url }) => {
+			const { sendPasswordResetEmail } = await import(
+				"#/modules/auth/infrastructure/email.server"
+			);
+			await sendPasswordResetEmail(user.email, user.name, url);
+		},
 	},
 	emailVerification: {
 		sendOnSignUp: true,
 		sendVerificationEmail: async ({ user, url }) => {
-			const { sendEmail } = await import(
+			const { sendVerificationEmail } = await import(
 				"#/modules/auth/infrastructure/email.server"
 			);
-			const { buildVerificationEmailHtml } = await import(
-				"#/modules/auth/infrastructure/email-templates"
-			);
-			await sendEmail(
-				user.email,
-				"Verify your email — Studio AI",
-				buildVerificationEmailHtml(user.name, url),
-			);
+			await sendVerificationEmail(user.email, user.name, url);
 		},
 		afterEmailVerification: async (user) => {
 			// Award referrer credits when new user verifies email
@@ -128,7 +145,8 @@ export const auth = betterAuth({
 			referredBy: {
 				type: "string",
 				required: false,
-				input: true,
+				// input: false (default) — never accept from client.
+				// Set programmatically in databaseHooks.user.create.before only.
 			},
 		},
 	},

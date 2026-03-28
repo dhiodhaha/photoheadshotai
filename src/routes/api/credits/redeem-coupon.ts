@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { getServerSession } from "#/modules/auth";
-import { redeemCoupon } from "#/modules/coupon";
+import { redeemCoupon, redeemCouponSchema } from "#/modules/coupon";
 
 export const Route = createFileRoute("/api/credits/redeem-coupon")({
 	server: {
@@ -13,7 +13,8 @@ export const Route = createFileRoute("/api/credits/redeem-coupon")({
 
 				try {
 					const body = await request.json();
-					const result = await redeemCoupon(session.user.id, body.code);
+					const { code } = redeemCouponSchema.parse(body);
+					const result = await redeemCoupon(session.user.id, code);
 					return Response.json(result);
 				} catch (error: unknown) {
 					const message =
