@@ -1,7 +1,7 @@
 # ─── Stage 1: deps ────────────────────────────────────────────────────────────
 FROM node:24-alpine AS deps
 
-RUN corepack enable && corepack prepare pnpm@latest --activate
+RUN corepack enable && corepack prepare pnpm@10.27.0 --activate
 
 WORKDIR /app
 
@@ -15,14 +15,12 @@ RUN pnpm install --frozen-lockfile
 # ─── Stage 2: build ───────────────────────────────────────────────────────────
 FROM node:24-alpine AS builder
 
-RUN corepack enable && corepack prepare pnpm@latest --activate
-
 WORKDIR /app
 
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
-RUN NODE_OPTIONS="--max-old-space-size=4096" pnpm build
+RUN NODE_OPTIONS="--max-old-space-size=4096" node_modules/.bin/vite build
 
 
 # ─── Stage 3: runner ──────────────────────────────────────────────────────────
@@ -37,8 +35,6 @@ ENV NODE_ENV=production
 COPY --from=builder /app/.output ./.output
 COPY --from=builder /app/prisma ./prisma
 COPY --from=builder /app/prisma.config.ts ./prisma.config.ts
-
-# Install Prisma locally so prisma/config resolves correctly for migrations
 COPY --from=deps /app/node_modules ./node_modules
 COPY package.json ./
 
