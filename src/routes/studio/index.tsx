@@ -15,7 +15,7 @@ import {
 	DialogTitle,
 	DialogTrigger,
 } from "@/components/ui/dialog";
-import { AnimatePresence, motion, useReducedMotion } from "motion/react";
+import { AnimatePresence, motion } from "motion/react";
 import { useState } from "react";
 import { authClient } from "#/lib/auth-client";
 import { GalleryCard } from "#/modules/studio/components/gallery-card";
@@ -206,410 +206,6 @@ const DOCK_STEPS = [
 	{ id: 3, label: "Generate" },
 ] as const;
 
-// ─── Collapsed pill ─────────────────────────────────────────────────────────
-interface CollapsedContentProps {
-	onExpand: () => void;
-}
-
-function CollapsedContent({ onExpand }: CollapsedContentProps) {
-	return (
-		<motion.button
-			type="button"
-			key="collapsed-content"
-			initial={{ opacity: 0 }}
-			animate={{ opacity: 1, transition: { duration: 0.18, delay: 0.12 } }}
-			exit={{ opacity: 0, transition: { duration: 0.1 } }}
-			onClick={onExpand}
-			className="flex items-center justify-center gap-6 px-8 h-12 w-full cursor-pointer group"
-			aria-label="Expand generation dock"
-		>
-			<div className="flex items-center gap-3">
-				<Sparkles className="w-4 h-4 text-primary group-hover:scale-110 transition-transform" />
-				<motion.span
-					layout="position"
-					className="text-[10px] font-black uppercase tracking-[0.2em] text-white/90"
-				>
-					New Generation
-				</motion.span>
-			</div>
-			<div className="w-px h-4 bg-white/10" />
-			<motion.span
-				layout="position"
-				className="text-[9px] font-bold uppercase tracking-widest text-white/30 group-hover:text-white/50 transition-colors"
-			>
-				Safe &amp; Secure
-			</motion.span>
-		</motion.button>
-	);
-}
-
-// ─── Expanded panel ──────────────────────────────────────────────────────────
-interface ExpandedContentProps {
-	step: 1 | 2 | 3;
-	previewUrl: string | null;
-	selectedStyle: string | null;
-	onCollapse: () => void;
-	onFileSelected: (file: File) => void;
-	onStyleSelect: (style: string) => void;
-	onClear: () => void;
-	onGenerate: () => void;
-}
-
-function ExpandedContent({
-	step,
-	previewUrl,
-	selectedStyle,
-	onCollapse,
-	onFileSelected,
-	onStyleSelect,
-	onClear,
-	onGenerate,
-}: ExpandedContentProps) {
-	return (
-		<motion.div
-			key="expanded-content"
-			initial={{ opacity: 0 }}
-			animate={{ opacity: 1, transition: { duration: 0.2, delay: 0.15 } }}
-			exit={{ opacity: 0, transition: { duration: 0.1 } }}
-			className="max-w-4xl mx-auto w-full"
-		>
-			<AnimatePresence mode="wait">
-				{step !== 3 ? (
-					<motion.div
-						key="standard-layout"
-						initial={{ opacity: 0 }}
-						animate={{ opacity: 1 }}
-						exit={{ opacity: 0, scale: 0.98, filter: "blur(10px)" }}
-						transition={{ duration: 0.4 }}
-						className="flex flex-col gap-4"
-					>
-						{/* Steps header */}
-						<div className="flex items-center justify-between h-8">
-							<div className="flex items-center gap-8">
-								{DOCK_STEPS.map((s) => (
-									<div key={s.id} className="flex items-center gap-2.5">
-										<div
-											className={cn(
-												"w-5 h-5 rounded-full flex items-center justify-center text-[8px] font-black transition-all duration-300",
-												step === s.id
-													? "bg-primary text-primary-foreground scale-110 shadow-[0_0_15px_rgba(var(--primary),0.4)]"
-													: step > s.id
-														? "bg-green-500 text-white"
-														: "bg-white/10 text-muted-foreground/30",
-											)}
-										>
-											{step > s.id ? (
-												<CheckCircle2 className="w-3 h-3" />
-											) : (
-												s.id
-											)}
-										</div>
-										<span
-											className={cn(
-												"text-[10px] font-black tracking-[0.2em] uppercase transition-colors duration-300",
-												step === s.id
-													? "text-white"
-													: "text-muted-foreground/30",
-											)}
-										>
-											{s.label}
-										</span>
-									</div>
-								))}
-							</div>
-							<div className="flex items-center gap-2">
-								<Dialog>
-									<DialogTrigger asChild>
-										<motion.button
-											type="button"
-											whileHover={{ scale: 1.05 }}
-											whileTap={{ scale: 0.95 }}
-											className="p-1.5 rounded-xl bg-white/5 border border-white/5 hover:bg-white/10 text-muted-foreground hover:text-white transition-all"
-											title="Optimal Image Sourcing Guidelines"
-										>
-											<Info className="w-4 h-4" />
-										</motion.button>
-									</DialogTrigger>
-									<DialogContent className="sm:max-w-md md:max-w-xl glass bg-background/95 backdrop-blur-xl border-white/10 text-white max-h-[85vh] overflow-y-auto">
-										<DialogHeader className="mb-2 text-left">
-											<DialogTitle className="text-xl font-display font-bold">
-												Optimal Image Sourcing
-											</DialogTitle>
-											<DialogDescription className="text-muted-foreground text-left">
-												Follow these guidelines to get the best AI generation
-												results.
-											</DialogDescription>
-										</DialogHeader>
-										<div className="space-y-6 mt-2">
-											<div className="space-y-3">
-												<h4 className="font-semibold text-emerald-400 flex items-center gap-2 leading-none">
-													Recommended Practices
-												</h4>
-												<ul className="space-y-2 text-sm text-white/80 list-disc list-outside ml-4">
-													<li>
-														<strong className="text-white">
-															Opt for authentic, well-captured photographs:
-														</strong>{" "}
-														Providing a pristine baseline helps the generation
-														model map out structural details more accurately.
-													</li>
-													<li>
-														<strong className="text-white">
-															Prioritize strong, deliberate lighting:
-														</strong>{" "}
-														Distinct shadows and highlights allow the tool to
-														render depth and volume effectively.
-													</li>
-													<li>
-														<strong className="text-white">
-															Select crisp, high-resolution visuals:
-														</strong>{" "}
-														Maximizing image detail ensures the process picks up
-														precise borders and physical traits.
-													</li>
-													<li>
-														<strong className="text-white">
-															Utilize 1:1 aspect ratios:
-														</strong>{" "}
-														Cropping your image to a square standardizes the
-														frame, which keeps the layout focused and prevents
-														unintended compositional shifts.
-													</li>
-													<li>
-														<strong className="text-white">
-															Feature unique stylistic elements:
-														</strong>{" "}
-														Striking poses, distinctive garments, or bold
-														hairstyles inject a much stronger character into the
-														final result.
-													</li>
-													<li>
-														<strong className="text-white">
-															Focus on a single central subject:
-														</strong>{" "}
-														Isolating one main focal point minimizes processing
-														confusion and keeps the visual transformation highly
-														accurate.
-													</li>
-												</ul>
-											</div>
-											<div className="space-y-3">
-												<h4 className="font-semibold text-red-400 flex items-center gap-2 leading-none">
-													What to Avoid
-												</h4>
-												<ul className="space-y-2 text-sm text-white/80 list-disc list-outside ml-4">
-													<li>
-														Heavily edited, pre-filtered, or low-clarity
-														pictures.
-													</li>
-													<li>
-														Files suffering from compression artifacts,
-														pixelation, or movement distortion.
-													</li>
-													<li>
-														Cluttered visual layouts or photos containing
-														multiple subjects.
-													</li>
-												</ul>
-											</div>
-										</div>
-									</DialogContent>
-								</Dialog>
-								<motion.button
-									type="button"
-									whileHover={{ scale: 1.05 }}
-									whileTap={{ scale: 0.95 }}
-									onClick={onCollapse}
-									className="p-1.5 rounded-xl bg-white/5 border border-white/5 hover:bg-white/10 text-muted-foreground hover:text-white transition-all group/collapse"
-									aria-label="Collapse dock"
-								>
-									<X className="w-4 h-4 group-hover/collapse:rotate-90 transition-transform" />
-								</motion.button>
-							</div>
-						</div>
-
-						{/* Content */}
-						<div className="w-full flex items-center">
-							<AnimatePresence mode="wait">
-								{step === 1 && (
-									<motion.div
-										key="step1"
-										className="w-full"
-										initial={{ opacity: 0, y: 10 }}
-										animate={{ opacity: 1, y: 0 }}
-										exit={{ opacity: 0, y: 10 }}
-									>
-										<StudioUploadZone onFileSelected={onFileSelected} />
-									</motion.div>
-								)}
-								{step === 2 && previewUrl && (
-									<motion.div
-										key="step2"
-										className="w-full"
-										initial={{ opacity: 0, y: 10 }}
-										animate={{ opacity: 1, y: 0 }}
-										exit={{ opacity: 0, y: 10 }}
-									>
-										<StudioStyleSelector
-											previewUrl={previewUrl}
-											selectedStyle={selectedStyle}
-											onStyleSelect={onStyleSelect}
-											onClear={onClear}
-											onGenerate={onGenerate}
-										/>
-									</motion.div>
-								)}
-							</AnimatePresence>
-						</div>
-
-						{/* Footer */}
-						<div className="flex items-center justify-between pt-1">
-							<span className="text-[9.5px] font-black uppercase tracking-[0.2em] text-white/40">
-								Secure &amp; Private
-							</span>
-							<div className="flex items-center gap-2">
-								<div className="w-1 h-1 rounded-full bg-green-500/60 animate-pulse" />
-								<span className="text-[9.5px] font-black uppercase tracking-[0.2em] text-white/40">
-									Photos Automatically Deleted
-								</span>
-							</div>
-						</div>
-					</motion.div>
-				) : (
-					<motion.div
-						key="synthesis-layout"
-						initial={{
-							opacity: 0,
-							scale: 0.95,
-							filter: "blur(10px)",
-						}}
-						animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
-						className="w-full h-[180px] flex flex-col items-center justify-center relative overflow-hidden"
-					>
-						{/* Ambient effects */}
-						<div className="absolute inset-0 pointer-events-none overflow-hidden rounded-[20px]">
-							<div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[300px] bg-primary/10 rounded-full blur-[120px] opacity-40 animate-pulse" />
-							<motion.div
-								initial={{ x: "-120%", opacity: 0 }}
-								animate={{ x: "120%", opacity: [0, 1, 1, 0] }}
-								transition={{
-									delay: 0.5,
-									duration: 0.9,
-									repeat: Infinity,
-									repeatDelay: 1.5,
-									ease: "easeInOut",
-								}}
-								className="absolute inset-y-0 w-[500px] bg-linear-to-r from-transparent via-white/40 to-transparent skew-x-[-35deg] blur-md z-30"
-							/>
-						</div>
-
-						<div className="flex flex-col items-center gap-6 relative z-10 w-full">
-							<div className="flex items-center gap-24 relative h-20 w-full justify-center">
-								<motion.div
-									initial={{ x: -200, opacity: 0, scale: 0.5 }}
-									animate={{ x: -40, opacity: 1, scale: 1 }}
-									transition={{
-										duration: 1.5,
-										ease: [0.16, 1, 0.3, 1],
-									}}
-									className="w-20 h-20 rounded-full border-2 border-white/20 overflow-hidden glass shadow-[0_0_50px_rgba(255,255,255,0.1)] z-20"
-								>
-									<img
-										src={previewUrl || ""}
-										alt="Source"
-										className="w-full h-full object-cover"
-									/>
-								</motion.div>
-
-								<div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
-									<motion.div
-										animate={{ rotate: -360 }}
-										transition={{
-											repeat: Infinity,
-											duration: 12,
-											ease: "linear",
-										}}
-										className="w-44 h-44 rounded-full border border-dashed border-primary/20 opacity-30"
-									/>
-									<motion.div
-										animate={{
-											scale: [1, 1.5, 1],
-											opacity: [0.3, 0.6, 0.3],
-										}}
-										transition={{ repeat: Infinity, duration: 3 }}
-										className="absolute inset-0 flex items-center justify-center"
-									>
-										<div className="w-32 h-32 rounded-full bg-primary/20 blur-3xl shadow-[0_0_120px_rgba(var(--primary),0.4)]" />
-									</motion.div>
-								</div>
-
-								<motion.div
-									initial={{ x: 200, opacity: 0, scale: 0.5 }}
-									animate={{
-										x: 40,
-										opacity: 1,
-										scale: 1,
-										boxShadow: [
-											"0 0 0px rgba(var(--primary),0)",
-											"0 0 40px rgba(var(--primary),0.3)",
-											"0 0 0px rgba(var(--primary),0)",
-										],
-									}}
-									transition={{
-										duration: 1.5,
-										ease: [0.16, 1, 0.3, 1],
-										boxShadow: {
-											delay: 1,
-											duration: 2,
-											repeat: Infinity,
-										},
-									}}
-									className="w-20 h-20 rounded-full border-2 border-primary/40 overflow-hidden glass shadow-[0_0_50px_rgba(var(--primary),0.2)] z-20"
-								>
-									<img
-										src={
-											HEADSHOT_STYLES.find(
-												(s) => s.id === (selectedStyle || ""),
-											)?.image || ""
-										}
-										alt="Style"
-										className="w-full h-full object-cover"
-									/>
-								</motion.div>
-							</div>
-
-							<motion.div
-								initial={{ opacity: 0, y: 20 }}
-								animate={{ opacity: 1, y: 0 }}
-								transition={{ delay: 1.4 }}
-								className="text-center space-y-2"
-							>
-								<p className="text-sm font-black uppercase tracking-[0.5em] text-primary drop-shadow-[0_0_10px_rgba(var(--primary),0.5)]">
-									Neural Synthesis
-								</p>
-								<p className="text-[10px] font-medium text-white/40 uppercase tracking-[0.3em]">
-									Merging Reference &amp; Style in the cloud
-								</p>
-							</motion.div>
-						</div>
-
-						<motion.button
-							initial={{ opacity: 0 }}
-							animate={{ opacity: 1 }}
-							transition={{ delay: 2 }}
-							onClick={onCollapse}
-							className="absolute top-0 right-0 p-2 text-white/20 hover:text-white transition-colors z-30"
-						>
-							<X className="w-5 h-5" />
-						</motion.button>
-					</motion.div>
-				)}
-			</AnimatePresence>
-		</motion.div>
-	);
-}
-
-// ─── Dock shell (morph container) ───────────────────────────────────────────
 function StudioGenerationDock({
 	step,
 	isDockCollapsed,
@@ -622,46 +218,394 @@ function StudioGenerationDock({
 	onClear,
 	onGenerate,
 }: DockProps) {
-	const shouldReduceMotion = useReducedMotion();
-
-	const morphTransition = shouldReduceMotion
-		? { duration: 0 }
-		: { type: "spring" as const, duration: 0.45, bounce: 0.12 };
-
 	return (
-		<div className="fixed bottom-0 left-0 right-0 z-50 pointer-events-none p-4 sm:p-6">
-			<div className="max-w-4xl mx-auto w-full pointer-events-auto flex flex-col items-center">
-				<motion.div
-					layoutId="studio-dock"
-					layout
-					style={{
-						borderRadius: isDockCollapsed ? 28 : 24,
-						overflow: "hidden",
-					}}
-					transition={morphTransition}
-					className={cn(
-						"glass border border-white/10 shadow-2xl backdrop-blur-xl mb-4",
-						isDockCollapsed ? "min-w-[300px]" : "w-full p-4",
+		<div
+			className={cn(
+				"fixed bottom-0 left-0 right-0 z-50 pointer-events-none transition-all duration-500",
+				isDockCollapsed ? "px-4 sm:px-6 pb-0" : "p-4 sm:p-6",
+			)}
+		>
+			<div className="max-w-4xl mx-auto w-full pointer-events-auto flex flex-col gap-4 items-center">
+				<AnimatePresence mode="wait">
+					{!isDockCollapsed ? (
+						<motion.div
+							key="expanded-dock"
+							initial={{ opacity: 0, y: 40 }}
+							animate={{ opacity: 1, y: 0 }}
+							exit={{ opacity: 0, y: 40 }}
+							transition={{ type: "spring", stiffness: 400, damping: 30 }}
+							className="w-full glass rounded-[24px] border border-white/10 shadow-2xl backdrop-blur-xl p-4 mb-4"
+						>
+							<div className="max-w-4xl mx-auto">
+								<AnimatePresence mode="wait">
+									{step !== 3 ? (
+										<motion.div
+											key="standard-layout"
+											initial={{ opacity: 0 }}
+											animate={{ opacity: 1 }}
+											exit={{ opacity: 0, scale: 0.98, filter: "blur(10px)" }}
+											transition={{ duration: 0.4 }}
+											className="flex flex-col gap-4"
+										>
+											{/* Steps header */}
+											<div className="flex items-center justify-between h-8">
+												<div className="flex items-center gap-8">
+													{DOCK_STEPS.map((s) => (
+														<div
+															key={s.id}
+															className="flex items-center gap-2.5"
+														>
+															<div
+																className={cn(
+																	"w-5 h-5 rounded-full flex items-center justify-center text-[8px] font-black transition-all duration-300",
+																	step === s.id
+																		? "bg-primary text-primary-foreground scale-110 shadow-[0_0_15px_rgba(var(--primary),0.4)]"
+																		: step > s.id
+																			? "bg-green-500 text-white"
+																			: "bg-white/10 text-muted-foreground/30",
+																)}
+															>
+																{step > s.id ? (
+																	<CheckCircle2 className="w-3 h-3" />
+																) : (
+																	s.id
+																)}
+															</div>
+															<span
+																className={cn(
+																	"text-[10px] font-black tracking-[0.2em] uppercase transition-colors duration-300",
+																	step === s.id
+																		? "text-white"
+																		: "text-muted-foreground/30",
+																)}
+															>
+																{s.label}
+															</span>
+														</div>
+													))}
+												</div>
+												<div className="flex items-center gap-2">
+													<Dialog>
+														<DialogTrigger asChild>
+															<motion.button
+																type="button"
+																whileHover={{ scale: 1.05 }}
+																whileTap={{ scale: 0.95 }}
+																className="p-1.5 rounded-xl bg-white/5 border border-white/5 hover:bg-white/10 text-muted-foreground hover:text-white transition-all"
+																title="Optimal Image Sourcing Guidelines"
+															>
+																<Info className="w-4 h-4" />
+															</motion.button>
+														</DialogTrigger>
+														<DialogContent className="sm:max-w-md md:max-w-xl glass bg-background/95 backdrop-blur-xl border-white/10 text-white max-h-[85vh] overflow-y-auto">
+															<DialogHeader className="mb-2 text-left">
+																<DialogTitle className="text-xl font-display font-bold">
+																	Optimal Image Sourcing
+																</DialogTitle>
+																<DialogDescription className="text-muted-foreground text-left">
+																	Follow these guidelines to get the best AI
+																	generation results.
+																</DialogDescription>
+															</DialogHeader>
+
+															<div className="space-y-6 mt-2">
+																<div className="space-y-3">
+																	<h4 className="font-semibold text-emerald-400 flex items-center gap-2 leading-none">
+																		Recommended Practices
+																	</h4>
+																	<ul className="space-y-2 text-sm text-white/80 list-disc list-outside ml-4">
+																		<li>
+																			<strong className="text-white">
+																				Opt for authentic, well-captured
+																				photographs:
+																			</strong>{" "}
+																			Providing a pristine baseline helps the
+																			generation model map out structural
+																			details more accurately.
+																		</li>
+																		<li>
+																			<strong className="text-white">
+																				Prioritize strong, deliberate lighting:
+																			</strong>{" "}
+																			Distinct shadows and highlights allow the
+																			tool to render depth and volume
+																			effectively.
+																		</li>
+																		<li>
+																			<strong className="text-white">
+																				Select crisp, high-resolution visuals:
+																			</strong>{" "}
+																			Maximizing image detail ensures the
+																			process picks up precise borders and
+																			physical traits.
+																		</li>
+																		<li>
+																			<strong className="text-white">
+																				Utilize 1:1 aspect ratios:
+																			</strong>{" "}
+																			Cropping your image to a square
+																			standardizes the frame, which keeps the
+																			layout focused and prevents unintended
+																			compositional shifts.
+																		</li>
+																		<li>
+																			<strong className="text-white">
+																				Feature unique stylistic elements:
+																			</strong>{" "}
+																			Striking poses, distinctive garments, or
+																			bold hairstyles inject a much stronger
+																			character into the final result.
+																		</li>
+																		<li>
+																			<strong className="text-white">
+																				Focus on a single central subject:
+																			</strong>{" "}
+																			Isolating one main focal point minimizes
+																			processing confusion and keeps the visual
+																			transformation highly accurate.
+																		</li>
+																	</ul>
+																</div>
+
+																<div className="space-y-3">
+																	<h4 className="font-semibold text-red-400 flex items-center gap-2 leading-none">
+																		What to Avoid
+																	</h4>
+																	<ul className="space-y-2 text-sm text-white/80 list-disc list-outside ml-4">
+																		<li>
+																			Heavily edited, pre-filtered, or
+																			low-clarity pictures.
+																		</li>
+																		<li>
+																			Files suffering from compression
+																			artifacts, pixelation, or movement
+																			distortion.
+																		</li>
+																		<li>
+																			Cluttered visual layouts or photos
+																			containing multiple subjects.
+																		</li>
+																	</ul>
+																</div>
+															</div>
+														</DialogContent>
+													</Dialog>
+													<motion.button
+														type="button"
+														whileHover={{ scale: 1.05 }}
+														whileTap={{ scale: 0.95 }}
+														onClick={onCollapse}
+														className="p-1.5 rounded-xl bg-white/5 border border-white/5 hover:bg-white/10 text-muted-foreground hover:text-white transition-all group/collapse"
+													>
+														<X className="w-4 h-4 group-hover/collapse:rotate-90 transition-transform" />
+													</motion.button>
+												</div>
+											</div>
+
+											{/* Content */}
+											<div className="w-full flex items-center">
+												<AnimatePresence mode="wait">
+													{step === 1 && (
+														<motion.div
+															key="step1"
+															className="w-full"
+															initial={{ opacity: 0, y: 10 }}
+															animate={{ opacity: 1, y: 0 }}
+															exit={{ opacity: 0, y: 10 }}
+														>
+															<StudioUploadZone
+																onFileSelected={onFileSelected}
+															/>
+														</motion.div>
+													)}
+													{step === 2 && previewUrl && (
+														<motion.div
+															key="step2"
+															className="w-full"
+															initial={{ opacity: 0, y: 10 }}
+															animate={{ opacity: 1, y: 0 }}
+															exit={{ opacity: 0, y: 10 }}
+														>
+															<StudioStyleSelector
+																previewUrl={previewUrl}
+																selectedStyle={selectedStyle}
+																onStyleSelect={onStyleSelect}
+																onClear={onClear}
+																onGenerate={onGenerate}
+															/>
+														</motion.div>
+													)}
+												</AnimatePresence>
+											</div>
+
+											{/* Footer */}
+											<div className="flex items-center justify-between pt-1">
+												<span className="text-[9.5px] font-black uppercase tracking-[0.2em] text-white/40">
+													Secure & Private
+												</span>
+												<div className="flex items-center gap-2">
+													<div className="w-1 h-1 rounded-full bg-green-500/60 animate-pulse" />
+													<span className="text-[9.5px] font-black uppercase tracking-[0.2em] text-white/40">
+														Photos Automatically Deleted
+													</span>
+												</div>
+											</div>
+										</motion.div>
+									) : (
+										<motion.div
+											key="synthesis-layout"
+											initial={{
+												opacity: 0,
+												scale: 0.95,
+												filter: "blur(10px)",
+											}}
+											animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
+											className="w-full h-[180px] flex flex-col items-center justify-center relative overflow-hidden"
+										>
+											{/* Ambient effects */}
+											<div className="absolute inset-0 pointer-events-none overflow-hidden rounded-[20px]">
+												<div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[300px] bg-primary/10 rounded-full blur-[120px] opacity-40 animate-pulse" />
+												<motion.div
+													initial={{ x: "-120%", opacity: 0 }}
+													animate={{ x: "120%", opacity: [0, 1, 1, 0] }}
+													transition={{
+														delay: 0.5,
+														duration: 0.9,
+														repeat: Infinity,
+														repeatDelay: 1.5,
+														ease: "easeInOut",
+													}}
+													className="absolute inset-y-0 w-[500px] bg-linear-to-r from-transparent via-white/40 to-transparent skew-x-[-35deg] blur-md z-30"
+												/>
+											</div>
+
+											<div className="flex flex-col items-center gap-6 relative z-10 w-full">
+												<div className="flex items-center gap-24 relative h-20 w-full justify-center">
+													<motion.div
+														initial={{ x: -200, opacity: 0, scale: 0.5 }}
+														animate={{ x: -40, opacity: 1, scale: 1 }}
+														transition={{
+															duration: 1.5,
+															ease: [0.16, 1, 0.3, 1],
+														}}
+														className="w-20 h-20 rounded-full border-2 border-white/20 overflow-hidden glass shadow-[0_0_50px_rgba(255,255,255,0.1)] z-20"
+													>
+														<img
+															src={previewUrl || ""}
+															alt="Source"
+															className="w-full h-full object-cover"
+														/>
+													</motion.div>
+
+													<div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
+														<motion.div
+															animate={{ rotate: -360 }}
+															transition={{
+																repeat: Infinity,
+																duration: 12,
+																ease: "linear",
+															}}
+															className="w-44 h-44 rounded-full border border-dashed border-primary/20 opacity-30"
+														/>
+														<motion.div
+															animate={{
+																scale: [1, 1.5, 1],
+																opacity: [0.3, 0.6, 0.3],
+															}}
+															transition={{ repeat: Infinity, duration: 3 }}
+															className="absolute inset-0 flex items-center justify-center"
+														>
+															<div className="w-32 h-32 rounded-full bg-primary/20 blur-3xl shadow-[0_0_120px_rgba(var(--primary),0.4)]" />
+														</motion.div>
+													</div>
+
+													<motion.div
+														initial={{ x: 200, opacity: 0, scale: 0.5 }}
+														animate={{
+															x: 40,
+															opacity: 1,
+															scale: 1,
+															boxShadow: [
+																"0 0 0px rgba(var(--primary),0)",
+																"0 0 40px rgba(var(--primary),0.3)",
+																"0 0 0px rgba(var(--primary),0)",
+															],
+														}}
+														transition={{
+															duration: 1.5,
+															ease: [0.16, 1, 0.3, 1],
+															boxShadow: {
+																delay: 1,
+																duration: 2,
+																repeat: Infinity,
+															},
+														}}
+														className="w-20 h-20 rounded-full border-2 border-primary/40 overflow-hidden glass shadow-[0_0_50px_rgba(var(--primary),0.2)] z-20"
+													>
+														<img
+															src={
+																HEADSHOT_STYLES.find(
+																	(s) => s.id === (selectedStyle || ""),
+																)?.image || ""
+															}
+															alt="Style"
+															className="w-full h-full object-cover"
+														/>
+													</motion.div>
+												</div>
+
+												<motion.div
+													initial={{ opacity: 0, y: 20 }}
+													animate={{ opacity: 1, y: 0 }}
+													transition={{ delay: 1.4 }}
+													className="text-center space-y-2"
+												>
+													<p className="text-sm font-black uppercase tracking-[0.5em] text-primary drop-shadow-[0_0_10px_rgba(var(--primary),0.5)]">
+														Neural Synthesis
+													</p>
+													<p className="text-[10px] font-medium text-white/40 uppercase tracking-[0.3em]">
+														Merging Reference & Style in the cloud
+													</p>
+												</motion.div>
+											</div>
+
+											<motion.button
+												initial={{ opacity: 0 }}
+												animate={{ opacity: 1 }}
+												transition={{ delay: 2 }}
+												onClick={onCollapse}
+												className="absolute top-0 right-0 p-2 text-white/20 hover:text-white transition-colors z-30"
+											>
+												<X className="w-5 h-5" />
+											</motion.button>
+										</motion.div>
+									)}
+								</AnimatePresence>
+							</div>
+						</motion.div>
+					) : (
+						<motion.button
+							key="collapsed-dock"
+							initial={{ opacity: 0, y: 20, scale: 0.95 }}
+							animate={{ opacity: 1, y: 0, scale: 1 }}
+							exit={{ opacity: 0, y: 20, scale: 0.95 }}
+							whileHover={{ y: -4, scale: 1.02 }}
+							onClick={onExpand}
+							className="glass min-w-[300px] h-12 rounded-[20px] border border-white/10 shadow-2xl flex items-center justify-center gap-6 px-8 group cursor-pointer relative mb-4"
+						>
+							<div className="flex items-center gap-3">
+								<Sparkles className="w-4 h-4 text-primary group-hover:scale-110 transition-transform" />
+								<span className="text-[10px] font-black uppercase tracking-[0.2em] text-white/90">
+									New Generation
+								</span>
+							</div>
+							<div className="w-px h-4 bg-white/10" />
+							<span className="text-[9px] font-bold uppercase tracking-widest text-white/30 group-hover:text-white/50 transition-colors">
+								Safe & Secure
+							</span>
+						</motion.button>
 					)}
-				>
-					<AnimatePresence mode="popLayout" initial={false}>
-						{isDockCollapsed ? (
-							<CollapsedContent key="collapsed" onExpand={onExpand} />
-						) : (
-							<ExpandedContent
-								key="expanded"
-								step={step}
-								previewUrl={previewUrl}
-								selectedStyle={selectedStyle}
-								onCollapse={onCollapse}
-								onFileSelected={onFileSelected}
-								onStyleSelect={onStyleSelect}
-								onClear={onClear}
-								onGenerate={onGenerate}
-							/>
-						)}
-					</AnimatePresence>
-				</motion.div>
+				</AnimatePresence>
 			</div>
 		</div>
 	);
