@@ -1,9 +1,20 @@
 import { Download, Heart, Trash2 } from "lucide-react";
 import { motion } from "motion/react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { cfImg } from "@/lib/cloudflare-image";
 import { cn } from "@/lib/utils";
 import type { GalleryItem } from "../domain/headshot.types";
+
+const STAGES = [
+	"Analyzing your photo...",
+	"Applying professional style...",
+	"Generating headshot...",
+	"Almost there...",
+] as const;
+
+// Stage thresholds in seconds
+const STAGE_TIMES = [0, 8, 18, 30] as const;
 
 interface GalleryCardProps {
 	item: GalleryItem;
@@ -18,6 +29,44 @@ export function GalleryCard({
 	onDelete,
 	onDownload,
 }: GalleryCardProps) {
+	const [progress, setProgress] = useState(0);
+	const [stageIndex, setStageIndex] = useState(0);
+
+	useEffect(() => {
+		if (!item.isPending) return;
+
+		const startTime = item.createdAt.getTime();
+
+		const tick = () => {
+			const elapsed = (Date.now() - startTime) / 1000;
+
+			// Progress: 0→60% in first 10s, 60→90% over next 25s, hold at 90%
+			let p: number;
+			if (elapsed < 10) {
+				p = (elapsed / 10) * 60;
+			} else if (elapsed < 35) {
+				p = 60 + ((elapsed - 10) / 25) * 30;
+			} else {
+				p = 90;
+			}
+			setProgress(Math.min(90, p));
+
+			// Advance stage label based on elapsed time
+			let stage = 0;
+			for (let i = STAGE_TIMES.length - 1; i >= 0; i--) {
+				if (elapsed >= STAGE_TIMES[i]) {
+					stage = i;
+					break;
+				}
+			}
+			setStageIndex(stage);
+		};
+
+		tick(); // run immediately so card doesn't flash 0%
+		const id = setInterval(tick, 500);
+		return () => clearInterval(id);
+	}, [item.isPending, item.createdAt]);
+
 	if (item.isPending) {
 		return (
 			<motion.div
@@ -26,14 +75,41 @@ export function GalleryCard({
 				animate={{ opacity: 1 }}
 				className="relative aspect-3/4 rounded-2xl overflow-hidden glass border border-primary/20 bg-primary/5"
 			>
-				<div className="absolute inset-0 flex flex-col items-center justify-center gap-3">
+				{/* Ambient glow */}
+				<div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-40 h-40 bg-primary/15 rounded-full blur-3xl" />
+
+				<div className="absolute inset-0 flex flex-col items-center justify-center gap-4 px-5">
+					{/* Spinner */}
 					<motion.div
 						animate={{ rotate: 360 }}
 						transition={{ repeat: Infinity, duration: 2, ease: "linear" }}
 						className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full"
 					/>
-					<span className="text-[10px] font-bold uppercase tracking-widest text-primary animate-pulse">
-						Neural Crafting...
+
+					{/* Stage label */}
+					<motion.span
+						key={stageIndex}
+						initial={{ opacity: 0, y: 4 }}
+						animate={{ opacity: 1, y: 0 }}
+						exit={{ opacity: 0, y: -4 }}
+						transition={{ duration: 0.3 }}
+						className="text-[10px] font-bold uppercase tracking-widest text-primary text-center"
+					>
+						{STAGES[stageIndex]}
+					</motion.span>
+
+					{/* Progress bar */}
+					<div className="w-full h-0.5 rounded-full bg-primary/10 overflow-hidden">
+						<motion.div
+							className="h-full bg-primary/60 rounded-full"
+							animate={{ width: `${progress}%` }}
+							transition={{ duration: 0.5, ease: "easeOut" }}
+						/>
+					</div>
+
+					{/* Percentage */}
+					<span className="text-[9px] font-medium text-primary/40 tabular-nums">
+						{Math.round(progress)}%
 					</span>
 				</div>
 			</motion.div>
