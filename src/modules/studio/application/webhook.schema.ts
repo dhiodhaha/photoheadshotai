@@ -2,7 +2,7 @@ import { z } from "zod";
 
 export const falWebhookSchema = z.object({
 	status: z.enum(["OK", "ERROR"]),
-	error: z.string().optional(),
+	error: z.string().nullable().optional(),
 	payload: z
 		.object({
 			images: z.array(z.object({ url: z.string().url() })).optional(),

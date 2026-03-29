@@ -29,6 +29,7 @@ export const Route = createFileRoute("/api/studio/webhook/fal")({
 				const parsed = falWebhookSchema.safeParse(body);
 				if (!parsed.success) {
 					console.error("Webhook payload parse error:", parsed.error.message);
+					console.error("Raw webhook body:", JSON.stringify(body));
 					return Response.json({ error: "Invalid payload" }, { status: 400 });
 				}
 
