@@ -1,7 +1,7 @@
 import { Link, useLocation } from "@tanstack/react-router";
 import { Bolt, ChevronLeft, Plus, Sparkles } from "lucide-react";
-import { authClient } from "#/lib/auth-client";
 import { cn } from "#/lib/utils";
+import { useCredits } from "#/modules/credits/components/use-credits";
 import { UserDropdownMenu } from "./user-dropdown-menu";
 
 type StudioHeaderProps = {
@@ -9,7 +9,7 @@ type StudioHeaderProps = {
 };
 
 export function StudioHeader({ isVisible = true }: StudioHeaderProps) {
-	const credits = authClient.useSession().data?.user?.currentCredits ?? 0;
+	const credits = useCredits();
 	const location = useLocation();
 
 	const isSecondaryView =
