@@ -55,20 +55,55 @@ export function useGenerationFlow({
 		onGenerating?.(true);
 
 		try {
-			const formData = new FormData();
-			formData.append("file", file);
-
-			const uploadRes = await fetch("/api/studio/upload", {
+			// Step 1: Get presigned PUT URL from server (no data transfer)
+			const urlRes = await fetch("/api/studio/upload-url", {
 				method: "POST",
-				body: formData,
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({
+					contentType: file.type,
+					size: file.size,
+					filename: file.name,
+				}),
 			});
 
-			if (!uploadRes.ok) {
-				const err = await uploadRes.json();
-				throw new Error(err.error || "Failed to upload image.");
+			if (!urlRes.ok) {
+				const err = await urlRes.json();
+				throw new Error(err.error || "Failed to get upload URL.");
 			}
 
-			const { image_id } = await uploadRes.json();
+			const { presignedUrl, key, filename } = await urlRes.json();
+
+			// Step 2: Upload directly to R2 (bypasses VPS)
+			if (presignedUrl) {
+				const putRes = await fetch(presignedUrl, {
+					method: "PUT",
+					headers: { "Content-Type": file.type },
+					body: file,
+				});
+
+				if (!putRes.ok) {
+					throw new Error("Failed to upload image to storage.");
+				}
+			}
+
+			// Step 3: Confirm upload with server (creates DB record)
+			const confirmRes = await fetch("/api/studio/upload-confirm", {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({
+					key,
+					filename: filename || file.name,
+					contentType: file.type,
+					size: file.size,
+				}),
+			});
+
+			if (!confirmRes.ok) {
+				const err = await confirmRes.json();
+				throw new Error(err.error || "Failed to confirm upload.");
+			}
+
+			const { image_id } = await confirmRes.json();
 
 			const generateRes = await fetch("/api/studio/generate", {
 				method: "POST",

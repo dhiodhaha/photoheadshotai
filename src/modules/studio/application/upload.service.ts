@@ -72,4 +72,22 @@ export async function removePhoto(userId: string, imageId: string) {
 	await deletePhoto(photo.id);
 }
 
+export async function confirmUpload(
+	userId: string,
+	data: { key: string; filename: string; contentType: string; size: number },
+): Promise<{ file_url: string; image_id: string }> {
+	const record = await createPhoto({
+		userId,
+		key: data.key,
+		filename: data.filename,
+		contentType: data.contentType,
+		size: data.size,
+	});
+
+	return {
+		file_url: getPublicUrl(data.key),
+		image_id: record.id,
+	};
+}
+
 export { ALLOWED_CONTENT_TYPES, MAX_FILE_SIZE };

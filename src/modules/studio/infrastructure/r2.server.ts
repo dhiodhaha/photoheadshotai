@@ -1,4 +1,8 @@
-import { GetObjectCommand, S3Client } from "@aws-sdk/client-s3";
+import {
+	GetObjectCommand,
+	PutObjectCommand,
+	S3Client,
+} from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { requireEnv } from "#/lib/env";
 
@@ -37,6 +41,26 @@ export async function getPresignedUrl(key: string, expiresIn = 3600) {
 	return getSignedUrl(
 		client,
 		new GetObjectCommand({ Bucket: getBucketName(), Key: key }),
+		{ expiresIn },
+	);
+}
+
+export async function getPresignedPutUrl(
+	key: string,
+	contentType: string,
+	expiresIn = 600,
+) {
+	const client = getR2Client();
+	if (!client) {
+		throw new Error("R2 client not available in mock mode");
+	}
+	return getSignedUrl(
+		client,
+		new PutObjectCommand({
+			Bucket: getBucketName(),
+			Key: key,
+			ContentType: contentType,
+		}),
 		{ expiresIn },
 	);
 }
