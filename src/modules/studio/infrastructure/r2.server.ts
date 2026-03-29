@@ -2,19 +2,23 @@ import { GetObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { requireEnv } from "#/lib/env";
 
-export function getR2Client() {
+let _r2Client: S3Client | null = null;
+
+export function getR2Client(): S3Client | null {
 	if (requireEnv("R2_ACCOUNT_ID") === "placeholder_account_id") {
 		return null; // Mock mode
 	}
-
-	return new S3Client({
-		region: "auto",
-		endpoint: `https://${requireEnv("R2_ACCOUNT_ID")}.r2.cloudflarestorage.com`,
-		credentials: {
-			accessKeyId: requireEnv("R2_ACCESS_KEY_ID"),
-			secretAccessKey: requireEnv("R2_SECRET_ACCESS_KEY"),
-		},
-	});
+	if (!_r2Client) {
+		_r2Client = new S3Client({
+			region: "auto",
+			endpoint: `https://${requireEnv("R2_ACCOUNT_ID")}.r2.cloudflarestorage.com`,
+			credentials: {
+				accessKeyId: requireEnv("R2_ACCESS_KEY_ID"),
+				secretAccessKey: requireEnv("R2_SECRET_ACCESS_KEY"),
+			},
+		});
+	}
+	return _r2Client;
 }
 
 export function getBucketName() {
