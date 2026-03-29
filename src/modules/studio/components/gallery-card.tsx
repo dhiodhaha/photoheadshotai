@@ -35,7 +35,7 @@ export function GalleryCard({
 	useEffect(() => {
 		if (!item.isPending) return;
 
-		const startTime = item.createdAt.getTime();
+		const startTime = new Date(item.createdAt).getTime();
 
 		const tick = () => {
 			const elapsed = (Date.now() - startTime) / 1000;
