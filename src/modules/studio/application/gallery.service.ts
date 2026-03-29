@@ -23,7 +23,7 @@ export async function getHeadshotGallery(userId: string, styleId?: string) {
 		src: "",
 		style: "",
 		styleLabel: "",
-		createdAt: new Date(),
+		createdAt: job.startedAt,
 		isFavorited: false,
 		isPending: true,
 	}));

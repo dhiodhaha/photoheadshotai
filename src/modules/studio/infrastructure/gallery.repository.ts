@@ -9,7 +9,7 @@ export async function findActiveJobsByUser(userId: string) {
 				in: [GenerationJobStatus.pending, GenerationJobStatus.processing],
 			},
 		},
-		select: { id: true },
+		select: { id: true, startedAt: true },
 		orderBy: { startedAt: "desc" },
 	});
 }
