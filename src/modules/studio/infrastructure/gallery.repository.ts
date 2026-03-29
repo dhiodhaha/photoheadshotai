@@ -138,3 +138,14 @@ export async function restoreHeadshotById(headshotId: string) {
 export async function hardDeleteHeadshot(headshotId: string) {
 	return prisma.generatedHeadshot.delete({ where: { id: headshotId } });
 }
+
+export async function updateHeadshotResultUrl(
+	headshotId: string,
+	resultUrl: string,
+	r2Key: string | null,
+) {
+	await prisma.generatedHeadshot.update({
+		where: { id: headshotId },
+		data: { resultUrl, r2Key },
+	});
+}

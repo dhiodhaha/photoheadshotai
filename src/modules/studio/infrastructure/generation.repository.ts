@@ -29,12 +29,12 @@ export async function completeGenerationJob(
 	photoId: string,
 	imageData: {
 		resultUrl: string;
-		thumbnailUrl: string;
+		thumbnailUrl: string | null;
 		r2Key: string | null;
 		r2ThumbnailKey: string | null;
 	},
-) {
-	await prisma.$transaction([
+): Promise<string> {
+	const [, , headshot] = await prisma.$transaction([
 		prisma.generationJob.update({
 			where: { id: jobId },
 			data: { status: GenerationJobStatus.completed, completedAt: new Date() },
@@ -53,6 +53,7 @@ export async function completeGenerationJob(
 			},
 		}),
 	]);
+	return headshot.id;
 }
 
 export async function failGenerationJob(jobId: string) {

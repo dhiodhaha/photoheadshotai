@@ -1,16 +1,15 @@
 import { fal } from "@fal-ai/client";
-import { deductUserCredits, refundCredits } from "#/modules/credits";
+import { requireEnv } from "#/lib/env";
+import { deductUserCredits } from "#/modules/credits";
 import {
 	getFalKey,
 	getPhotoUrlForGeneration,
 	isMockAiGeneration,
 } from "#/modules/studio/infrastructure/generation-context.server";
-import { persistImageToR2 } from "#/modules/studio/infrastructure/photo.storage";
 import { buildPrompt, getStyleById } from "../domain/styles";
 import {
 	completeGenerationJob,
 	createGenerationJob,
-	failGenerationJob,
 	getJobWithResults,
 	getPhotoByIdAndUser,
 } from "../infrastructure/generation.repository";
@@ -80,57 +79,20 @@ export class GenerationService {
 			return;
 		}
 
-		try {
-			const result = await fal.subscribe(SEEDREAM_MODEL, {
-				input: {
-					prompt,
-					image_urls: [photoUrl],
-					image_size: { width: 2048, height: 2048 },
-					num_images: 1,
-					enable_safety_checker: true,
-				},
-			});
-
-			const imageUrl = result.data?.images?.[0]?.url;
-			if (imageUrl) {
-				let resultUrl = imageUrl;
-				let r2Key: string | null = null;
-
-				try {
-					const persisted = await persistImageToR2(imageUrl, userId, jobId);
-					resultUrl = persisted.resultUrl;
-					r2Key = persisted.r2Key;
-				} catch (r2Error: unknown) {
-					const msg =
-						r2Error instanceof Error ? r2Error.message : String(r2Error);
-					console.warn(
-						`R2 upload failed for job ${jobId}, using fal.ai URL: ${msg}`,
-					);
-				}
-
-				await completeGenerationJob(jobId, photoId, {
-					resultUrl,
-					thumbnailUrl: null,
-					r2Key,
-					r2ThumbnailKey: null,
-				});
-				return;
-			}
-			throw new Error("AI Provider returned no image.");
-		} catch (error: unknown) {
-			const message = error instanceof Error ? error.message : String(error);
-			if (error instanceof Error && "body" in error) {
-				console.error(
-					`Job ${jobId} failed: ${message}`,
-					JSON.stringify((error as Record<string, unknown>).body, null, 2),
-				);
-			} else {
-				console.error(`Job ${jobId} failed: ${message}`);
-			}
-			await failGenerationJob(jobId);
-			await refundCredits(userId, GENERATION_CREDIT_COST);
-			throw error;
-		}
+		const webhookUrl = buildWebhookUrl(jobId, userId, photoId);
+		const submitted = await fal.queue.submit(SEEDREAM_MODEL, {
+			input: {
+				prompt,
+				image_urls: [photoUrl],
+				image_size: { width: 2048, height: 2048 },
+				num_images: 1,
+				enable_safety_checker: true,
+			},
+			webhookUrl,
+		});
+		console.log(
+			`Job ${jobId} submitted to fal.ai, request_id: ${submitted.request_id}`,
+		);
 	}
 
 	async getJobStatus(jobId: string, userId: string) {
@@ -143,3 +105,13 @@ export class GenerationService {
 }
 
 export const generationService = new GenerationService();
+
+function buildWebhookUrl(
+	jobId: string,
+	userId: string,
+	photoId: string,
+): string {
+	const base = requireEnv("BETTER_AUTH_URL");
+	const secret = requireEnv("WEBHOOK_SECRET");
+	return `${base}/api/studio/webhook/fal?jobId=${encodeURIComponent(jobId)}&userId=${encodeURIComponent(userId)}&photoId=${encodeURIComponent(photoId)}&secret=${encodeURIComponent(secret)}`;
+}
