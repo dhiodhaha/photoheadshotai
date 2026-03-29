@@ -33,7 +33,7 @@ export const auth = betterAuth({
 		updateAge: 60 * 60 * 24, // refresh session token daily
 		cookieCache: {
 			enabled: true,
-			maxAge: 60 * 5, // 5-minute client-side cache to reduce DB reads
+			maxAge: 30, // 30s cache — short enough that credits update quickly after mutations
 		},
 	},
 	emailAndPassword: {
