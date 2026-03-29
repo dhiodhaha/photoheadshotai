@@ -29,6 +29,7 @@ import { Route as ApiCreditsPurchaseRouteImport } from './routes/api/credits/pur
 import { Route as ApiCreditsDeductRouteImport } from './routes/api/credits/deduct'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 import { Route as ApiStudioTrashIndexRouteImport } from './routes/api/studio/trash/index'
+import { Route as ApiStudioWebhookFalRouteImport } from './routes/api/studio/webhook/fal'
 import { Route as ApiStudioTrashRestoreRouteImport } from './routes/api/studio/trash/restore'
 import { Route as ApiStudioTrashIdRouteImport } from './routes/api/studio/trash/$id'
 import { Route as ApiStudioStatusTaskIdRouteImport } from './routes/api/studio/status/$taskId'
@@ -134,6 +135,11 @@ const ApiStudioTrashIndexRoute = ApiStudioTrashIndexRouteImport.update({
   path: '/api/studio/trash/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiStudioWebhookFalRoute = ApiStudioWebhookFalRouteImport.update({
+  id: '/api/studio/webhook/fal',
+  path: '/api/studio/webhook/fal',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiStudioTrashRestoreRoute = ApiStudioTrashRestoreRouteImport.update({
   id: '/api/studio/trash/restore',
   path: '/api/studio/trash/restore',
@@ -180,6 +186,7 @@ export interface FileRoutesByFullPath {
   '/api/studio/status/$taskId': typeof ApiStudioStatusTaskIdRoute
   '/api/studio/trash/$id': typeof ApiStudioTrashIdRoute
   '/api/studio/trash/restore': typeof ApiStudioTrashRestoreRoute
+  '/api/studio/webhook/fal': typeof ApiStudioWebhookFalRoute
   '/api/studio/trash/': typeof ApiStudioTrashIndexRoute
 }
 export interface FileRoutesByTo {
@@ -205,6 +212,7 @@ export interface FileRoutesByTo {
   '/api/studio/status/$taskId': typeof ApiStudioStatusTaskIdRoute
   '/api/studio/trash/$id': typeof ApiStudioTrashIdRoute
   '/api/studio/trash/restore': typeof ApiStudioTrashRestoreRoute
+  '/api/studio/webhook/fal': typeof ApiStudioWebhookFalRoute
   '/api/studio/trash': typeof ApiStudioTrashIndexRoute
 }
 export interface FileRoutesById {
@@ -232,6 +240,7 @@ export interface FileRoutesById {
   '/api/studio/status/$taskId': typeof ApiStudioStatusTaskIdRoute
   '/api/studio/trash/$id': typeof ApiStudioTrashIdRoute
   '/api/studio/trash/restore': typeof ApiStudioTrashRestoreRoute
+  '/api/studio/webhook/fal': typeof ApiStudioWebhookFalRoute
   '/api/studio/trash/': typeof ApiStudioTrashIndexRoute
 }
 export interface FileRouteTypes {
@@ -260,6 +269,7 @@ export interface FileRouteTypes {
     | '/api/studio/status/$taskId'
     | '/api/studio/trash/$id'
     | '/api/studio/trash/restore'
+    | '/api/studio/webhook/fal'
     | '/api/studio/trash/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -285,6 +295,7 @@ export interface FileRouteTypes {
     | '/api/studio/status/$taskId'
     | '/api/studio/trash/$id'
     | '/api/studio/trash/restore'
+    | '/api/studio/webhook/fal'
     | '/api/studio/trash'
   id:
     | '__root__'
@@ -311,6 +322,7 @@ export interface FileRouteTypes {
     | '/api/studio/status/$taskId'
     | '/api/studio/trash/$id'
     | '/api/studio/trash/restore'
+    | '/api/studio/webhook/fal'
     | '/api/studio/trash/'
   fileRoutesById: FileRoutesById
 }
@@ -332,6 +344,7 @@ export interface RootRouteChildren {
   ApiStudioStatusTaskIdRoute: typeof ApiStudioStatusTaskIdRoute
   ApiStudioTrashIdRoute: typeof ApiStudioTrashIdRoute
   ApiStudioTrashRestoreRoute: typeof ApiStudioTrashRestoreRoute
+  ApiStudioWebhookFalRoute: typeof ApiStudioWebhookFalRoute
   ApiStudioTrashIndexRoute: typeof ApiStudioTrashIndexRoute
 }
 
@@ -477,6 +490,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiStudioTrashIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/studio/webhook/fal': {
+      id: '/api/studio/webhook/fal'
+      path: '/api/studio/webhook/fal'
+      fullPath: '/api/studio/webhook/fal'
+      preLoaderRoute: typeof ApiStudioWebhookFalRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/studio/trash/restore': {
       id: '/api/studio/trash/restore'
       path: '/api/studio/trash/restore'
@@ -556,6 +576,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiStudioStatusTaskIdRoute: ApiStudioStatusTaskIdRoute,
   ApiStudioTrashIdRoute: ApiStudioTrashIdRoute,
   ApiStudioTrashRestoreRoute: ApiStudioTrashRestoreRoute,
+  ApiStudioWebhookFalRoute: ApiStudioWebhookFalRoute,
   ApiStudioTrashIndexRoute: ApiStudioTrashIndexRoute,
 }
 export const routeTree = rootRouteImport
