@@ -1,6 +1,6 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { authClient } from "#/lib/auth-client";
+import { useCreditsActions } from "#/modules/credits/components/use-credits";
 import { useGenerationPolling } from "./use-generation-polling";
 
 interface UseGenerationFlowOptions {
@@ -9,24 +9,26 @@ interface UseGenerationFlowOptions {
 	onStep: (step: 1 | 2 | 3) => void;
 }
 
+const GENERATION_COST = 10;
+
 export function useGenerationFlow({
 	onGenerating,
 	onGeneratedImage,
 	onStep,
 }: UseGenerationFlowOptions) {
 	const queryClient = useQueryClient();
-	const { refetch: refetchSession } = authClient.useSession();
+	const { deduct, invalidate } = useCreditsActions();
 
 	const { startPolling } = useGenerationPolling({
-		onCompleted: async (resultUrl) => {
+		onCompleted: (resultUrl) => {
 			onGeneratedImage?.(resultUrl);
 			onGenerating?.(false);
-			await refetchSession();
+			invalidate();
 			queryClient.invalidateQueries({ queryKey: ["gallery"] });
 		},
-		onFailed: async () => {
+		onFailed: () => {
 			onGenerating?.(false);
-			await refetchSession();
+			invalidate(); // Refund may have happened — sync with DB
 			queryClient.invalidateQueries({ queryKey: ["gallery"] });
 			toast.error("Generation failed. Credits have been refunded.");
 			onStep(2);
@@ -42,7 +44,7 @@ export function useGenerationFlow({
 		selectedStyle: string,
 		currentCredits: number,
 	) => {
-		if (currentCredits < 10) {
+		if (currentCredits < GENERATION_COST) {
 			toast.error(
 				"Insufficient credits. Please top up in the Billing section.",
 			);
@@ -53,20 +55,55 @@ export function useGenerationFlow({
 		onGenerating?.(true);
 
 		try {
-			const formData = new FormData();
-			formData.append("file", file);
-
-			const uploadRes = await fetch("/api/studio/upload", {
+			// Step 1: Get presigned PUT URL from server (no data transfer)
+			const urlRes = await fetch("/api/studio/upload-url", {
 				method: "POST",
-				body: formData,
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({
+					contentType: file.type,
+					size: file.size,
+					filename: file.name,
+				}),
 			});
 
-			if (!uploadRes.ok) {
-				const err = await uploadRes.json();
-				throw new Error(err.error || "Failed to upload image.");
+			if (!urlRes.ok) {
+				const err = await urlRes.json();
+				throw new Error(err.error || "Failed to get upload URL.");
 			}
 
-			const { image_id } = await uploadRes.json();
+			const { presignedUrl, key, filename } = await urlRes.json();
+
+			// Step 2: Upload directly to R2 (bypasses VPS)
+			if (presignedUrl) {
+				const putRes = await fetch(presignedUrl, {
+					method: "PUT",
+					headers: { "Content-Type": file.type },
+					body: file,
+				});
+
+				if (!putRes.ok) {
+					throw new Error("Failed to upload image to storage.");
+				}
+			}
+
+			// Step 3: Confirm upload with server (creates DB record)
+			const confirmRes = await fetch("/api/studio/upload-confirm", {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({
+					key,
+					filename: filename || file.name,
+					contentType: file.type,
+					size: file.size,
+				}),
+			});
+
+			if (!confirmRes.ok) {
+				const err = await confirmRes.json();
+				throw new Error(err.error || "Failed to confirm upload.");
+			}
+
+			const { image_id } = await confirmRes.json();
 
 			const generateRes = await fetch("/api/studio/generate", {
 				method: "POST",
@@ -80,8 +117,7 @@ export function useGenerationFlow({
 			}
 
 			const { job_id } = await generateRes.json();
-			await refetchSession();
-			// Invalidate so gallery re-fetches and shows the server-side pending skeleton
+			deduct(GENERATION_COST); // Instant UI update
 			queryClient.invalidateQueries({ queryKey: ["gallery"] });
 
 			startPolling(job_id);

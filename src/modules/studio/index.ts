@@ -26,6 +26,7 @@ export {
 } from "./application/upload.schema";
 // Application
 export {
+	confirmUpload,
 	getUserPhotos,
 	removePhoto,
 	uploadPhoto,

@@ -17,8 +17,14 @@ interface ImageOptions {
 	fit?: "cover" | "contain" | "scale-down" | "crop";
 }
 
+function isR2Url(src: string): boolean {
+	return src.includes("standoutheadshot.com") || src.startsWith("/");
+}
+
 export function cfImage(src: string, options: ImageOptions = {}): string {
 	if (!src) return src;
+	// Only apply Cloudflare Image Resizing to our own R2/CDN URLs
+	if (!isR2Url(src)) return src;
 
 	const {
 		width,

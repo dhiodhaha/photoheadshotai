@@ -21,6 +21,8 @@ import { Route as AuthSignupRouteImport } from './routes/auth/signup'
 import { Route as AuthSigninRouteImport } from './routes/auth/signin'
 import { Route as ApiHistoryRouteImport } from './routes/api/history'
 import { Route as ApiUserProfileRouteImport } from './routes/api/user/profile'
+import { Route as ApiStudioUploadUrlRouteImport } from './routes/api/studio/upload-url'
+import { Route as ApiStudioUploadConfirmRouteImport } from './routes/api/studio/upload-confirm'
 import { Route as ApiStudioUploadRouteImport } from './routes/api/studio/upload'
 import { Route as ApiStudioGenerateRouteImport } from './routes/api/studio/generate'
 import { Route as ApiStudioGalleryRouteImport } from './routes/api/studio/gallery'
@@ -93,6 +95,16 @@ const ApiHistoryRoute = ApiHistoryRouteImport.update({
 const ApiUserProfileRoute = ApiUserProfileRouteImport.update({
   id: '/api/user/profile',
   path: '/api/user/profile',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiStudioUploadUrlRoute = ApiStudioUploadUrlRouteImport.update({
+  id: '/api/studio/upload-url',
+  path: '/api/studio/upload-url',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiStudioUploadConfirmRoute = ApiStudioUploadConfirmRouteImport.update({
+  id: '/api/studio/upload-confirm',
+  path: '/api/studio/upload-confirm',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiStudioUploadRoute = ApiStudioUploadRouteImport.update({
@@ -181,6 +193,8 @@ export interface FileRoutesByFullPath {
   '/api/studio/gallery': typeof ApiStudioGalleryRouteWithChildren
   '/api/studio/generate': typeof ApiStudioGenerateRoute
   '/api/studio/upload': typeof ApiStudioUploadRoute
+  '/api/studio/upload-confirm': typeof ApiStudioUploadConfirmRoute
+  '/api/studio/upload-url': typeof ApiStudioUploadUrlRoute
   '/api/user/profile': typeof ApiUserProfileRoute
   '/api/studio/gallery/categories': typeof ApiStudioGalleryCategoriesRoute
   '/api/studio/status/$taskId': typeof ApiStudioStatusTaskIdRoute
@@ -207,6 +221,8 @@ export interface FileRoutesByTo {
   '/api/studio/gallery': typeof ApiStudioGalleryRouteWithChildren
   '/api/studio/generate': typeof ApiStudioGenerateRoute
   '/api/studio/upload': typeof ApiStudioUploadRoute
+  '/api/studio/upload-confirm': typeof ApiStudioUploadConfirmRoute
+  '/api/studio/upload-url': typeof ApiStudioUploadUrlRoute
   '/api/user/profile': typeof ApiUserProfileRoute
   '/api/studio/gallery/categories': typeof ApiStudioGalleryCategoriesRoute
   '/api/studio/status/$taskId': typeof ApiStudioStatusTaskIdRoute
@@ -235,6 +251,8 @@ export interface FileRoutesById {
   '/api/studio/gallery': typeof ApiStudioGalleryRouteWithChildren
   '/api/studio/generate': typeof ApiStudioGenerateRoute
   '/api/studio/upload': typeof ApiStudioUploadRoute
+  '/api/studio/upload-confirm': typeof ApiStudioUploadConfirmRoute
+  '/api/studio/upload-url': typeof ApiStudioUploadUrlRoute
   '/api/user/profile': typeof ApiUserProfileRoute
   '/api/studio/gallery/categories': typeof ApiStudioGalleryCategoriesRoute
   '/api/studio/status/$taskId': typeof ApiStudioStatusTaskIdRoute
@@ -264,6 +282,8 @@ export interface FileRouteTypes {
     | '/api/studio/gallery'
     | '/api/studio/generate'
     | '/api/studio/upload'
+    | '/api/studio/upload-confirm'
+    | '/api/studio/upload-url'
     | '/api/user/profile'
     | '/api/studio/gallery/categories'
     | '/api/studio/status/$taskId'
@@ -290,6 +310,8 @@ export interface FileRouteTypes {
     | '/api/studio/gallery'
     | '/api/studio/generate'
     | '/api/studio/upload'
+    | '/api/studio/upload-confirm'
+    | '/api/studio/upload-url'
     | '/api/user/profile'
     | '/api/studio/gallery/categories'
     | '/api/studio/status/$taskId'
@@ -317,6 +339,8 @@ export interface FileRouteTypes {
     | '/api/studio/gallery'
     | '/api/studio/generate'
     | '/api/studio/upload'
+    | '/api/studio/upload-confirm'
+    | '/api/studio/upload-url'
     | '/api/user/profile'
     | '/api/studio/gallery/categories'
     | '/api/studio/status/$taskId'
@@ -340,6 +364,8 @@ export interface RootRouteChildren {
   ApiStudioGalleryRoute: typeof ApiStudioGalleryRouteWithChildren
   ApiStudioGenerateRoute: typeof ApiStudioGenerateRoute
   ApiStudioUploadRoute: typeof ApiStudioUploadRoute
+  ApiStudioUploadConfirmRoute: typeof ApiStudioUploadConfirmRoute
+  ApiStudioUploadUrlRoute: typeof ApiStudioUploadUrlRoute
   ApiUserProfileRoute: typeof ApiUserProfileRoute
   ApiStudioStatusTaskIdRoute: typeof ApiStudioStatusTaskIdRoute
   ApiStudioTrashIdRoute: typeof ApiStudioTrashIdRoute
@@ -432,6 +458,20 @@ declare module '@tanstack/react-router' {
       path: '/api/user/profile'
       fullPath: '/api/user/profile'
       preLoaderRoute: typeof ApiUserProfileRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/studio/upload-url': {
+      id: '/api/studio/upload-url'
+      path: '/api/studio/upload-url'
+      fullPath: '/api/studio/upload-url'
+      preLoaderRoute: typeof ApiStudioUploadUrlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/studio/upload-confirm': {
+      id: '/api/studio/upload-confirm'
+      path: '/api/studio/upload-confirm'
+      fullPath: '/api/studio/upload-confirm'
+      preLoaderRoute: typeof ApiStudioUploadConfirmRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/studio/upload': {
@@ -572,6 +612,8 @@ const rootRouteChildren: RootRouteChildren = {
   ApiStudioGalleryRoute: ApiStudioGalleryRouteWithChildren,
   ApiStudioGenerateRoute: ApiStudioGenerateRoute,
   ApiStudioUploadRoute: ApiStudioUploadRoute,
+  ApiStudioUploadConfirmRoute: ApiStudioUploadConfirmRoute,
+  ApiStudioUploadUrlRoute: ApiStudioUploadUrlRoute,
   ApiUserProfileRoute: ApiUserProfileRoute,
   ApiStudioStatusTaskIdRoute: ApiStudioStatusTaskIdRoute,
   ApiStudioTrashIdRoute: ApiStudioTrashIdRoute,

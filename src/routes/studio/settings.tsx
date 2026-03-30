@@ -15,6 +15,7 @@ import { motion } from "motion/react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { authClient } from "#/lib/auth-client";
+import { useCreditsActions } from "#/modules/credits/components/use-credits";
 import { ReferralCard } from "#/modules/referral/components/referral-card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -43,7 +44,7 @@ interface UserProfile {
 
 function SettingsPage() {
 	const queryClient = useQueryClient();
-	const { refetch: refetchSession } = authClient.useSession();
+	const { set: setCredits } = useCreditsActions();
 	const [activeTab, setActiveTab] = useState("profile");
 	const [name, setName] = useState("");
 	const [couponCode, setCouponCode] = useState("");
@@ -104,8 +105,8 @@ function SettingsPage() {
 		onSuccess: (data: { newBalance: number }) => {
 			toast.success(`Coupon redeemed! New balance: ${data.newBalance} credits`);
 			setCouponCode("");
+			setCredits(data.newBalance);
 			queryClient.invalidateQueries({ queryKey: ["user-profile"] });
-			refetchSession();
 		},
 		onError: (error: unknown) => {
 			toast.error(
