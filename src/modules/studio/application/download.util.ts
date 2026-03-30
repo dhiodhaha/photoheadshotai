@@ -1,8 +1,11 @@
 import { toast } from "sonner";
+import { cfImg } from "#/lib/cloudflare-image";
 
 export async function downloadHeadshot(url: string): Promise<void> {
 	try {
-		const response = await fetch(url);
+		// Route through /cdn-cgi/image/ for same-origin download (avoids CORS on R2 URLs)
+		const downloadUrl = cfImg.full(url);
+		const response = await fetch(downloadUrl);
 		if (!response.ok) {
 			toast.error("Download failed. The image may no longer be available.");
 			return;
